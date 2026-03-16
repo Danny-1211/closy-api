@@ -3,7 +3,7 @@ dotenv.config();
 
 // 環境變數類型定義
 type EnvConfig = {
-  PORT:string;
+  PORT: string;
   MONGO_URI: string;
   GEMINI_API_KEY: string;
   OPENWEATHER_API_KEY: string;
