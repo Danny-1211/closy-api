@@ -4,19 +4,19 @@ type Location = {
 };
 
 type Preferences = {
-  styles: [string] | [];
-  colors: [string] | [];
-  occasions: [string] | [];
+  styles: string[];
+  colors: string[];
+  occasions: string[];
 };
 
 type User = {
-  googleId: string | '';
-  email: string | '';
-  name: string | '';
-  picture: string | '';
-  gender: string | '';
-  preferences: Preferences | { styles: []; colors: []; occasions: [] };
-  location: Location | { latitude: null; longtitude: null };
+  googleId: string;
+  email: string;
+  name: string;
+  picture: string;
+  gender: string;
+  preferences: Preferences;
+  location: Location;
   createdAt?: Date;
   updatedAt?: Date;
 };

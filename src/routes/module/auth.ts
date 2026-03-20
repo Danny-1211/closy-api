@@ -22,11 +22,11 @@ authRouter.post('/google', async (req, res) => {
         token,
         tokenExpiresIn: config.JWT_EXPIRES_IN,
         user: {
-          userId: String(user._id),
+          userId: String(user.id),
           name: user.name,
           email: user.email,
           avatar: user.picture,
-          isProfileCompleted: !!user.gender, // gender 有值代表已完成引導頁
+          isProfileCompleted: user.gender ? true : false, // gender 有值代表已完成引導頁
         },
       },
     });

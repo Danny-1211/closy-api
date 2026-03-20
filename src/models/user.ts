@@ -22,13 +22,16 @@ const preferencesSchema = new Schema<UserType.Preferences>(
 // 使用者資訊
 const userSchema = new Schema<UserType.User>(
   {
-    googleId: String,
-    email: String,
-    name: String,
-    picture: String,
-    gender: String,
-    preferences: preferencesSchema,
-    location: locationSchema,
+    googleId: { type: String, default: '' },
+    email: { type: String, default: '' },
+    name: { type: String, default: '' },
+    picture: { type: String, default: '' },
+    gender: { type: String, default: '' },
+    preferences: {
+      type: preferencesSchema,
+      default: () => ({ styles: [], colors: [], occasions: [] }),
+    },
+    location: { type: locationSchema, default: () => ({ latitude: null, longtitude: null }) },
   },
   { timestamps: true, collection: 'users' },
 );

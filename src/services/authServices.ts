@@ -16,17 +16,17 @@ const verifyGoogleToken = async (id_token: string) => {
 
 // 查找或建立用戶
 async function findOrCreateUser({
-  sub,
+  googleId,
   email,
   picture,
   name,
 }: {
-  sub: string;
+  googleId: string;
   email?: string;
   picture?: string;
   name?: string;
 }) {
-  const user = await User.findOne({ sub });
+  const user = await User.findOne({ googleId });
 
   // 如果已經被創過
   if (user) {
@@ -34,10 +34,10 @@ async function findOrCreateUser({
   }
 
   const newUser = new User({
-    sub,
-    email,
-    name,
-    picture,
+    googleId: googleId || '',
+    email: email || '',
+    name: name || '',
+    picture: picture || '',
   });
 
   // 儲存新用戶到 DB
@@ -51,7 +51,7 @@ export const loginWithGoogle = async (id_token: string) => {
   if (!payload) throw new Error('unvalid Google Token');
 
   const user = await findOrCreateUser({
-    sub: payload.sub,
+    googleId: payload.sub,
     email: payload.email,
     picture: payload.picture,
     name: payload.name,
