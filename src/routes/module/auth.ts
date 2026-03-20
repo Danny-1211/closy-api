@@ -17,7 +17,7 @@ authRouter.post('/google', async (req, res) => {
     res.status(200).json({
       statusCode: 200,
       status: true,
-      message: "登入成功",
+      message: '登入成功',
       data: {
         token,
         tokenExpiresIn: config.JWT_EXPIRES_IN,
@@ -32,14 +32,12 @@ authRouter.post('/google', async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(401).json(
-      {
-        statusCode: 401,
-        status: false,
-        message: "Google token 驗證失敗",
-        data: null,
-      }
-    );
+    res.status(401).json({
+      statusCode: 401,
+      status: false,
+      message: 'Google token 驗證失敗',
+      data: null,
+    });
   }
 });
 

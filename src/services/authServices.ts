@@ -1,4 +1,4 @@
-import { OAuth2Client } from "google-auth-library";
+import { OAuth2Client } from 'google-auth-library';
 import { config } from '../types/env';
 import { User } from '../models/user';
 import { signToken } from '../utils/jwt';
@@ -15,14 +15,17 @@ const verifyGoogleToken = async (id_token: string) => {
 };
 
 // 查找或建立用戶
-async function findOrCreateUser(
-  { sub, email, picture, name }: {
-    sub: string,
-    email?: string,
-    picture?: string,
-    name?: string,
-  }
-) {
+async function findOrCreateUser({
+  sub,
+  email,
+  picture,
+  name,
+}: {
+  sub: string;
+  email?: string;
+  picture?: string;
+  name?: string;
+}) {
   const user = await User.findOne({ sub });
 
   // 如果已經被創過
@@ -34,7 +37,7 @@ async function findOrCreateUser(
     sub,
     email,
     name,
-    picture
+    picture,
   });
 
   // 儲存新用戶到 DB
@@ -45,21 +48,17 @@ async function findOrCreateUser(
 export const loginWithGoogle = async (id_token: string) => {
   const payload = await verifyGoogleToken(id_token);
 
-  if (!payload) throw new Error("unvalid Google Token");
+  if (!payload) throw new Error('unvalid Google Token');
 
   const user = await findOrCreateUser({
     sub: payload.sub,
     email: payload.email,
     picture: payload.picture,
-    name: payload.name
+    name: payload.name,
   });
 
-  if (!user) throw new Error("user create failed");
+  if (!user) throw new Error('user create failed');
 
   const token = signToken(user.id);
   return { token, user };
 };
-
-
-
-

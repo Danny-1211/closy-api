@@ -1,6 +1,6 @@
 import express from 'express';
-import { config } from './config/env';
-import { connectDB } from './utils/db';
+import { config } from './types/env';
+import { connectDB } from './config/db';
 const app = express();
 const port = process.env.PORT || config.PORT;
 app.use(express.json());
