@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { SignOptions } from 'jsonwebtoken';
 dotenv.config();
 
 // 環境變數類型定義
@@ -9,6 +10,8 @@ type EnvConfig = {
   OPENWEATHER_API_KEY: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+  JWT_SECRET: string;
+  JWT_EXPIRES_IN: SignOptions['expiresIn'];
 };
 
 export const config: EnvConfig = {
@@ -18,4 +21,6 @@ export const config: EnvConfig = {
   OPENWEATHER_API_KEY: process.env.OPENWEATHER_API_KEY || '',
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
+  JWT_SECRET: process.env.JWT_SECRET || 'default_fallback_secret',
+  JWT_EXPIRES_IN: (process.env.JWT_EXPIRES_IN || '1h') as SignOptions['expiresIn'],
 };
