@@ -5,7 +5,8 @@ const corsOptions: CorsOptions = {
         const allowedOrigins = [
             'http://localhost:3000',
             'http://localhost:5173',
-            'https://qa-closy-nine.vercel.app'
+            'https://qa-closy-nine.vercel.app',
+            'https://closy-api.onrender.com'
         ];
 
         // 允許沒有 origin 的請求（例如 Swagger UI、Postman、curl）
@@ -16,7 +17,7 @@ const corsOptions: CorsOptions = {
         }
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true,
 };
 
