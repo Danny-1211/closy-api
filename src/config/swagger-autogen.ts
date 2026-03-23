@@ -1,4 +1,3 @@
-// swagger.ts (建議放在專案根目錄)
 import swaggerAutogen from 'swagger-autogen';
 import { config } from '../types/env';
 import dotenv from 'dotenv';
@@ -28,5 +27,5 @@ const doc = {
 const outputFile = '../../swagger-output.json';
 const endpointsFiles = ['./src/app.ts'];
 
-
-swaggerAutogen(outputFile, endpointsFiles, doc);
+const autogen = swaggerAutogen({ openapi: '3.0.0' });
+autogen(outputFile, endpointsFiles, doc);
