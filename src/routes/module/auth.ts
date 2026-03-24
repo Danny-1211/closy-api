@@ -2,6 +2,8 @@
 import express from 'express';
 import { loginWithGoogle } from '../../services/authServices';
 import { config } from '../../types/env';
+import { errorHandler } from '../../utils/errorMessage';
+
 const authRouter = express.Router();
 
 authRouter.post('/google', async (req, res) => {
@@ -52,7 +54,7 @@ authRouter.post('/google', async (req, res) => {
       schema: {
         type: "object",
         properties: {
-          message: { type: "string", example: "token is required" }
+          message: { type: "string", example: "未提供 Token 或格式錯誤" }
         }
       }
     }
@@ -73,8 +75,7 @@ authRouter.post('/google', async (req, res) => {
   const { id_token } = req.body;
 
   if (!id_token) {
-    res.status(400).json({ message: 'token is required' });
-    return;
+    return errorHandler({ statusCode: 400, message: '未提供 Token 或格式錯誤' }, res);
   }
 
   try {
@@ -97,12 +98,7 @@ authRouter.post('/google', async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(401).json({
-      statusCode: 401,
-      status: false,
-      message: 'Google token 驗證失敗',
-      data: null,
-    });
+    return errorHandler({ statusCode: 401, message: 'Google token 驗證失敗' }, res);
   }
 });
 
