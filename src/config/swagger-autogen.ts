@@ -22,6 +22,16 @@ const doc = {
       description: 'Render dev',
     },
   ],
+  security: [{ bearerAuth: [] }],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
+  },
 };
 
 const outputFile = '../../swagger-output.json';
