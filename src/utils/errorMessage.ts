@@ -1,7 +1,7 @@
 // respone 錯誤統一發送
 import { Response } from 'express';
-
-const errorHandler = (err: any, res: Response,) => {
+import { AppError } from '../types/error';
+const errorHandler = (err: AppError, res: Response,) => {
     const statusCode = err.statusCode ?? 500;
 
     res.status(statusCode).json({
