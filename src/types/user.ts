@@ -1,12 +1,8 @@
+import { Preferences } from './preference';
+
 type Location = {
   latitude: number | null;
   longtitude: number | null;
-};
-
-type Preferences = {
-  styles: string[];
-  colors: string[];
-  occasions: string[];
 };
 
 type User = {
