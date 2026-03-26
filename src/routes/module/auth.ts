@@ -80,7 +80,7 @@ authRouter.post('/google', async (req, res) => {
 
   try {
     const { token, user } = await loginWithGoogle(id_token);
-    res.status(200).json({
+    return res.status(200).json({
       statusCode: 200,
       status: true,
       message: '登入成功',
