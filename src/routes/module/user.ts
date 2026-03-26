@@ -101,15 +101,14 @@ userRouter.patch('/gender', authMiddleWare, async (req, res) => {
     const userId = req.user!.userId;
     const IsupdatedUserGenderSuccessful = await updateUserGender(userId, gender);
     if (!IsupdatedUserGenderSuccessful) {
-      return errorHandler({ statusCode: 500, message: '伺服器發生錯誤，資料更新失敗，請稍後再試' }, res);
-    } else {
-      res.status(200).json({
-        statusCode: 200,
-        status: true,
-        message: '性別更新成功',
-        data: {},
-      });
+      return errorHandler({ statusCode: 404, message: '找不到使用者' }, res);
     }
+    return res.status(200).json({
+      statusCode: 200,
+      status: true,
+      message: '性別更新成功',
+      data: {},
+    });
   } catch (error) {
     return errorHandler(error as { statusCode: number; message: string }, res);
   }
