@@ -38,6 +38,11 @@ async function findOrCreateUser({
     email: email || '',
     name: name || '',
     picture: picture || '',
+    preferences: {
+      styles: [],
+      colors: [],
+      occasions: [],
+    }
   });
 
   // 儲存新用戶到 DB

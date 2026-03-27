@@ -92,6 +92,7 @@ authRouter.post('/google', async (req, res) => {
           name: user.name,
           email: user.email,
           avatar: user.picture,
+          preferences: user.preferences,
           isProfileCompleted: user.gender ? true : false, // gender 有值代表已完成引導頁
         },
       },
