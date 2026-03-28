@@ -4,7 +4,7 @@ import * as UserType from '../types/user';
 const locationSchema = new Schema<UserType.Location>(
   {
     latitude: { type: Number, default: null },
-    longtitude: { type: Number, default: null },
+    longitude: { type: Number, default: null },
   },
   { _id: false },
 );
@@ -14,7 +14,7 @@ const preferencesSchema = new Schema<UserType.Preferences>(
   {
     styles: { type: [String], default: [] },
     colors: { type: [String], default: [] },
-    occasions: { type: [String], default: [] },
+    occasions: { type: String, default: "" },
   },
   { _id: false },
 );
@@ -29,9 +29,9 @@ const userSchema = new Schema<UserType.User>(
     gender: { type: String, default: '' },
     preferences: {
       type: preferencesSchema,
-      default: () => ({ styles: [], colors: [], occasions: [] }),
+      default: () => ({ styles: [], colors: [], occasions: "" }),
     },
-    location: { type: locationSchema, default: () => ({ latitude: null, longtitude: null }) },
+    location: { type: locationSchema, default: () => ({ latitude: null, longitude: null }) },
   },
   { timestamps: true, collection: 'users' },
 );

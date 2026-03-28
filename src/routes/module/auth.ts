@@ -2,6 +2,8 @@
 import express from 'express';
 import { loginWithGoogle } from '../../services/authServices';
 import { config } from '../../types/env';
+import { errorHandler } from '../../utils/errorMessage';
+
 const authRouter = express.Router();
 
 authRouter.post('/google', async (req, res) => {
@@ -52,7 +54,7 @@ authRouter.post('/google', async (req, res) => {
       schema: {
         type: "object",
         properties: {
-          message: { type: "string", example: "token is required" }
+          message: { type: "string", example: "未提供 Token 或格式錯誤" }
         }
       }
     }
@@ -73,13 +75,12 @@ authRouter.post('/google', async (req, res) => {
   const { id_token } = req.body;
 
   if (!id_token) {
-    res.status(400).json({ message: 'token is required' });
-    return;
+    return errorHandler({ statusCode: 400, message: '未提供 Token 或格式錯誤' }, res);
   }
 
   try {
     const { token, user } = await loginWithGoogle(id_token);
-    res.status(200).json({
+    return res.status(200).json({
       statusCode: 200,
       status: true,
       message: '登入成功',
@@ -91,18 +92,15 @@ authRouter.post('/google', async (req, res) => {
           name: user.name,
           email: user.email,
           avatar: user.picture,
+          preferences: user.preferences,
           isProfileCompleted: user.gender ? true : false, // gender 有值代表已完成引導頁
         },
       },
     });
   } catch (err) {
-    console.error(err);
-    res.status(401).json({
-      statusCode: 401,
-      status: false,
-      message: 'Google token 驗證失敗',
-      data: null,
-    });
+    const statusCode = (err as any)?.statusCode ?? 500;
+    const message = statusCode === 401 ? 'Google token 驗證失敗' : '伺服器錯誤，請稍後再試';
+    return errorHandler({ statusCode, message }, res);
   }
 });
 
