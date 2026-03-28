@@ -2,7 +2,7 @@
 type Preferences = {
   styles: string[];
   colors: string[];
-  occasions: string[];
+  occasions: string;
 };
 
 type Location = {
