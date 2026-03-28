@@ -2,6 +2,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { config } from '../types/env';
 import { User } from '../models/user';
 import { signToken } from '../utils/jwt';
+import { errorHandler } from '../utils/errorMessage';
 
 const client = new OAuth2Client(config.GOOGLE_CLIENT_ID);
 
@@ -53,7 +54,9 @@ async function findOrCreateUser({
 export const loginWithGoogle = async (id_token: string) => {
   const payload = await verifyGoogleToken(id_token);
 
-  if (!payload) throw new Error('unvalid Google Token');
+  if (!payload) {
+    throw Object.assign(new Error('unvalid Google Token'), { statusCode: 401 });
+  }
 
   const user = await findOrCreateUser({
     googleId: payload.sub,
@@ -62,7 +65,9 @@ export const loginWithGoogle = async (id_token: string) => {
     name: payload.name,
   });
 
-  if (!user) throw new Error('user create failed');
+  if (!user) {
+    throw Object.assign(new Error('user create failed'), { statusCode: 500 });
+  }
 
   const token = signToken(user.id);
   return { token, user };

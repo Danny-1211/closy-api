@@ -98,8 +98,9 @@ authRouter.post('/google', async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err);
-    return errorHandler({ statusCode: 401, message: 'Google token 驗證失敗' }, res);
+    const statusCode = (err as any)?.statusCode ?? 500;
+    const message = statusCode === 401 ? 'Google token 驗證失敗' : '伺服器錯誤，請稍後再試';
+    return errorHandler({ statusCode, message }, res);
   }
 });
 
