@@ -774,6 +774,477 @@
           }
         }
       }
+    },
+    "/user/preferences/colors": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "更新使用者偏好色系",
+        "description": "更新目前登入使用者的偏好色系，需要攜帶 Bearer Token",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "偏好色系更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "偏好色系更新成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "並沒有這個色系",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請提供正確的色系參數"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權，Token 無效或未提供",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未授權，請重新登入"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤，資料更新失敗",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤，資料更新失敗，請稍後再試"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "colors"
+                ],
+                "properties": {
+                  "colors": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "black",
+                      "white",
+                      "gray",
+                      "brown",
+                      "yellow",
+                      "orange",
+                      "pink",
+                      "green",
+                      "blue",
+                      "purple"
+                    ],
+                    "description": "使用者偏好色系，例如：black / white / gray / brown / yellow / orange / pink / green / blue / purple "
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/preferences/styles": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "更新使用者偏好風格",
+        "description": "更新目前登入使用者的偏好風格，需要攜帶 Bearer Token",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "偏好風格更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "偏好風格更新成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "請提供風格",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請提供正確的風格參數"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權，Token 無效或未提供",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未授權，請重新登入"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤，資料更新失敗",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤，資料更新失敗，請稍後再試"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "styles"
+                ],
+                "properties": {
+                  "styles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "simple",
+                      "street",
+                      "outdoor",
+                      "american",
+                      "japanese",
+                      "korean",
+                      "retro",
+                      "city",
+                      "sweety"
+                    ],
+                    "description": "使用者偏好風格，例如：simple / street / outdoor / american / japanese / korean / retro / city / sweety "
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/preferences/occasions": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "切換場合",
+        "description": "更新目前登入使用者的偏好場合，需要攜帶 Bearer Token",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "偏好場合更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "偏好場合更新成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "請提供場合 / 並沒有這個場合",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請提供正確的場合參數"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權，Token 無效或未提供",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未授權，請重新登入"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到使用者",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "找不到使用者"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤，資料更新失敗",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤，資料更新失敗，請稍後再試"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "occasionId"
+                ],
+                "properties": {
+                  "occasionId": {
+                    "type": "string",
+                    "example": "socialGathering",
+                    "description": "使用者偏好場合，例如：socialGathering / campusCasual / businessCasual / professional"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
