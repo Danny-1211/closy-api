@@ -41,7 +41,7 @@ async function findOrCreateUser({
     preferences: {
       styles: [],
       colors: [],
-      occasions: [],
+      occasions: "",
     }
   });
 
