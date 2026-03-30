@@ -1,7 +1,12 @@
 import express from 'express';
 import { errorHandler } from '../../utils/errorMessage';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
-import { updateUserGender, updateUserColor, updateUserStyle, updateUserOccasion } from '../../services/userService';
+import {
+  updateUserGender,
+  updateUserColor,
+  updateUserStyle,
+  updateUserOccasion,
+} from '../../services/userService';
 import { COLORS_SET, STYLES_SET, OCCASIONS_SET, genderOptions } from '../../constant/user';
 
 const userRouter = express.Router();
@@ -97,7 +102,6 @@ userRouter.patch('/gender', authMiddleWare, async (req, res) => {
   if (!gender || !genderOptions.includes(gender)) {
     return errorHandler({ statusCode: 400, message: '請提供正確的性別參數' }, res);
   }
-
 
   try {
     const userId = req.user!.userId;
@@ -210,7 +214,9 @@ userRouter.patch('/preferences/colors', authMiddleWare, async (req, res) => {
     return errorHandler({ statusCode: 400, message: '請提供色系' }, res);
   }
 
-  const hasInvalidColor = colors.some(colorId => !COLORS_SET.find(colorSet => colorSet.colorId === colorId));
+  const hasInvalidColor = colors.some(
+    (colorId) => !COLORS_SET.find((colorSet) => colorSet.colorId === colorId),
+  );
 
   if (hasInvalidColor) {
     return errorHandler({ statusCode: 400, message: '並沒有這個色系' }, res);
@@ -231,8 +237,7 @@ userRouter.patch('/preferences/colors', authMiddleWare, async (req, res) => {
   } catch (error) {
     return errorHandler(error as { statusCode: number; message: string }, res);
   }
-
-})
+});
 
 // // 使用者偏好設定 - 修改風格
 userRouter.patch('/preferences/styles', authMiddleWare, async (req, res) => {
@@ -344,7 +349,9 @@ userRouter.patch('/preferences/styles', authMiddleWare, async (req, res) => {
     return errorHandler({ statusCode: 400, message: '請提供風格' }, res);
   }
 
-  const hasInvalidStyle = styles.some(styleId => !STYLES_SET.find(styleSet => styleSet.styleId === styleId));
+  const hasInvalidStyle = styles.some(
+    (styleId) => !STYLES_SET.find((styleSet) => styleSet.styleId === styleId),
+  );
 
   if (hasInvalidStyle) {
     return errorHandler({ statusCode: 400, message: '並沒有這個風格' }, res);
@@ -365,7 +372,7 @@ userRouter.patch('/preferences/styles', authMiddleWare, async (req, res) => {
   } catch (error) {
     return errorHandler(error as { statusCode: number; message: string }, res);
   }
-})
+});
 
 // // 使用者偏好設定 - 修改場合
 userRouter.patch('/preferences/occasions', authMiddleWare, async (req, res) => {
@@ -474,7 +481,9 @@ userRouter.patch('/preferences/occasions', authMiddleWare, async (req, res) => {
     return errorHandler({ statusCode: 400, message: '請提供場合' }, res);
   }
 
-  const hasInvalidOccasion = OCCASIONS_SET.find(occasionSet => occasionSet.occasionId === occasionId);
+  const hasInvalidOccasion = OCCASIONS_SET.find(
+    (occasionSet) => occasionSet.occasionId === occasionId,
+  );
 
   if (!hasInvalidOccasion) {
     return errorHandler({ statusCode: 400, message: '並沒有這個場合' }, res);
@@ -495,6 +504,6 @@ userRouter.patch('/preferences/occasions', authMiddleWare, async (req, res) => {
   } catch (error) {
     return errorHandler(error as { statusCode: number; message: string }, res);
   }
-})
+});
 
 export { userRouter };

@@ -12,9 +12,8 @@ export const verifyToken = (token: string): UserPayload => {
     return decoded as UserPayload;
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError || error instanceof jwt.JsonWebTokenError) {
-      throw { statusCode: 401, message: "無效的憑證或憑證已過期，請重新登入" };
+      throw { statusCode: 401, message: '無效的憑證或憑證已過期，請重新登入' };
     }
     throw error;
   }
 };
-
