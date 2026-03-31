@@ -1,7 +1,7 @@
 import express from 'express';
 import { errorHandler } from '../../utils/errorMessage';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
-import { updateUserGender, updateUserColor, updateUserStyle, updateUserOccasion } from '../../services/userService';
+import { updateUserGender, updateUserColor, updateUserStyle, updateUserOccasion } from '../../services/userServices';
 import { COLORS_SET, STYLES_SET, OCCASIONS_SET, genderOptions } from '../../constant/user';
 
 const userRouter = express.Router();
