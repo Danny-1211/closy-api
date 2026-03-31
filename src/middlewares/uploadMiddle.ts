@@ -13,7 +13,7 @@ function fileFilter(
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    const err = Object.assign(new Error('Invalid file type'), { statusCode: 400 });
+    const err = Object.assign(new Error('不支援的檔案格式，請上傳 jpg、png、webp 格式的圖片'), { statusCode: 400 });
     cb(err);
   }
 }
