@@ -2,7 +2,6 @@ import { OAuth2Client } from 'google-auth-library';
 import { config } from '../types/env';
 import { User } from '../models/user';
 import { signToken } from '../utils/jwt';
-import { errorHandler } from '../utils/errorMessage';
 
 const client = new OAuth2Client(config.GOOGLE_CLIENT_ID);
 
