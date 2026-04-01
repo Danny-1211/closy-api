@@ -1,7 +1,7 @@
-import { Style, Occasion, Color } from '../types/constants';
+import { Occasion, Color, Season, Category } from '../types/constants';
 
-// 偏好設定-所有顏色選項
-const COLORS_SET: Color[] = [
+// 衣服屬性 - 色系
+const CLOTHES_COLORS_SET: Color[] = [
     {
         colorId: 'black',
         colorName: '深灰黑'
@@ -44,8 +44,8 @@ const COLORS_SET: Color[] = [
     }
 ] as const;
 
-// 偏好設定-所有場合選項
-const OCCASIONS_SET: Occasion[] = [
+// 衣服屬性 - 場合
+const CLOTHES_OCCASIONS_SET: Occasion[] = [
     {
         occasionId: 'socialGathering',
         occasionName: '社交聚會'
@@ -64,47 +64,52 @@ const OCCASIONS_SET: Occasion[] = [
     },
 ] as const;
 
-// 偏好設定-所有風格選項
-const STYLES_SET: Style[] = [
+// 衣服屬性 - 季節
+const CLOTHES_SEASONS_SET: Season[] = [
     {
-        styleId: 'simple',
-        styleName: '簡約'
+        seasonId: 'spring',
+        seasonName: '春季'
     },
     {
-        styleId: 'street',
-        styleName: '街頭'
+        seasonId: 'summer',
+        seasonName: '夏季'
     },
     {
-        styleId: 'outdoor',
-        styleName: '戶外'
+        seasonId: 'autumn',
+        seasonName: '秋季'
     },
     {
-        styleId: 'american',
-        styleName: '美式'
-    },
-    {
-        styleId: 'japanese',
-        styleName: '日系'
-    },
-    {
-        styleId: 'korean',
-        styleName: '韓系'
-    },
-    {
-        styleId: 'retro',
-        styleName: '復古'
-    },
-    {
-        styleId: 'city',
-        styleName: '都會'
-    },
-    {
-        styleId: 'sweety',
-        styleName: '甜美'
+        seasonId: 'winter',
+        seasonName: '冬季'
     }
 ] as const;
 
-// 使用者性別
-const genderOptions = ['male', 'female'] as const;
+// 衣服屬性 - 類別
+const CLOTHES_CATEGORIES_SET: Category[] = [
+    {
+        categoryId: 'top',
+        categoryName: '上衣'
+    },
+    {
+        categoryId: 'bottom',
+        categoryName: '褲子'
+    },
+    {
+        categoryId: 'outerwear',
+        categoryName: '外套'
+    },
+    {
+        categoryId: 'shoes',
+        categoryName: '鞋子'
+    },
+    {
+        categoryId: 'skirt',
+        categoryName: '裙子'
+    },
+    {
+        categoryId: 'dress',
+        categoryName: '連身裙'
+    }
+] as const;
 
-export { STYLES_SET, OCCASIONS_SET, COLORS_SET, genderOptions }
+export { CLOTHES_COLORS_SET, CLOTHES_OCCASIONS_SET, CLOTHES_SEASONS_SET, CLOTHES_CATEGORIES_SET }
