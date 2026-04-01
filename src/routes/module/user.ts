@@ -2,7 +2,7 @@ import express from 'express';
 import { errorHandler } from '../../utils/errorMessage';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { updateUserGender, updateUserColor, updateUserStyle, updateUserOccasion } from '../../services/userServices';
-import { COLORS_SET, STYLES_SET, OCCASIONS_SET, genderOptions } from '../../constant/user';
+import { validateColors, validateStyles, validateOccasions, validateGender } from '../../utils/validateAttribute';
 
 const userRouter = express.Router();
 
@@ -94,10 +94,9 @@ userRouter.patch('/gender', authMiddleWare, async (req, res) => {
 */
   const { gender } = req.body;
 
-  if (!gender || !genderOptions.includes(gender)) {
+  if (!validateGender(gender)) {
     return errorHandler({ statusCode: 400, message: '請提供正確的性別參數' }, res);
   }
-
 
   try {
     const userId = req.user!.userId;
@@ -206,14 +205,9 @@ userRouter.patch('/preferences/colors', authMiddleWare, async (req, res) => {
   }
 */
   const { colors }: { colors: string[] } = req.body;
-  if (!colors) {
-    return errorHandler({ statusCode: 400, message: '請提供色系' }, res);
-  }
 
-  const hasInvalidColor = colors.some(colorId => !COLORS_SET.find(colorSet => colorSet.colorId === colorId));
-
-  if (hasInvalidColor) {
-    return errorHandler({ statusCode: 400, message: '並沒有這個色系' }, res);
+  if (!validateColors(colors)) {
+    return errorHandler({ statusCode: 400, message: '請提供正確的色系' }, res);
   }
 
   try {
@@ -340,14 +334,8 @@ userRouter.patch('/preferences/styles', authMiddleWare, async (req, res) => {
 */
   const { styles }: { styles: string[] } = req.body;
 
-  if (!styles || styles.length === 0) {
-    return errorHandler({ statusCode: 400, message: '請提供風格' }, res);
-  }
-
-  const hasInvalidStyle = styles.some(styleId => !STYLES_SET.find(styleSet => styleSet.styleId === styleId));
-
-  if (hasInvalidStyle) {
-    return errorHandler({ statusCode: 400, message: '並沒有這個風格' }, res);
+  if (!validateStyles(styles)) {
+    return errorHandler({ statusCode: 400, message: '請提供正確的風格' }, res);
   }
 
   try {
@@ -470,14 +458,8 @@ userRouter.patch('/preferences/occasions', authMiddleWare, async (req, res) => {
   */
   const { occasionId }: { occasionId: string } = req.body;
 
-  if (!occasionId) {
-    return errorHandler({ statusCode: 400, message: '請提供場合' }, res);
-  }
-
-  const hasInvalidOccasion = OCCASIONS_SET.find(occasionSet => occasionSet.occasionId === occasionId);
-
-  if (!hasInvalidOccasion) {
-    return errorHandler({ statusCode: 400, message: '並沒有這個場合' }, res);
+  if (!validateOccasions(occasionId)) {
+    return errorHandler({ statusCode: 400, message: '請提供正確的場合' }, res);
   }
 
   try {
