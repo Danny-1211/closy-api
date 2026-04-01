@@ -13,4 +13,19 @@ type Occasion = {
   occasionName: string;
 };
 
-export { Style, Color, Occasion };
+type Season = {
+  seasonId: string;
+  seasonName: string;
+}
+
+type Category = {
+  categoryId: string;
+  categoryName: string;
+}
+
+type Brand = {
+  brandName: string;
+}
+
+
+export { Style, Color, Occasion, Season, Category, Brand };

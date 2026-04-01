@@ -1,6 +1,4 @@
-import { Style } from '../types/constants';
-import { Occasion } from '../types/constants';
-import { Color } from '../types/constants';
+import { Style, Occasion, Color } from '../types/constants';
 
 // 偏好設定-所有顏色選項
 const COLORS_SET: Color[] = [

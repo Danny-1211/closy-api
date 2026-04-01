@@ -1246,13 +1246,13 @@
         }
       }
     },
-    "/process/removeBg": {
+    "/clothes/": {
       "post": {
         "tags": [
-          "Process"
+          "Clothes"
         ],
-        "summary": "圖片去背",
-        "description": "上傳單張圖片進行去背處理，回傳去背後的圖片結果。<br>需要發送 multipart/form-data 格式，並帶上 key 名稱為 `image` 的檔案。",
+        "summary": "新增單品",
+        "description": "將新的衣物單品加入到使用者的衣櫃清單中。",
         "parameters": [
           {
             "name": "authorization",
@@ -1277,32 +1277,6 @@
                     "properties": {
                       "type": "object",
                       "properties": {
-                        "statusCode": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "integer"
-                            },
-                            "example": {
-                              "type": "number",
-                              "example": 200
-                            }
-                          }
-                        },
-                        "status": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "boolean"
-                            },
-                            "example": {
-                              "type": "boolean",
-                              "example": true
-                            }
-                          }
-                        },
                         "message": {
                           "type": "object",
                           "properties": {
@@ -1312,20 +1286,7 @@
                             },
                             "example": {
                               "type": "string",
-                              "example": "成功"
-                            }
-                          }
-                        },
-                        "ok": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "boolean"
-                            },
-                            "example": {
-                              "type": "boolean",
-                              "example": true
+                              "example": "單品加入衣櫃成功"
                             }
                           }
                         },
@@ -1336,10 +1297,14 @@
                               "type": "string",
                               "example": "object"
                             },
+                            "description": {
+                              "type": "string",
+                              "example": "更新後的衣櫃資料 (包含所有單品清單)"
+                            },
                             "properties": {
                               "type": "object",
                               "properties": {
-                                "message": {
+                                "_id": {
                                   "type": "object",
                                   "properties": {
                                     "type": {
@@ -1348,11 +1313,11 @@
                                     },
                                     "example": {
                                       "type": "string",
-                                      "example": "圖片去背完成"
+                                      "example": "660a1b2c3d4e5f6g7h8i9j00"
                                     }
                                   }
                                 },
-                                "image": {
+                                "userId": {
                                   "type": "object",
                                   "properties": {
                                     "type": {
@@ -1361,7 +1326,164 @@
                                     },
                                     "example": {
                                       "type": "string",
-                                      "example": "data:image/png;base64,iVBORw0KGgo..."
+                                      "example": "660a1b2c3d4e5f6g7h8i9j11"
+                                    }
+                                  }
+                                },
+                                "list": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "array"
+                                    },
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "example": "object"
+                                        },
+                                        "properties": {
+                                          "type": "object",
+                                          "properties": {
+                                            "category": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "top"
+                                                }
+                                              }
+                                            },
+                                            "name": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "白襯衫"
+                                                }
+                                              }
+                                            },
+                                            "color": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "white"
+                                                }
+                                              }
+                                            },
+                                            "occasions": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "array"
+                                                },
+                                                "items": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "string"
+                                                    }
+                                                  }
+                                                },
+                                                "example": {
+                                                  "type": "array",
+                                                  "example": [
+                                                    "socialGathering",
+                                                    "campusCasual"
+                                                  ],
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "seasons": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "array"
+                                                },
+                                                "items": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "string"
+                                                    }
+                                                  }
+                                                },
+                                                "example": {
+                                                  "type": "array",
+                                                  "example": [
+                                                    "spring",
+                                                    "summer"
+                                                  ],
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "brand": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "Uniqlo"
+                                                }
+                                              }
+                                            },
+                                            "cloudImgUrl": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "https://example.com/clothes-url.jpg"
+                                                }
+                                              }
+                                            },
+                                            "_id": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "660a1b2c3d4e5f6g7h8i9j22"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
                                     }
                                   }
                                 }
@@ -1388,32 +1510,6 @@
                     "properties": {
                       "type": "object",
                       "properties": {
-                        "statusCode": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "integer"
-                            },
-                            "example": {
-                              "type": "number",
-                              "example": 200
-                            }
-                          }
-                        },
-                        "status": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "boolean"
-                            },
-                            "example": {
-                              "type": "boolean",
-                              "example": true
-                            }
-                          }
-                        },
                         "message": {
                           "type": "object",
                           "properties": {
@@ -1423,20 +1519,7 @@
                             },
                             "example": {
                               "type": "string",
-                              "example": "成功"
-                            }
-                          }
-                        },
-                        "ok": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "boolean"
-                            },
-                            "example": {
-                              "type": "boolean",
-                              "example": true
+                              "example": "單品加入衣櫃成功"
                             }
                           }
                         },
@@ -1447,10 +1530,14 @@
                               "type": "string",
                               "example": "object"
                             },
+                            "description": {
+                              "type": "string",
+                              "example": "更新後的衣櫃資料 (包含所有單品清單)"
+                            },
                             "properties": {
                               "type": "object",
                               "properties": {
-                                "message": {
+                                "_id": {
                                   "type": "object",
                                   "properties": {
                                     "type": {
@@ -1459,11 +1546,11 @@
                                     },
                                     "example": {
                                       "type": "string",
-                                      "example": "圖片去背完成"
+                                      "example": "660a1b2c3d4e5f6g7h8i9j00"
                                     }
                                   }
                                 },
-                                "image": {
+                                "userId": {
                                   "type": "object",
                                   "properties": {
                                     "type": {
@@ -1472,7 +1559,164 @@
                                     },
                                     "example": {
                                       "type": "string",
-                                      "example": "data:image/png;base64,iVBORw0KGgo..."
+                                      "example": "660a1b2c3d4e5f6g7h8i9j11"
+                                    }
+                                  }
+                                },
+                                "list": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "array"
+                                    },
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "example": "object"
+                                        },
+                                        "properties": {
+                                          "type": "object",
+                                          "properties": {
+                                            "category": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "top"
+                                                }
+                                              }
+                                            },
+                                            "name": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "白襯衫"
+                                                }
+                                              }
+                                            },
+                                            "color": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "white"
+                                                }
+                                              }
+                                            },
+                                            "occasions": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "array"
+                                                },
+                                                "items": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "string"
+                                                    }
+                                                  }
+                                                },
+                                                "example": {
+                                                  "type": "array",
+                                                  "example": [
+                                                    "socialGathering",
+                                                    "campusCasual"
+                                                  ],
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "seasons": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "array"
+                                                },
+                                                "items": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "string"
+                                                    }
+                                                  }
+                                                },
+                                                "example": {
+                                                  "type": "array",
+                                                  "example": [
+                                                    "spring",
+                                                    "summer"
+                                                  ],
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "brand": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "Uniqlo"
+                                                }
+                                              }
+                                            },
+                                            "cloudImgUrl": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "https://example.com/clothes-url.jpg"
+                                                }
+                                              }
+                                            },
+                                            "_id": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "660a1b2c3d4e5f6g7h8i9j22"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
                                     }
                                   }
                                 }
@@ -1491,7 +1735,7 @@
             }
           },
           "400": {
-            "description": "請求錯誤 (可能原因：未提供圖片、不支援的檔案格式、檔案超出 5MB 限制)",
+            "description": "請求錯誤 (可能原因：缺少必要參數)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1526,7 +1770,7 @@
                             },
                             "example": {
                               "type": "string",
-                              "example": "未提供圖片 / 不支援的檔案格式，請上傳 jpg、png、webp 格式的圖片 / File too large"
+                              "example": "請提供正確的單品參數"
                             }
                           }
                         }
@@ -1571,7 +1815,7 @@
                             },
                             "example": {
                               "type": "string",
-                              "example": "未提供圖片 / 不支援的檔案格式，請上傳 jpg、png、webp 格式的圖片 / File too large"
+                              "example": "請提供正確的單品參數"
                             }
                           }
                         }
@@ -1687,18 +1931,89 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "statusCode": {
-                      "type": "integer",
-                      "example": 500
-                    },
-                    "status": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
+                    "type": {
                       "type": "string",
-                      "example": "伺服器發生錯誤，資料更新失敗，請稍後再試"
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "integer"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 500
+                            }
+                          }
+                        },
+                        "message": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            },
+                            "example": {
+                              "type": "string",
+                              "example": "內部伺服器錯誤或其他錯誤訊息"
+                            }
+                          }
+                        }
+                      }
                     }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "integer"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 500
+                            }
+                          }
+                        },
+                        "message": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            },
+                            "example": {
+                              "type": "string",
+                              "example": "內部伺服器錯誤或其他錯誤訊息"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
                   }
                 }
               }
@@ -1713,17 +2028,58 @@
         "requestBody": {
           "required": true,
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "required": [
-                  "image"
+                  "category",
+                  "cloudImgUrl",
+                  "name",
+                  "color",
+                  "occasions",
+                  "seasons",
+                  "brand"
                 ],
                 "properties": {
-                  "image": {
+                  "category": {
                     "type": "string",
-                    "format": "binary",
-                    "description": "要進行去背的圖片 (格式可以 jpg 、png 、webp，最大 5MB)"
+                    "example": "top"
+                  },
+                  "cloudImgUrl": {
+                    "type": "string",
+                    "example": "https://example.com/clothes-url.jpg"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "白襯衫"
+                  },
+                  "color": {
+                    "type": "string",
+                    "example": "white"
+                  },
+                  "occasions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "socialGathering",
+                      "campusCasual"
+                    ]
+                  },
+                  "seasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "spring",
+                      "summer"
+                    ]
+                  },
+                  "brand": {
+                    "type": "string",
+                    "example": "Uniqlo"
                   }
                 }
               }
