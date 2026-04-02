@@ -9,7 +9,7 @@ const processRouter = express.Router();
 processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, res) => {
   /* #swagger.tags = ['Process']
     #swagger.summary = '圖片去背'
-    #swagger.description = '上傳單張圖片進行去背處理，回傳去背後的圖片結果。<br>需要發送 multipart/form-data 格式，並帶上 key 名稱為 `image` 的檔案。'
+    #swagger.description = '上傳單張圖片進行去背處理，回傳去背後的圖片結果。<br>需要發送 multipart/form-data 格式，並帶上 key 名稱為 `image` 的檔案。<br>⚠️ **注意**：需要在後端環境變數中設定 `PICTURE_TOKEN` 才能成功呼叫去背 API。'
     #swagger.security = [{
       "bearerAuth": []
     }]
@@ -44,8 +44,7 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
           data: {
             type: "object",
             properties: {
-              message: { type: "string", example: "圖片去背完成" },
-              image: { type: "string", example: "data:image/png;base64,iVBORw0KGgo..." }
+              message: { type: "string", example: "圖片去背完成" }
             }
           }
         }
@@ -96,14 +95,14 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
   }
   try {
     const result = await removeBg(image);
+
     return res.status(200).json({
       statusCode: 200,
       status: true,
       message: '圖片去背完成',
-      ok: result.ok,
+      ok: true,
       data: {
         message: '圖片去背完成',
-        image: result.data.image,
       },
     });
   } catch (err) {
