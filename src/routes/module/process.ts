@@ -44,7 +44,8 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
           data: {
             type: "object",
             properties: {
-              message: { type: "string", example: "圖片去背完成" }
+              message: { type: "string", example: "圖片去背完成" },
+              imageUrl: { type: "string", example: "https://res.cloudinary.com/xxx/image/upload/v1/system/abc123.png" }
             }
           }
         }
