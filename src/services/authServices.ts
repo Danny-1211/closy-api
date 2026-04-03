@@ -1,19 +1,6 @@
-import { OAuth2Client } from 'google-auth-library';
-import { config } from '../types/env';
 import { User } from '../models/user';
 import { signToken } from '../utils/jwt';
-
-const client = new OAuth2Client(config.GOOGLE_CLIENT_ID);
-
-// 向 Google 驗證 id_token
-const verifyGoogleToken = async (id_token: string) => {
-  const ticket = await client.verifyIdToken({
-    idToken: id_token,
-    audience: config.GOOGLE_CLIENT_ID,
-  });
-  return ticket.getPayload();
-};
-
+import { verifyGoogleToken } from '../integrations/auth';
 // 查找或建立用戶
 async function findOrCreateUser({
   googleId,
