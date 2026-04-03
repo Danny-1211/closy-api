@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
+import axios from 'axios';
 import { config } from '../types/env';
 
 cloudinary.config({
@@ -7,6 +8,7 @@ cloudinary.config({
   api_secret: config.CLOUDINARY_API_SECRET,
 });
 
+// 上傳圖片到 cloudinary
 async function uploadToCloudinary(imageBuffer: Buffer, folder = 'closy/system'): Promise<string> {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -20,4 +22,16 @@ async function uploadToCloudinary(imageBuffer: Buffer, folder = 'closy/system'):
   });
 }
 
-export { uploadToCloudinary };
+// 從 cloudinary 下載圖片
+async function downloadImgFromCloudinary(imageUrl: string): Promise<Buffer> {
+  try {
+    const response = await axios.get(imageUrl, {
+      responseType: 'arraybuffer',
+    });
+    return Buffer.from(response.data);
+  } catch (err) {
+    throw { statusCode: 500, message: '從 Cloudinary 下載圖片失敗' };
+  }
+}
+
+export { uploadToCloudinary, downloadImgFromCloudinary };

@@ -22,18 +22,22 @@ async function removeBg(image: Buffer): Promise<string> {
 
 // 將傳進來的圖片進行屬性標籤辨識
 async function getClothesImageAttribute(image: Buffer) {
-  const form = new FormData();
-  const imageUint8 = new Uint8Array(image);
-  const blob = new Blob([imageUint8], { type: 'image/png' });
-  form.append('file', blob, 'image.png');
+  try {
+    const form = new FormData();
+    const imageUint8 = new Uint8Array(image);
+    const blob = new Blob([imageUint8], { type: 'image/png' });
+    form.append('image', blob, 'image.png');
 
-  const response = await axios.post('https://fntxxx-rembg-service.hf.space/predict', form, {
-    headers: {
-      Authorization: `Bearer ${config.PICTURE_TOKEN}`
-    },
-    responseType: 'arraybuffer'
-  });
+    const response = await axios.post('https://fntxxx-fashion-attr-service.hf.space/predict', form, {
+      headers: {
+        Authorization: `Bearer ${config.PICTURE_TOKEN}`,
+      },
+    });
 
+    return response.data.data;
+  } catch {
+    throw { statusCode: 500, message: 'AI 辨識衣物屬性失敗' };
+  }
 }
 
 export { removeBg, getClothesImageAttribute };

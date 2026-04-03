@@ -1,7 +1,8 @@
 import express from 'express';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { uploadSingleImage } from '../../middlewares/uploadMiddle';
-import { removeBg } from '../../services/processService';
+import { removeBg, getClothesImageAttribute } from '../../integrations/process';
+import { downloadImgFromCloudinary } from '../../integrations/cloudinary';
 import { errorHandler } from '../../utils/errorMessage';
 const processRouter = express.Router();
 
@@ -39,13 +40,13 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
         properties: {
           statusCode: { type: "integer", example: 200 },
           status: { type: "boolean", example: true },
-          message: { type: "string", example: "成功" },
+          message: { type: "string", example: "圖片去背完成" },
           ok: { type: "boolean", example: true },
           data: {
             type: "object",
             properties: {
               message: { type: "string", example: "圖片去背完成" },
-              imageUrl: { type: "string", example: "https://res.cloudinary.com/xxx/image/upload/v1/system/abc123.png" }
+              cloudinaryImageUrl: { type: "string", example: "https://res.cloudinary.com/xxx/image/upload/v1/system/abc123.png" }
             }
           }
         }
@@ -58,7 +59,10 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
         type: "object",
         properties: {
           statusCode: { type: "integer", example: 400 },
-          message: { type: "string", example: "未提供圖片 / 不支援的檔案格式，請上傳 jpg、png、webp 格式的圖片 / File too large" }
+          status: { type: "boolean", example: false },
+          message: { type: "string", example: "未提供圖片 / 不支援的檔案格式，請上傳 jpg、png、webp 格式的圖片 / File too large" },
+          data: { type: "object", example: null },
+          ok: { type: "boolean", example: false }
         }
       }
     }
@@ -69,23 +73,24 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
         type: "object",
         properties: {
           statusCode: { type: "integer", example: 401 },
-          message: { type: "string", example: "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入" }
+          status: { type: "boolean", example: false },
+          message: { type: "string", example: "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入" },
+          data: { type: "object", example: null },
+          ok: { type: "boolean", example: false }
         }
       }
     }
 
     #swagger.responses[500] = {
       description: '伺服器錯誤',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              statusCode: { type: 'integer', example: 500 },
-              status: { type: 'boolean', example: false },
-              message: { type: 'string', example: '伺服器發生錯誤，資料更新失敗，請稍後再試' }
-            }
-          }
+      schema: {
+        type: 'object',
+        properties: {
+          statusCode: { type: 'integer', example: 500 },
+          status: { type: 'boolean', example: false },
+          message: { type: 'string', example: '伺服器發生錯誤，資料更新失敗，請稍後再試' },
+          data: { type: "object", example: null },
+          ok: { type: "boolean", example: false }
         }
       }
     }
@@ -104,6 +109,7 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
       ok: true,
       data: {
         message: '圖片去背完成',
+        cloudinaryImageUrl: result,
       },
     });
   } catch (err) {
@@ -111,5 +117,126 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
   }
 
 });
+
+// Ai 辨識屬性 : cloudinary 抓下圖片 -> ai 辨識 -> 回傳屬性
+processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
+  /* #swagger.tags = ['Process']
+    #swagger.summary = 'AI 辨識衣物屬性'
+    #swagger.description = '透過圖片網址進行 AI 辨識，提取衣物的分類、名稱、季節、場合與顏色等屬性。'
+    #swagger.security = [{
+      "bearerAuth": []
+    }]
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            required: ["imageUrl"],
+            properties: {
+              imageUrl: {
+                type: "string",
+                description: 'Cloudinary 圖片網址',
+                example: 'https://res.cloudinary.com/xxx/image/upload/v1/system/abc123.png'
+              }
+            }
+          }
+        }
+      }
+    }
+
+    #swagger.responses[200] = {
+      description: '辨識成功',
+      schema: {
+        type: "object",
+        properties: {
+          statusCode: { type: "integer", example: 200 },
+          status: { type: "boolean", example: true },
+          message: { type: "string", example: "圖片屬性辨識完成" },
+          ok: { type: "boolean", example: true },
+          data: {
+            type: "object",
+            properties: {
+              cloudImgUrl: { type: "string", example: "https://res.cloudinary.com/xxx/image/upload/v1/system/abc123.png" },
+              category: { type: "string", example: "上衣" },
+              name: { type: "string", example: "T-shirt" },
+              seasons: { type: "array", items: { type: "string" }, example: ["夏季", "春季"] },
+              occasions: { type: "array", items: { type: "string" }, example: ["休閒"] },
+              color: { type: "string", example: "白色" },
+              brand: { type: "string", example: "" }
+            }
+          }
+        }
+      }
+    }
+
+    #swagger.responses[400] = {
+      description: '請求錯誤 (可能原因：未提供圖片網址)',
+      schema: {
+        type: "object",
+        properties: {
+          statusCode: { type: "integer", example: 400 },
+          status: { type: "boolean", example: false },
+          message: { type: "string", example: "未提供圖片網址" },
+          data: { type: "object", example: null },
+          ok: { type: "boolean", example: false }
+        }
+      }
+    }
+
+    #swagger.responses[401] = {
+      description: '身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)',
+      schema: {
+        type: "object",
+        properties: {
+          statusCode: { type: "integer", example: 401 },
+          status: { type: "boolean", example: false },
+          message: { type: "string", example: "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入" },
+          data: { type: "object", example: null },
+          ok: { type: "boolean", example: false }
+        }
+      }
+    }
+
+    #swagger.responses[500] = {
+      description: '伺服器錯誤 (可能原因：AI 辨識衣物屬性失敗、從 Cloudinary 下載圖片失敗)',
+      schema: {
+        type: 'object',
+        properties: {
+          statusCode: { type: 'integer', example: 500 },
+          status: { type: 'boolean', example: false },
+          message: { type: 'string', example: 'AI 辨識衣物屬性失敗 / 從 Cloudinary 下載圖片失敗' },
+          data: { type: "object", example: null },
+          ok: { type: "boolean", example: false }
+        }
+      }
+    }
+  */
+  const imageUrl = req.body.imageUrl;
+  if (!imageUrl) {
+    return errorHandler({ statusCode: 400, message: '未提供圖片網址' }, res);
+  }
+  try {
+    const imageBuffer = await downloadImgFromCloudinary(imageUrl);
+    const attributes = await getClothesImageAttribute(imageBuffer);
+    return res.status(200).json({
+      statusCode: 200,
+      status: true,
+      message: '圖片屬性辨識完成',
+      ok: true,
+      data: {
+        cloudImgUrl: imageUrl,
+        category: attributes.category,
+        name: attributes.name,
+        seasons: attributes.season,
+        occasions: attributes.occasion,
+        color: attributes.color,
+        brand: "",
+      },
+    });
+  } catch (err) {
+    return errorHandler(err as { statusCode: number; message: string }, res);
+  }
+})
 
 export { processRouter };
