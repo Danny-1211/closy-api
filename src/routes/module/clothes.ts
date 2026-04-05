@@ -25,6 +25,7 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
              properties: {
                category: { type: "string", example: "top" },
                cloudImgUrl: { type: "string", example: "https://example.com/clothes-url.jpg" },
+               imageHash: { type: "string", example: "d41d8cd98f00b204e9800998ecf8427e", description: "圖片的 MD5 hash，用於去重檢查" },
                name: { type: "string", example: "白襯衫" },
                color: { type: "string", example: "white" },
                occasions: { type: "array", items: { type: "string" }, example: ["socialGathering", "campusCasual"] },
@@ -103,7 +104,7 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
        }
      }
   */
-  const { category, cloudImgUrl, name, color, occasions, seasons, brand } = req.body;
+  const { category, cloudImgUrl, imageHash, name, color, occasions, seasons, brand } = req.body;
 
   if (!validateClothesItem({ category, cloudImgUrl, name, color, occasions, seasons, brand })) {
     return errorHandler({ statusCode: 400, message: '請提供正確的單品參數' }, res);
@@ -111,7 +112,7 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
 
   try {
     const userId = req.user!.userId;
-    const singleItem: ClothesType.singleItem = { category, cloudImgUrl, name, color, occasions, seasons, brand };
+    const singleItem: ClothesType.singleItem = { category, cloudImgUrl, imageHash: imageHash || '', name, color, occasions, seasons, brand };
     const clothes = await addSingleItem(userId, singleItem);
     return res.status(200).json({
       message: '單品加入衣櫃成功',

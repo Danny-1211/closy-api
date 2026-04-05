@@ -1,6 +1,7 @@
 type singleItem = {
     category: string;
     cloudImgUrl: string;
+    imageHash: string;
     name: string;
     color: string;
     occasions: string[];

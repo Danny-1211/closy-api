@@ -11,6 +11,7 @@ const singleItemSchema = new Schema<ClothesType.singleItem>(
         seasons: { type: [String], default: [] },
         brand: { type: String, default: '' },
         cloudImgUrl: { type: String, default: '' },
+        imageHash: { type: String, default: '' },
     },
     { timestamps: true },
 );

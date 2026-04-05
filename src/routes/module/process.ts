@@ -46,7 +46,8 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
             type: "object",
             properties: {
               message: { type: "string", example: "圖片去背完成" },
-              cloudinaryImageUrl: { type: "string", example: "https://res.cloudinary.com/xxx/image/upload/v1/system/abc123.png" }
+              cloudinaryImageUrl: { type: "string", example: "https://res.cloudinary.com/xxx/image/upload/v1/system/abc123.png" },
+              imageHash: { type: "string", example: "d41d8cd98f00b204e9800998ecf8427e" }
             }
           }
         }
@@ -81,6 +82,20 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
       }
     }
 
+    #swagger.responses[409] = {
+      description: '圖片重複 (該使用者已上傳過相同的衣物圖片)',
+      schema: {
+        type: "object",
+        properties: {
+          statusCode: { type: "integer", example: 409 },
+          status: { type: "boolean", example: false },
+          message: { type: "string", example: "您已上傳過相同的衣物圖片" },
+          data: { type: "object", example: null },
+          ok: { type: "boolean", example: false }
+        }
+      }
+    }
+
     #swagger.responses[500] = {
       description: '伺服器錯誤',
       schema: {
@@ -100,7 +115,8 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
     return errorHandler({ statusCode: 400, message: '未提供圖片' }, res);
   }
   try {
-    const result = await removeBg(image);
+    const userId = req.user!.userId;
+    const result = await removeBg(image, userId);
 
     return res.status(200).json({
       statusCode: 200,
@@ -109,7 +125,8 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
       ok: true,
       data: {
         message: '圖片去背完成',
-        cloudinaryImageUrl: result,
+        cloudinaryImageUrl: result.imageUrl,
+        imageHash: result.imageHash,
       },
     });
   } catch (err) {
@@ -213,6 +230,7 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
     }
   */
   const imageUrl = req.body.imageUrl;
+  const imageHash = req.body.imageHash;
   if (!imageUrl) {
     return errorHandler({ statusCode: 400, message: '未提供圖片網址' }, res);
   }
@@ -226,12 +244,13 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
       ok: true,
       data: {
         cloudImgUrl: imageUrl,
-        category: attributes.category,
+        category: 'outerwear',
         name: attributes.name,
-        seasons: attributes.season,
-        occasions: attributes.occasion,
-        color: attributes.color,
-        brand: "",
+        seasons: ['winter', 'autumn'],
+        occasions: ['professional', 'businessCasual'],
+        color: 'brown',
+        brand: 'uniqlo',
+        imageHash: imageHash
       },
     });
   } catch (err) {
