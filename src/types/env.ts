@@ -12,6 +12,10 @@ type EnvConfig = {
   GOOGLE_CLIENT_SECRET: string;
   JWT_SECRET: string;
   JWT_EXPIRES_IN: SignOptions['expiresIn'];
+  PICTURE_TOKEN: string;
+  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: string;
+  CLOUDINARY_API_KEY: string;
+  CLOUDINARY_API_SECRET: string;
 };
 
 export const config: EnvConfig = {
@@ -23,4 +27,8 @@ export const config: EnvConfig = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
   JWT_SECRET: process.env.JWT_SECRET || 'default_fallback_secret',
   JWT_EXPIRES_IN: (process.env.JWT_EXPIRES_IN || '1h') as SignOptions['expiresIn'],
+  PICTURE_TOKEN: process.env.PICTURE_TOKEN || '',
+  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || '',
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || '',
 };

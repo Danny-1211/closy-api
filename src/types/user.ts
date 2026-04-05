@@ -1,4 +1,3 @@
-
 type Preferences = {
   styles: string[];
   colors: string[];

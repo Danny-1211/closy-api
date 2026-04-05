@@ -14,7 +14,7 @@ const preferencesSchema = new Schema<UserType.Preferences>(
   {
     styles: { type: [String], default: [] },
     colors: { type: [String], default: [] },
-    occasions: { type: String, default: "" },
+    occasions: { type: String, default: '' },
   },
   { _id: false },
 );
@@ -29,7 +29,7 @@ const userSchema = new Schema<UserType.User>(
     gender: { type: String, default: '' },
     preferences: {
       type: preferencesSchema,
-      default: () => ({ styles: [], colors: [], occasions: "" }),
+      default: () => ({ styles: [], colors: [], occasions: '' }),
     },
     location: { type: locationSchema, default: () => ({ latitude: null, longitude: null }) },
   },
