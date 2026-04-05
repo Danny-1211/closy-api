@@ -180,7 +180,8 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
               seasons: { type: "array", items: { type: "string" }, example: ["夏季", "春季"] },
               occasions: { type: "array", items: { type: "string" }, example: ["休閒"] },
               color: { type: "string", example: "白色" },
-              brand: { type: "string", example: "" }
+              brand: { type: "string", example: "" },
+              imageHash: { type: "string", example: "d41d8cd98f00b204e9800998ecf8427e" }
             }
           }
         }

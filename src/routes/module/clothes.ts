@@ -77,7 +77,10 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
          type: "object",
          properties: {
            statusCode: { type: "integer", example: 400 },
-           message: { type: "string", example: "請提供正確的單品參數" }
+           status: { type: "boolean", example: false },
+           message: { type: "string", example: "請提供正確的單品參數" },
+           data: { type: "object", example: null },
+           ok: { type: "boolean", example: false }
          }
        }
      }
@@ -88,7 +91,10 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
          type: "object",
          properties: {
            statusCode: { type: "integer", example: 401 },
-           message: { type: "string", example: "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入" }
+           status: { type: "boolean", example: false },
+           message: { type: "string", example: "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入" },
+           data: { type: "object", example: null },
+           ok: { type: "boolean", example: false }
          }
        }
      }
@@ -99,13 +105,15 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
          type: 'object',
          properties: {
            statusCode: { type: 'integer', example: 500 },
-           message: { type: 'string', example: '內部伺服器錯誤或其他錯誤訊息' }
+           status: { type: 'boolean', example: false },
+           message: { type: 'string', example: '內部伺服器錯誤或其他錯誤訊息' },
+           data: { type: 'object', example: null },
+           ok: { type: 'boolean', example: false }
          }
        }
      }
   */
   const { category, cloudImgUrl, imageHash, name, color, occasions, seasons, brand } = req.body;
-
   if (!validateClothesItem({ category, cloudImgUrl, name, color, occasions, seasons, brand })) {
     return errorHandler({ statusCode: 400, message: '請提供正確的單品參數' }, res);
   }

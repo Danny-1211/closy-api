@@ -76,7 +76,7 @@ export function validateClothesItem(body: {
   const { category, cloudImgUrl, name, color, occasions, seasons, brand } = body;
   if (!cloudImgUrl || typeof cloudImgUrl !== 'string') return false;
   if (!name || typeof name !== 'string') return false;
-  if (!brand || typeof brand !== 'string') return false;
+  if (typeof brand !== 'string') return false;
   if (!validateClothesCategory(category)) return false;
   if (!validateClothesColor(color)) return false;
   if (!validateClothesOccasions(occasions)) return false;
