@@ -8,7 +8,7 @@ import { checkDuplicateByHash } from '../services/clothesServices';
 async function removeBg(image: Buffer, userId: string) {
   const form = new FormData();
   const imageUint8 = new Uint8Array(image);
-  const blob = new Blob([imageUint8], { type: 'image/pngetClothesImageAttributeg' });
+  const blob = new Blob([imageUint8], { type: 'image/png' });
   form.append('file', blob, 'image.png');
 
   const response = await axios.post('https://fntxxx-rembg-service.hf.space/remove-bg', form, {

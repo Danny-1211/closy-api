@@ -14,14 +14,14 @@ export function validateGender(gender: unknown): boolean {
 // 檢查顏色是否符合格式以及規則
 // 回傳 true 表示合法，false 表示不合法
 export function validateColors(colors: unknown): boolean {
-  if (!colors || !Array.isArray(colors) || colors.length === 0) return false;
+  if (!colors || !Array.isArray(colors)) return false;
   return !colors.some(colorId => !COLORS_SET.find(colorSet => colorSet.colorId === colorId));
 }
 
 // 檢查風格是否符合格式以及規則
 // 回傳 true 表示合法，false 表示不合法
 export function validateStyles(styles: unknown): boolean {
-  if (!styles || !Array.isArray(styles) || styles.length === 0) return false;
+  if (!styles || !Array.isArray(styles)) return false;
   return !styles.some(styleId => !STYLES_SET.find(styleSet => styleSet.styleId === styleId));
 }
 
