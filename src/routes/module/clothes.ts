@@ -47,8 +47,7 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
              type: 'object',
              description: '更新後的衣櫃資料 (包含所有單品清單)',
              properties: {
-               _id: { type: 'string', example: '660a1b2c3d4e5f6g7h8i9j00' },
-               userId: { type: 'string', example: '660a1b2c3d4e5f6g7h8i9j11' },
+               message: { type: 'string', example: '單品加入衣櫃成功' },
                list: {
                  type: 'array',
                  items: {
@@ -61,6 +60,7 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
                      seasons: { type: 'array', items: { type: 'string' }, example: ['spring', 'summer'] },
                      brand: { type: 'string', example: 'Uniqlo' },
                      cloudImgUrl: { type: 'string', example: 'https://example.com/clothes-url.jpg' },
+                     imageHash: { type: 'string', example: 'd41d8cd98f00b204e9800998ecf8427e' },
                      _id: { type: 'string', example: '660a1b2c3d4e5f6g7h8i9j22' }
                    }
                  }
@@ -124,7 +124,10 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
     const clothes = await addSingleItem(userId, singleItem);
     return res.status(200).json({
       message: '單品加入衣櫃成功',
-      data: clothes,
+      data: {
+        message: '單品加入衣櫃成功',
+        list: clothes.list
+      }
     });
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);
