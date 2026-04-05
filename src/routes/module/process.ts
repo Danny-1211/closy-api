@@ -155,6 +155,11 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
                 type: "string",
                 description: 'Cloudinary 圖片網址',
                 example: 'https://res.cloudinary.com/xxx/image/upload/v1/system/abc123.png'
+              },
+              imageHash: {
+                type: "string",
+                description: '圖片的 MD5 hash，由 /removeBg 回傳，用於去重檢查 (非必填)',
+                example: 'd41d8cd98f00b204e9800998ecf8427e'
               }
             }
           }
