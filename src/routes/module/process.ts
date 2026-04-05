@@ -244,12 +244,12 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
       ok: true,
       data: {
         cloudImgUrl: imageUrl,
-        category: 'outerwear',
+        category: attributes.category,
         name: attributes.name,
-        seasons: ['winter', 'autumn'],
-        occasions: ['professional', 'businessCasual'],
-        color: 'brown',
-        brand: 'uniqlo',
+        seasons: attributes.season,
+        occasions: attributes.occasion,
+        color: attributes.color,
+        brand: attributes.brand,
         imageHash: imageHash
       },
     });
