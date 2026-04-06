@@ -35,3 +35,13 @@ export const updateUserOccasion = async (userId: string, occasions: string) => {
   );
   return user;
 };
+
+export const updateUserLocation = async (userId: string, longitude: number, latitude: number) => {
+  // 將使用者的位置做更新
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { $set: { 'location.longitude': longitude, 'location.latitude': latitude } },
+    { new: true },
+  );
+  return user;
+}

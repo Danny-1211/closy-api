@@ -1246,6 +1246,178 @@
         }
       }
     },
+    "/user/location": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "更新使用者定位",
+        "description": "更新目前登入使用者的經緯度定位，需要攜帶 Bearer Token。備註：如果使用者沒有授權，請將參數 {longitude, latitude} 都各自帶入 null 給後端。",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "定位更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "定位更新成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "請提供正確的經緯度",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請提供正確的經緯度"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權，Token 無效或未提供",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未授權，請重新登入"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到使用者",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "找不到使用者"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤，資料更新失敗",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤，資料更新失敗，請稍後再試"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "longitude",
+                  "latitude"
+                ],
+                "properties": {
+                  "longitude": {
+                    "type": "number",
+                    "nullable": true,
+                    "example": 121.5654,
+                    "description": "經度 (若使用者沒有授權請帶入 null)"
+                  },
+                  "latitude": {
+                    "type": "number",
+                    "nullable": true,
+                    "example": 25.033,
+                    "description": "緯度 (若使用者沒有授權請帶入 null)"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/process/removeBg": {
       "post": {
         "tags": [

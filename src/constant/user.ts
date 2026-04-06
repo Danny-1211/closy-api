@@ -107,4 +107,10 @@ const STYLES_SET: Style[] = [
 // 使用者性別
 const genderOptions = ['male', 'female'] as const;
 
-export { STYLES_SET, OCCASIONS_SET, COLORS_SET, genderOptions };
+// 使用者定位，當使用者沒有授權的時候預設為台北
+const defaultLocation = {
+  longitude: 121.5625,
+  latitude: 25.0375,
+} as const;
+
+export { STYLES_SET, OCCASIONS_SET, COLORS_SET, genderOptions, defaultLocation };
