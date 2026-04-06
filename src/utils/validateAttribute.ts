@@ -1,6 +1,6 @@
 // 驗證屬性是否正確
-import { COLORS_SET, STYLES_SET, OCCASIONS_SET, genderOptions } from '../constant/user';
-import { CLOTHES_COLORS_SET, CLOTHES_OCCASIONS_SET, CLOTHES_SEASONS_SET, CLOTHES_CATEGORIES_SET } from '../constant/clothes';
+import { COLORS_SET, STYLES_SET, OCCASIONS_SET, genderOptions } from '../constants/user';
+import { CLOTHES_COLORS_SET, CLOTHES_OCCASIONS_SET, CLOTHES_SEASONS_SET, CLOTHES_CATEGORIES_SET } from '../constants/clothes';
 
 // ── User 偏好設定驗證 ──────────────────────────────────────────
 
