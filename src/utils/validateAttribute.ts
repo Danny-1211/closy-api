@@ -34,8 +34,8 @@ export function validateOccasions(occasion: unknown): boolean {
 
 // 檢查使用者有沒有授權，是否需要使用預設座標
 // 回傳 true 表示沒有授權需要使用預設座標， false 表示有授權不需使用預設座標
-export function validateUserAuthorzation(longitude: unknown, latitude: unknown): boolean {
-  if (typeof longitude == 'number' && typeof latitude == 'number') return false;
+export function validateUserAuthorization(longitude: unknown, latitude: unknown): boolean {
+  if (typeof longitude === 'number' && typeof latitude === 'number') return false;
   return true;
 }
 
@@ -48,6 +48,7 @@ export function roundCoordinate(value: number): number {
 // 檢查前端提供經緯度是否符合格式以及規則
 // 回傳 true 表示合法， false 表示不合法
 export function validateLocation(longitude: number, latitude: number): boolean {
+  if (Number.isNaN(longitude) || Number.isNaN(latitude)) return false;
   if (longitude < -180 || longitude > 180) return false;
   if (latitude < -90 || latitude > 90) return false;
   return true;
