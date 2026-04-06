@@ -1,9 +1,9 @@
 import express from 'express';
 import { errorHandler } from '../../utils/errorMessage';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
-import { updateUserGender, updateUserColor, updateUserStyle, updateUserOccasion, updateUserLocation } from '../../services/userServices';
+import { updateUserGender, updateUserColor, updateUserStyle, updateUserOccasion, updateUserLocation, getUserInformation } from '../../services/userServices';
 import { validateColors, validateStyles, validateOccasions, validateGender, validateLocation, validateUserAuthorization, roundCoordinate } from '../../utils/validateAttribute';
-import { defaultLocation } from '../../constant/user';
+import { defaultLocation } from '../../constants/user';
 
 const userRouter = express.Router();
 
@@ -614,6 +614,118 @@ userRouter.post('/location', authMiddleWare, async (req, res) => {
       status: true,
       message: '定位更新成功',
       data: {},
+    });
+  } catch (error) {
+    return errorHandler(error as { statusCode: number; message: string }, res);
+  }
+})
+
+userRouter.get('/information', authMiddleWare, async (req, res) => {
+  /*
+  #swagger.tags = ['User']
+  #swagger.summary = '取得使用者資訊'
+  #swagger.description = '取得目前登入使用者的個人資訊，包含姓名、大頭貼、性別、偏好設定與定位等，需要攜帶 Bearer Token'
+  #swagger.responses[200] = {
+    description: '取得使用者資訊成功',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 200 },
+            status: { type: 'boolean', example: true },
+            message: { type: 'string', example: '取得使用者資訊成功' },
+            data: { 
+              type: 'object',
+              properties: {
+                name: { type: 'string', example: '王小明', description: '使用者姓名' },
+                picture: { type: 'string', example: 'https://example.com/avatar.jpg', description: '大頭貼 URL' },
+                gender: { type: 'string', example: 'male', description: '性別 (例如: male / female)' },
+                preferences: {
+                  type: 'object',
+                  properties: {
+                    colors: { type: 'array', items: { type: 'string' }, example: ['black', 'white'] },
+                    styles: { type: 'array', items: { type: 'string' }, example: ['simple', 'street'] },
+                    occasions: { type: 'string', example: 'socialGathering' }
+                  }
+                },
+                location: {
+                  type: 'object',
+                  properties: {
+                    longitude: { type: 'number', example: 121.560 },
+                    latitude: { type: 'number', example: 25.037 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  #swagger.responses[401] = {
+    description: '未授權，Token 無效或未提供',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 401 },
+            status: { type: 'boolean', example: false },
+            message: { type: 'string', example: '未授權，請重新登入' }
+          }
+        }
+      }
+    }
+  }
+  #swagger.responses[404] = {
+    description: '找不到使用者',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 404 },
+            status: { type: 'boolean', example: false },
+            message: { type: 'string', example: '找不到使用者' }
+          }
+        }
+      }
+    }
+  }
+  #swagger.responses[500] = {
+    description: '伺服器錯誤，取得資訊失敗',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 500 },
+            status: { type: 'boolean', example: false },
+            message: { type: 'string', example: '伺服器發生錯誤，資料讀取失敗，請稍後再試' }
+          }
+        }
+      }
+    }
+  }
+  */
+  try {
+    const userId = req.user!.userId;
+    const userInformation = await getUserInformation(userId);
+    if (!userInformation) {
+      return errorHandler({ statusCode: 404, message: '找不到使用者' }, res);
+    }
+    return res.status(200).json({
+      statusCode: 200,
+      status: true,
+      message: '取得使用者資訊成功',
+      data: {
+        name: userInformation.name,
+        picture: userInformation.picture,
+        gender: userInformation.gender,
+        preferences: userInformation.preferences,
+        location: userInformation.location,
+      },
     });
   } catch (error) {
     return errorHandler(error as { statusCode: number; message: string }, res);
