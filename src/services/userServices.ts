@@ -1,5 +1,11 @@
 import { User } from '../models/user';
 
+export const getUserInformation = async (userId: string) => {
+  // 取得使用者的資訊
+  const user = await User.findById(userId);
+  return user;
+}
+
 export const updateUserGender = async (userId: string, gender: string) => {
   // 將使用者的性別做更新
   const user = await User.findByIdAndUpdate(
