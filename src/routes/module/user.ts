@@ -2,7 +2,7 @@ import express from 'express';
 import { errorHandler } from '../../utils/errorMessage';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { updateUserGender, updateUserColor, updateUserStyle, updateUserOccasion, updateUserLocation } from '../../services/userServices';
-import { validateColors, validateStyles, validateOccasions, validateGender, validateLocation, validateUserAuthorzation, roundCoordinate } from '../../utils/validateAttribute';
+import { validateColors, validateStyles, validateOccasions, validateGender, validateLocation, validateUserAuthorization, roundCoordinate } from '../../utils/validateAttribute';
 import { defaultLocation } from '../../constant/user';
 
 const userRouter = express.Router();
@@ -591,7 +591,7 @@ userRouter.post('/location', authMiddleWare, async (req, res) => {
   let tempLong = longitude;
   let tempLat = latitude;
 
-  if (validateUserAuthorzation(tempLong, tempLat)) {
+  if (validateUserAuthorization(tempLong, tempLat)) {
     tempLong = defaultLocation.longitude;
     tempLat = defaultLocation.latitude;
   }
@@ -605,8 +605,8 @@ userRouter.post('/location', authMiddleWare, async (req, res) => {
 
   try {
     const userId = req.user!.userId;
-    const IsupdatedUserLocationSuccessful = await updateUserLocation(userId, tempLong, tempLat);
-    if (!IsupdatedUserLocationSuccessful) {
+    const isUpdatedUserLocationSuccessful = await updateUserLocation(userId, tempLong, tempLat);
+    if (!isUpdatedUserLocationSuccessful) {
       return errorHandler({ statusCode: 404, message: '找不到使用者' }, res);
     }
     return res.status(200).json({
