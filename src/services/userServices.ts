@@ -2,7 +2,11 @@ import { User } from '../models/user';
 
 export const updateUserGender = async (userId: string, gender: string) => {
   // 將使用者的性別做更新
-  const user = await User.findByIdAndUpdate(userId, { gender }, { new: true });
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { gender },
+    { returnDocument: 'after' }
+  );
   return user;
 };
 
@@ -11,7 +15,7 @@ export const updateUserColor = async (userId: string, colors: string[]) => {
   const user = await User.findByIdAndUpdate(
     userId,
     { $set: { 'preferences.colors': colors } },
-    { new: true },
+    { returnDocument: 'after' },
   );
   return user;
 };
@@ -21,7 +25,7 @@ export const updateUserStyle = async (userId: string, styles: string[]) => {
   const user = await User.findByIdAndUpdate(
     userId,
     { $set: { 'preferences.styles': styles } },
-    { new: true },
+    { returnDocument: 'after' },
   );
   return user;
 };
@@ -31,7 +35,7 @@ export const updateUserOccasion = async (userId: string, occasions: string) => {
   const user = await User.findByIdAndUpdate(
     userId,
     { $set: { 'preferences.occasions': occasions } },
-    { new: true },
+    { returnDocument: 'after' },
   );
   return user;
 };
@@ -41,7 +45,7 @@ export const updateUserLocation = async (userId: string, longitude: number, lati
   const user = await User.findByIdAndUpdate(
     userId,
     { $set: { 'location.longitude': longitude, 'location.latitude': latitude } },
-    { new: true },
-  );
+    { returnDocument: 'after' },
+  )
   return user;
 }
