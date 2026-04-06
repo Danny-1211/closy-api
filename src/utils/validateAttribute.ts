@@ -32,6 +32,27 @@ export function validateOccasions(occasion: unknown): boolean {
   return !!OCCASIONS_SET.find(occasionSet => occasionSet.occasionId === occasion);
 }
 
+// 檢查使用者有沒有授權，是否需要使用預設座標
+// 回傳 true 表示沒有授權需要使用預設座標， false 表示有授權不需使用預設座標
+export function validateUserAuthorzation(longitude: unknown, latitude: unknown): boolean {
+  if (typeof longitude == 'number' && typeof latitude == 'number') return false;
+  return true;
+}
+
+
+// 將經緯度四捨五入到小數第三位（給 OpenWeather API 使用）
+export function roundCoordinate(value: number): number {
+  return Math.round(value * 1000) / 1000;
+}
+
+// 檢查前端提供經緯度是否符合格式以及規則
+// 回傳 true 表示合法， false 表示不合法
+export function validateLocation(longitude: number, latitude: number): boolean {
+  if (longitude < -180 || longitude > 180) return false;
+  if (latitude < -90 || latitude > 90) return false;
+  return true;
+}
+
 // ── 單品（Clothes）驗證 ────────────────────────────────────────
 
 // 檢查單品類別是否符合 CLOTHES_CATEGORIES_SET

@@ -1,8 +1,9 @@
 import express from 'express';
 import { errorHandler } from '../../utils/errorMessage';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
-import { updateUserGender, updateUserColor, updateUserStyle, updateUserOccasion } from '../../services/userServices';
-import { validateColors, validateStyles, validateOccasions, validateGender } from '../../utils/validateAttribute';
+import { updateUserGender, updateUserColor, updateUserStyle, updateUserOccasion, updateUserLocation } from '../../services/userServices';
+import { validateColors, validateStyles, validateOccasions, validateGender, validateLocation, validateUserAuthorzation, roundCoordinate } from '../../utils/validateAttribute';
+import { defaultLocation } from '../../constant/user';
 
 const userRouter = express.Router();
 
@@ -477,5 +478,146 @@ userRouter.patch('/preferences/occasions', authMiddleWare, async (req, res) => {
     return errorHandler(error as { statusCode: number; message: string }, res);
   }
 });
+
+// 使用者定位
+userRouter.post('/location', authMiddleWare, async (req, res) => {
+  /*
+  #swagger.tags = ['User']
+  #swagger.summary = '更新使用者定位'
+  #swagger.description = '更新目前登入使用者的經緯度定位，需要攜帶 Bearer Token。備註：如果使用者沒有授權，請將參數 {longitude, latitude} 都各自帶入 null 給後端。'
+  #swagger.requestBody = {
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['longitude', 'latitude'],
+          properties: {
+            longitude: {
+              type: 'number',
+              nullable: true,
+              example: 121.5654,
+              description: '經度 (若使用者沒有授權請帶入 null)'
+            },
+            latitude: {
+              type: 'number',
+              nullable: true,
+              example: 25.033,
+              description: '緯度 (若使用者沒有授權請帶入 null)'
+            }
+          }
+        }
+      }
+    }
+  }
+  #swagger.responses[200] = {
+    description: '定位更新成功',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 200 },
+            status: { type: 'boolean', example: true },
+            message: { type: 'string', example: '定位更新成功' },
+            data: { type: 'object', example: {} }
+          }
+        }
+      }
+    }
+  }
+  #swagger.responses[400] = {
+    description: '請提供正確的經緯度',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 400 },
+            status: { type: 'boolean', example: false },
+            message: { type: 'string', example: '請提供正確的經緯度' }
+          }
+        }
+      }
+    }
+  }
+  #swagger.responses[401] = {
+    description: '未授權，Token 無效或未提供',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 401 },
+            status: { type: 'boolean', example: false },
+            message: { type: 'string', example: '未授權，請重新登入' }
+          }
+        }
+      }
+    }
+  }
+  #swagger.responses[404] = {
+    description: '找不到使用者',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 404 },
+            status: { type: 'boolean', example: false },
+            message: { type: 'string', example: '找不到使用者' }
+          }
+        }
+      }
+    }
+  }
+  #swagger.responses[500] = {
+    description: '伺服器錯誤，資料更新失敗',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 500 },
+            status: { type: 'boolean', example: false },
+            message: { type: 'string', example: '伺服器發生錯誤，資料更新失敗，請稍後再試' }
+          }
+        }
+      }
+    }
+  }
+  */
+  const { longitude, latitude } = req.body;
+  let tempLong = longitude;
+  let tempLat = latitude;
+
+  if (validateUserAuthorzation(tempLong, tempLat)) {
+    tempLong = defaultLocation.longitude;
+    tempLat = defaultLocation.latitude;
+  }
+
+  if (!validateLocation(tempLong, tempLat)) {
+    return errorHandler({ statusCode: 400, message: '請提供正確的經緯度' }, res);
+  }
+
+  tempLong = roundCoordinate(tempLong);
+  tempLat = roundCoordinate(tempLat);
+
+  try {
+    const userId = req.user!.userId;
+    const IsupdatedUserLocationSuccessful = await updateUserLocation(userId, tempLong, tempLat);
+    if (!IsupdatedUserLocationSuccessful) {
+      return errorHandler({ statusCode: 404, message: '找不到使用者' }, res);
+    }
+    return res.status(200).json({
+      statusCode: 200,
+      status: true,
+      message: '定位更新成功',
+      data: {},
+    });
+  } catch (error) {
+    return errorHandler(error as { statusCode: number; message: string }, res);
+  }
+})
 
 export { userRouter };
