@@ -1,8 +1,12 @@
+import { singleItem } from './clothes';
+import { Preferences } from './user'
+
 export type OutfitContext = {
   gender: string;
-  occasion: { occasionId: string; occasionName: string };
-  styles: string[];
-  colors: string[];
+  occasion: Preferences['occasions'];
+  styles: Preferences['styles'];
+  colors: Preferences['colors'];
+  items: singleItem[];
 };
 
 export type GeminiOutfitResponse = {
