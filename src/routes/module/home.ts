@@ -3,6 +3,7 @@ import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { errorHandler } from '../../utils/errorMessage';
 import { generateOutfitRecommendation } from '../../services/geminiServices';
 import { getUserClothes } from '../../services/clothesServices';
+import { getUserInformation } from '../../services/userServices';
 import { OutfitContext } from '../../types/gemini';
 
 const homeRouter = express.Router();
@@ -81,12 +82,16 @@ homeRouter.get('/today', authMiddleWare, async (req, res) => {
   */
   try {
     const userId = req.user!.userId;
-    const clothesList = await getUserClothes(userId);
+    const [user, clothesList] = await Promise.all([
+      getUserInformation(userId),
+      getUserClothes(userId),
+    ]);
+    if (!user) throw { statusCode: 404, message: '找不到使用者' };
     const context: OutfitContext = {
-      gender: req.user!.gender,
-      occasion: '社交聚會',
-      styles: ['簡約', '日系'],
-      colors: ['深灰黑', '大地棕', '奶油黃'],
+      gender: user.gender,
+      occasion: user.preferences.occasions,
+      styles: user.preferences.styles,
+      colors: user.preferences.colors,
       items: clothesList.map(item => item.toObject()),
     }
     const result = await generateOutfitRecommendation(context);
