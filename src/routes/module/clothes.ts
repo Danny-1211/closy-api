@@ -123,6 +123,8 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
     const singleItem: ClothesType.singleItem = { category, cloudImgUrl, imageHash: imageHash || '', name, color, occasions, seasons, brand };
     const clothes = await addSingleItem(userId, singleItem);
     return res.status(200).json({
+      statusCode: 200,
+      status: true,
       message: '單品加入衣櫃成功',
       data: {
         message: '單品加入衣櫃成功',
