@@ -10,8 +10,7 @@ function buildOutfitPrompt(context: OutfitContext): string {
 
   const itemList = items
     .map((item, i) => {
-      const id = (item as { _id?: unknown })._id?.toString() ?? '';
-      return `${i + 1}. ID: ${id} | 類別: ${item.category} | 名稱: ${item.name} | 顏色: ${item.color} | 場合: ${item.occasions.join('、')} | 季節: ${item.seasons.join('、')}`;
+      return `${i + 1}. 圖片URL: ${item.cloudImgUrl} | 類別: ${item.category} | 名稱: ${item.name} | 顏色: ${item.color} | 場合: ${item.occasions.join('、')} | 季節: ${item.seasons.join('、')}`;
     })
     .join('\n');
 
@@ -26,6 +25,10 @@ function buildOutfitPrompt(context: OutfitContext): string {
 ${itemList || '（無衣物）'}
 
 請根據以上資訊，從衣櫃清單中選出最適合的穿搭組合。
+⚠️ 注意事項：
+- 只能從上方圖片清單中選擇衣物，不可憑空捏造
+- 若圖片清單中找不到符合規則的單品，請說明原因並推薦最接近的選項
+- 輸出語言：繁體中文
     `.trim();
 }
 
@@ -33,7 +36,7 @@ function isValidGeminiResponse(value: unknown): value is GeminiOutfitResponse {
   return (
     typeof value === 'object' &&
     value !== null &&
-    Array.isArray((value as GeminiOutfitResponse).selectedItemIds) &&
+    Array.isArray((value as GeminiOutfitResponse).selectedItemUrls) &&
     typeof (value as GeminiOutfitResponse).reasoning === 'string'
   );
 }
@@ -42,7 +45,7 @@ export async function generateOutfitRecommendation(context: OutfitContext): Prom
   const prompt = buildOutfitPrompt(context);
 
   const response = await aiInstance.models.generateContent({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3-flash-preview',
     contents: prompt,
     config: {
       systemInstruction: OUTFIT_SYSTEM_INSTRUCTION,

@@ -10,6 +10,6 @@ export type OutfitContext = {
 };
 
 export type GeminiOutfitResponse = {
-  selectedItemIds: string[];
+  selectedItemUrls: string[];
   reasoning: string;
 };
