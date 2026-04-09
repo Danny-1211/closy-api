@@ -5,6 +5,9 @@ import { generateOutfitRecommendation } from '../../services/geminiServices';
 import { getUserClothes } from '../../services/clothesServices';
 import { getUserInformation } from '../../services/userServices';
 import { OutfitContext } from '../../types/gemini';
+import * as ClothesType from '../../types/clothes';
+
+type MongooseSingleItem = ClothesType.singleItem & { toObject(): any };
 
 const homeRouter = express.Router();
 
@@ -82,17 +85,15 @@ homeRouter.get('/today', authMiddleWare, async (req, res) => {
   */
   try {
     const userId = req.user!.userId;
-    const [user, clothesList] = await Promise.all([
-      getUserInformation(userId),
-      getUserClothes(userId),
-    ]);
+    const user = await getUserInformation(userId);
     if (!user) throw { statusCode: 404, message: '找不到使用者' };
+    const clothesList = await getUserClothes(userId);
     const context: OutfitContext = {
       gender: user.gender,
       occasion: user.preferences.occasions,
       styles: user.preferences.styles,
       colors: user.preferences.colors,
-      items: clothesList.map(item => item.toObject()),
+      items: clothesList.map(item => (item as MongooseSingleItem).toObject()),
     }
     const result = await generateOutfitRecommendation(context);
     return res.status(200).json({
@@ -101,7 +102,7 @@ homeRouter.get('/today', authMiddleWare, async (req, res) => {
       message: '取得穿搭建議成功',
       ok: true,
       data: {
-        reuslt: result
+        result
       },
     });
   } catch (err) {

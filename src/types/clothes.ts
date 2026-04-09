@@ -1,5 +1,4 @@
 type singleItem = {
-  toObject(): any;
   category: string;
   cloudImgUrl: string;
   imageHash: string;
