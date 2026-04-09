@@ -8,8 +8,7 @@ const errorHandler = (err: AppError, res: Response) => {
     statusCode,
     status: false,
     message: err.message ?? '伺服器發生錯誤',
-    data: null,
-    ok: false
+    data: null
   });
 };
 

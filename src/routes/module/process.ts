@@ -41,7 +41,6 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
           statusCode: { type: "integer", example: 200 },
           status: { type: "boolean", example: true },
           message: { type: "string", example: "圖片去背完成" },
-          ok: { type: "boolean", example: true },
           data: {
             type: "object",
             properties: {
@@ -103,7 +102,7 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
         properties: {
           statusCode: { type: 'integer', example: 500 },
           status: { type: 'boolean', example: false },
-          message: { type: 'string', example: '伺服器發生錯誤，資料更新失敗，請稍後再試' },
+          message: { type: 'string', example: '伺服器發生錯誤' },
           data: { type: "object", example: null },
           ok: { type: "boolean", example: false }
         }
@@ -122,7 +121,6 @@ processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, r
       statusCode: 200,
       status: true,
       message: '圖片去背完成',
-      ok: true,
       data: {
         message: '圖片去背完成',
         cloudinaryImageUrl: result.imageUrl,
@@ -175,7 +173,6 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
           statusCode: { type: "integer", example: 200 },
           status: { type: "boolean", example: true },
           message: { type: "string", example: "圖片屬性辨識完成" },
-          ok: { type: "boolean", example: true },
           data: {
             type: "object",
             properties: {
@@ -201,8 +198,7 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
           statusCode: { type: "integer", example: 400 },
           status: { type: "boolean", example: false },
           message: { type: "string", example: "未提供圖片網址" },
-          data: { type: "object", example: null },
-          ok: { type: "boolean", example: false }
+          data: { type: "object", example: null }
         }
       }
     }
@@ -215,8 +211,7 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
           statusCode: { type: "integer", example: 401 },
           status: { type: "boolean", example: false },
           message: { type: "string", example: "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入" },
-          data: { type: "object", example: null },
-          ok: { type: "boolean", example: false }
+          data: { type: "object", example: null }
         }
       }
     }
@@ -229,8 +224,7 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
           statusCode: { type: 'integer', example: 500 },
           status: { type: 'boolean', example: false },
           message: { type: 'string', example: 'AI 辨識衣物屬性失敗 / 從 Cloudinary 下載圖片失敗' },
-          data: { type: "object", example: null },
-          ok: { type: "boolean", example: false }
+          data: { type: "object", example: null }
         }
       }
     }
@@ -247,7 +241,6 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
       statusCode: 200,
       status: true,
       message: '圖片屬性辨識完成',
-      ok: true,
       data: {
         cloudImgUrl: imageUrl,
         category: attributes.category,

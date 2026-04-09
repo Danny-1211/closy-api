@@ -79,8 +79,7 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
            statusCode: { type: "integer", example: 400 },
            status: { type: "boolean", example: false },
            message: { type: "string", example: "請提供正確的單品參數" },
-           data: { type: "object", example: null },
-           ok: { type: "boolean", example: false }
+           data: { type: "object", example: null }
          }
        }
      }
@@ -93,8 +92,7 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
            statusCode: { type: "integer", example: 401 },
            status: { type: "boolean", example: false },
            message: { type: "string", example: "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入" },
-           data: { type: "object", example: null },
-           ok: { type: "boolean", example: false }
+           data: { type: "object", example: null }
          }
        }
      }
@@ -107,8 +105,7 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
            statusCode: { type: 'integer', example: 500 },
            status: { type: 'boolean', example: false },
            message: { type: 'string', example: '內部伺服器錯誤或其他錯誤訊息' },
-           data: { type: 'object', example: null },
-           ok: { type: 'boolean', example: false }
+           data: { type: 'object', example: null }
          }
        }
      }
