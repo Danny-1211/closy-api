@@ -5,7 +5,7 @@ import { generateOutfitRecommendation } from '../../services/geminiServices';
 import { getUserClothes } from '../../services/clothesServices';
 import { getUserInformation } from '../../services/userServices';
 import { OutfitContext } from '../../types/gemini';
-import { getWeather } from '../../integrations/openWeather';
+import { getForecastWeather, getTodayWeather } from '../../integrations/openWeather';
 import * as ClothesType from '../../types/clothes';
 
 type MongooseSingleItem = ClothesType.singleItem & { toObject(): any };
@@ -88,19 +88,18 @@ homeRouter.get('/today', authMiddleWare, async (req, res) => {
     const userId = req.user!.userId;
     const user = await getUserInformation(userId);
     if (!user) throw { statusCode: 404, message: '找不到使用者' };
-    const [clothesList, weather] = await Promise.all([
+    const [clothesList, weather, tomorrowWeather] = await Promise.all([
       getUserClothes(userId),
-      getWeather(user.location),
+      getTodayWeather(user.location),
+      getForecastWeather(user.location),
     ]);
     const context: OutfitContext = {
       gender: user.gender,
       occasion: user.preferences.occasions,
       styles: user.preferences.styles,
       colors: user.preferences.colors,
-      items: clothesList.map(item => (item as MongooseSingleItem).toObject()),
+      items: clothesList.map((item: any) => (item as MongooseSingleItem).toObject()),
     }
-
-    console.log('weather', weather)
     const result = await generateOutfitRecommendation(context);
     return res.status(200).json({
       statusCode: 200,
@@ -108,7 +107,7 @@ homeRouter.get('/today', authMiddleWare, async (req, res) => {
       message: '取得穿搭建議成功',
       ok: true,
       data: {
-        result
+        result: result
       },
     });
   } catch (err) {

@@ -13,3 +13,9 @@ export type GeminiOutfitResponse = {
   selectedItemUrls: string[];
   reasoning: string;
 };
+
+export type ForecastEntry = {
+    dt: number;
+    dt_txt: string;
+    [key: string]: any;
+};
