@@ -7,7 +7,7 @@ import { errorHandler } from '../../utils/errorMessage';
 const processRouter = express.Router();
 
 // 圖片去背 api
-processRouter.post('/removeBg', authMiddleWare, uploadSingleImage, async (req, res) => {
+processRouter.post('/remove-bg', authMiddleWare, uploadSingleImage, async (req, res) => {
   /* #swagger.tags = ['Process']
     #swagger.summary = '圖片去背'
     #swagger.description = '上傳單張圖片進行去背處理，回傳去背後的圖片結果。<br>需要發送 multipart/form-data 格式，並帶上 key 名稱為 `image` 的檔案。<br>⚠️ **注意**：需要在後端環境變數中設定 `PICTURE_TOKEN` 才能成功呼叫去背 API。'
