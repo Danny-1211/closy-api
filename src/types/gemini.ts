@@ -14,8 +14,14 @@ export type GeminiOutfitResponse = {
   reasoning: string;
 };
 
-export type ForecastEntry = {
-    dt: number;
-    dt_txt: string;
-    [key: string]: any;
+export type DayWeather = {
+  temperature: string;
+  weather: string;
+  weatherCode: string;
+  weatherDescription: string;
+};
+
+export type FilteredForecast = {
+  today: DayWeather;
+  tomorrow: DayWeather;
 };

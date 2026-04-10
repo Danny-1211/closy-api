@@ -5,7 +5,7 @@ import { generateOutfitRecommendation } from '../../services/geminiServices';
 import { getUserClothes } from '../../services/clothesServices';
 import { getUserInformation } from '../../services/userServices';
 import { OutfitContext } from '../../types/gemini';
-import { getForecastWeather, getTodayWeather } from '../../integrations/openWeather';
+import { getWeather } from '../../integrations/openWeather';
 import * as ClothesType from '../../types/clothes';
 
 type MongooseSingleItem = ClothesType.singleItem & { toObject(): any };
@@ -88,10 +88,9 @@ homeRouter.get('/today', authMiddleWare, async (req, res) => {
     const userId = req.user!.userId;
     const user = await getUserInformation(userId);
     if (!user) throw { statusCode: 404, message: '找不到使用者' };
-    const [clothesList, weather, tomorrowWeather] = await Promise.all([
+    const [clothesList, weather] = await Promise.all([
       getUserClothes(userId),
-      getTodayWeather(user.location),
-      getForecastWeather(user.location),
+      getWeather(user.location)
     ]);
     const context: OutfitContext = {
       gender: user.gender,
@@ -105,10 +104,7 @@ homeRouter.get('/today', authMiddleWare, async (req, res) => {
       statusCode: 200,
       status: true,
       message: '取得穿搭建議成功',
-      ok: true,
-      data: {
-        result: result
-      },
+      data: result
     });
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);
