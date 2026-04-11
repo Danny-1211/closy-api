@@ -244,14 +244,14 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
       getUserClothes(userId),
       getWeather(user.location)
     ]);
-    const selectedWheather: DayWeather = day === 'today' ? weather.wheatherDataSet.today : weather.wheatherDataSet.tomorrow;
+    const selectedWeather: DayWeather = day === 'today' ? weather.weatherDataSet.today : weather.weatherDataSet.tomorrow;
     const context: OutfitContext = {
       gender: user.gender,
       occasion: user.preferences.occasions,
       styles: user.preferences.styles,
       colors: user.preferences.colors,
       items: clothesList.map((item: any) => (item as MongooseSingleItem).toObject()),
-      wheather: selectedWheather
+      weather: selectedWeather
     }
     const result = await generateOutfitRecommendation(context);
     return res.status(200).json({
@@ -260,7 +260,7 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
       message: `取得${day === 'today' ? '今日' : '明日'}穿搭建議成功`,
       data: {
         recommendation: result,
-        weather: selectedWheather,
+        weather: selectedWeather,
         city: weather.city,
       }
     });
@@ -268,5 +268,6 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
     return errorHandler(err as { statusCode: number; message: string }, res);
   }
 });
+
 
 export { homeRouter }
