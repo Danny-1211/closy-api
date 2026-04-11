@@ -1,18 +1,5 @@
 import { singleItem } from './clothes';
-import { Preferences } from './user'
-
-export type OutfitContext = {
-  gender: string;
-  occasion: Preferences['occasions'];
-  styles: Preferences['styles'];
-  colors: Preferences['colors'];
-  items: singleItem[];
-};
-
-export type GeminiOutfitResponse = {
-  selectedItemUrls: string[];
-  reasoning: string;
-};
+import { Preferences } from './user';
 
 export type DayWeather = {
   temperature: string;
@@ -24,4 +11,18 @@ export type DayWeather = {
 export type FilteredForecast = {
   today: DayWeather;
   tomorrow: DayWeather;
+};
+
+export type OutfitContext = {
+  gender: string;
+  occasion: Preferences['occasions'];
+  styles: Preferences['styles'];
+  colors: Preferences['colors'];
+  items: singleItem[];
+  wheather: FilteredForecast
+};
+
+export type GeminiOutfitResponse = {
+  selectedItemUrls: string[];
+  reasoning: string;
 };

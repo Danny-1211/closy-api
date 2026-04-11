@@ -24,11 +24,8 @@ function buildOutfitPrompt(context: OutfitContext): string {
 ## 衣櫃清單
 ${itemList || '（無衣物）'}
 
-請根據以上資訊，從衣櫃清單中選出最適合的穿搭組合。
-⚠️ 注意事項：
-- 只能從上方圖片清單中選擇衣物，不可憑空捏造
-- 若圖片清單中找不到符合規則的單品，請說明原因並推薦最接近的選項
-- 輸出語言：繁體中文
+## 天氣資訊
+- 今日：${context.wheather.today.temperature} | ${context.wheather.today.weatherDescription}
     `.trim();
 }
 

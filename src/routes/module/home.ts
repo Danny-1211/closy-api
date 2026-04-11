@@ -98,13 +98,18 @@ homeRouter.get('/today', authMiddleWare, async (req, res) => {
       styles: user.preferences.styles,
       colors: user.preferences.colors,
       items: clothesList.map((item: any) => (item as MongooseSingleItem).toObject()),
+      wheather: weather
     }
     const result = await generateOutfitRecommendation(context);
     return res.status(200).json({
       statusCode: 200,
       status: true,
-      message: '取得穿搭建議成功',
-      data: result
+      message: '取得今日穿搭建議成功',
+      data: {
+        recommendation: result,
+        todayWeather: weather.today,
+        tomorrowWeather: weather.tomorrow,
+      }
     });
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);
