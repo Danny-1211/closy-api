@@ -25,7 +25,7 @@ function buildOutfitPrompt(context: OutfitContext): string {
 ${itemList || '（無衣物）'}
 
 ## 天氣資訊
-- 今日：${context.wheather.today.temperature} | ${context.wheather.today.weatherDescription}
+- 天氣：${context.wheather.temperature} | ${context.wheather.weatherDescription}
     `.trim();
 }
 

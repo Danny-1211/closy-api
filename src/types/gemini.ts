@@ -19,7 +19,7 @@ export type OutfitContext = {
   styles: Preferences['styles'];
   colors: Preferences['colors'];
   items: singleItem[];
-  wheather: FilteredForecast
+  wheather: DayWeather
 };
 
 export type GeminiOutfitResponse = {
