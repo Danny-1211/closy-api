@@ -23,6 +23,16 @@ export type OutfitContext = {
 };
 
 export type GeminiOutfitResponse = {
-  selectedItemUrls: string[];
+  selectedItems: { category: string; cloudImgUrl: string }[];
   reasoning: string;
+};
+
+// Service 層使用：圖片已下載為 Buffer
+export type VirtualOutfitItem = {
+  buffer: Buffer;
+  category: string;
+};
+
+export type VirtualOutfitResponse = {
+  imageUrl: string;
 };
