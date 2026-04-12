@@ -2,8 +2,8 @@
 import axios from 'axios';
 import { config } from '../types/env';
 import { Location } from '../types/user';
-import { getCurrentLocation } from '../utils/getCurrentLocation';
-import { filterForecast } from '../utils/forecastFilter';
+import { getCurrentLocation } from '../utils/weather';
+import { filterForecast } from '../utils/weather';
 
 // google geocoding 先用經緯度抓使用者地點
 // 將地點回傳之後再打氣象局開放資料平台拿到一週的天氣資料
