@@ -302,7 +302,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                  items: {
                    type: 'object',
                    properties: {
-                     url: { type: 'string', description: '圖片 URL' },
+                     cloudImgUrl: { type: 'string', description: '圖片 URL' },
                      category: { type: 'string', description: '服飾類別' }
                    }
                  }
@@ -314,7 +314,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                summary: '有效的請求範例',
                value: {
                  selectedItems: [
-                   { url: 'https://res.cloudinary.com/test/image.jpg', category: 'T恤' }
+                   { cloudImgUrl: 'https://res.cloudinary.com/test/image.jpg', category: 'top' }
                  ]
                }
              }
@@ -440,6 +440,10 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
              GenerateFailed: {
                summary: '伺服器端錯誤',
                value: { statusCode: 500, status: false, message: '伺服器發生不可預期的錯誤', data: null }
+             },
+             AIFailed: {
+               summary: 'AI 服務異常',
+               value: { statusCode: 500, status: false, message: 'AI 未回傳圖片，請稍後再試', data: null }
              }
            }
          }
