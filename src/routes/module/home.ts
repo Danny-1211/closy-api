@@ -24,8 +24,9 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
      #swagger.parameters['day'] = {
        in: 'query',
        name: 'day',
-       schema: { type: 'string', default: 'today' },
-       description: '查詢日期，today（今日）或 tomorrow（明日），預設為 today'
+       required: false,
+       description: '查詢日期，today（今日）或 tomorrow（明日），預設為 today',
+       '@schema': { type: 'string', example: 'today', default: 'today' }
      }
 
      #swagger.responses[200] = {
