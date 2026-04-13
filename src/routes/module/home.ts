@@ -463,7 +463,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
 
     const gender = user.gender || 'male';
     const modelPath = path.join(process.cwd(), 'public', `${gender}.webp`);
-    const modelBuffer = fs.readFileSync(modelPath);
+    const modelBuffer = await fs.promises.readFile(modelPath);
 
     const clothesItems: VirtualOutfitItem[] = await Promise.all(
       selectedItems.map(async (item) => ({
