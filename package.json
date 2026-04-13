@@ -14,6 +14,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.32.1",
   "dependencies": {
+    "@google/genai": "^1.48.0",
     "axios": "^1.14.0",
     "cloudinary": "^2.9.0",
     "cors": "^2.8.6",

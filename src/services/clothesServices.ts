@@ -10,6 +10,12 @@ export const checkDuplicateByHash = async (userId: string, imageHash: string) =>
     return !!clothes;
 }
 
+// 取得使用者衣櫃清單
+export const getUserClothes = async (userId: string) => {
+    const clothes = await Clothes.findOne({ userId });
+    return clothes?.list ?? [];
+}
+
 // 將單品加入衣櫃
 export const addSingleItem = async (userId: string, singleItem: ClothesType.singleItem) => {
     const clothes = await Clothes.findOneAndUpdate(

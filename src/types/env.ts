@@ -16,6 +16,7 @@ type EnvConfig = {
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: string;
   CLOUDINARY_API_KEY: string;
   CLOUDINARY_API_SECRET: string;
+  GOOGLE_GEOCODING_API_KEY: string;
 };
 
 export const config: EnvConfig = {
@@ -31,4 +32,5 @@ export const config: EnvConfig = {
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || '',
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || '',
+  GOOGLE_GEOCODING_API_KEY: process.env.GOOGLE_GEOCODING_API_KEY || '',
 };
