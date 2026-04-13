@@ -28,7 +28,7 @@ export const getWeather = async (location: Location | undefined | null) => {
         const url = `https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=${weatherApiKey}&LocationName=${currentlyCity}&ElementName=${['平均溫度', '天氣預報綜合描述', '天氣現象']}&timeFrom=${currentDateStr}&timeTo=${dayAfterStr}&sort=time`;
         const response = await axios.get(url);
         return {
-            weatherDataSet: filterForecast(response.data['records']['Locations'][0]['Location'][0]['WeatherElement']),
+            weatherDataSet: filterForecast(response.data?.records?.Locations?.[0]?.Location?.[0]?.WeatherElement),
             city: currentlyCity
         }
     } catch (err) {

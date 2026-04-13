@@ -49,7 +49,7 @@ export async function getCurrentLocation(latitude: number, longitude: number) {
         const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}&language=zh-TW`;
         const response = await axios.get(url);
         const cityName = response.data.results[0].address_components.find((component: any) => component.types.includes('administrative_area_level_1'))?.long_name;
-        return cityName;
+        return cityName ? cityName : '臺北市';
     } catch (err) {
         throw { statusCode: 500, message: '取得目前位置失敗' };
     }
