@@ -1,4 +1,5 @@
 type singleItem = {
+  _id?: string;
   category: string;
   cloudImgUrl: string;
   imageHash: string;
