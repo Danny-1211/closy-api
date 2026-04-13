@@ -1,7 +1,7 @@
 import express from 'express';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { errorHandler } from '../../utils/errorMessage';
-import { addSingleItem, deleteSingleItem, getUserClothes } from '../../services/clothesServices';
+import { addSingleItem, deleteSingleItem, getUserClothes, getUserSpecificClothes } from '../../services/clothesServices';
 import * as ClothesType from '../../types/clothes';
 import { validateClothesItem } from '../../utils/validateAttribute';
 
@@ -104,6 +104,142 @@ clothesRouter.get('/', authMiddleWare, async (req, res) => {
     return errorHandler(err as { statusCode: number; message: string }, res);
   }
 });
+
+clothesRouter.get('/:id', authMiddleWare, async (req, res) => {
+  /* #swagger.tags = ['Clothes']
+    #swagger.summary = '取得單一單品'
+    #swagger.description = '依據單品 ID 取得使用者衣櫃中指定的單品資訊。'
+    #swagger.security = [{ "bearerAuth": [] }]
+
+    #swagger.parameters['id'] = {
+      in: 'path',
+      required: true,
+      description: '要查詢的單品 ID',
+      '@schema': { type: 'string', example: '660a1b2c3d4e5f6g7h8i9j22' }
+    }
+
+    #swagger.responses[200] = {
+      description: '查詢成功',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              statusCode: { type: 'integer', example: 200 },
+              status: { type: 'boolean', example: true },
+              message: { type: 'string', example: '單品查詢成功' },
+              data: {
+                type: 'object',
+                properties: {
+                  _id: { type: 'string', example: '660a1b2c3d4e5f6g7h8i9j22' },
+                  category: { type: 'string', example: 'top' },
+                  cloudImgUrl: { type: 'string', example: 'https://example.com/clothes-url.jpg' },
+                  imageHash: { type: 'string', example: 'd41d8cd98f00b204e9800998ecf8427e' },
+                  name: { type: 'string', example: '白襯衫' },
+                  color: { type: 'string', example: 'white' },
+                  occasions: { type: 'array', items: { type: 'string' }, example: ['socialGathering', 'campusCasual']
+ },
+                  seasons: { type: 'array', items: { type: 'string' }, example: ['spring', 'summer'] },
+                  brand: { type: 'string', example: 'Uniqlo' },
+                  createdAt: { type: 'string', format: 'date-time', example: '2024-04-01T08:00:00.000Z' },
+                  updatedAt: { type: 'string', format: 'date-time', example: '2024-04-10T12:30:00.000Z' }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    #swagger.responses[400] = {
+      description: '請求錯誤 (未提供單品 ID)',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              statusCode: { type: 'integer', example: 400 },
+              status: { type: 'boolean', example: false },
+              message: { type: 'string', example: '請提供單品 id' },
+              data: { type: 'object', example: null }
+            }
+          }
+        }
+      }
+    }
+
+    #swagger.responses[401] = {
+      description: '身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              statusCode: { type: 'integer', example: 401 },
+              status: { type: 'boolean', example: false },
+              message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 /
+ 無效的憑證或憑證已過期，請重新登入' },
+              data: { type: 'object', example: null }
+            }
+          }
+        }
+      }
+    }
+
+    #swagger.responses[404] = {
+      description: '找不到指定單品',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              statusCode: { type: 'integer', example: 404 },
+              status: { type: 'boolean', example: false },
+              message: { type: 'string', example: '找不到單品' },
+              data: { type: 'object', example: null }
+            }
+          }
+        }
+      }
+    }
+
+    #swagger.responses[500] = {
+      description: '伺服器錯誤',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              statusCode: { type: 'integer', example: 500 },
+              status: { type: 'boolean', example: false },
+              message: { type: 'string', example: '內部伺服器錯誤或其他錯誤訊息' },
+              data: { type: 'object', example: null }
+            }
+          }
+        }
+      }
+    }
+ */
+  const singleItemId = req.params.id;
+  if (!singleItemId || typeof singleItemId !== 'string') {
+    return errorHandler({ statusCode: 400, message: '請提供單品 id' }, res);
+  }
+  try {
+    const userId = req.user!.userId;
+    const singleItem = await getUserSpecificClothes(userId, singleItemId);
+    if (!singleItem) {
+      return errorHandler({ statusCode: 404, message: '找不到單品' }, res);
+    }
+    return res.status(200).json({
+      statusCode: 200,
+      status: true,
+      message: '單品查詢成功',
+      data: singleItem
+    });
+  } catch (err) {
+    return errorHandler(err as { statusCode: number; message: string }, res);
+  }
+})
 
 clothesRouter.post('/', authMiddleWare, async (req, res) => {
   /* #swagger.tags = ['Clothes']
@@ -309,8 +445,8 @@ clothesRouter.delete('/:id', authMiddleWare, async (req, res) => {
   }
   try {
     const userId = req.user!.userId;
-    const clothes = await deleteSingleItem(userId, singleItemId);
-    if (!clothes) {
+    const singleItem = await deleteSingleItem(userId, singleItemId);
+    if (!singleItem) {
       return errorHandler({ statusCode: 404, message: '找不到單品' }, res);
     }
     return res.status(200).json({
@@ -323,6 +459,8 @@ clothesRouter.delete('/:id', authMiddleWare, async (req, res) => {
     return errorHandler(err as { statusCode: number; message: string }, res);
   }
 });
+
+
 
 
 

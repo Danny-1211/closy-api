@@ -16,6 +16,15 @@ export const getUserClothes = async (userId: string) => {
   return clothes?.list ?? [];
 }
 
+// 取得這位使用者衣櫃的某件單品
+export const getUserSpecificClothes = async (userId: string, singleItemId: string) => {
+  const singleItem = await Clothes.findOne(
+    { userId, "list._id": singleItemId },
+    { "list.$": 1 }
+  );
+  return singleItem;
+}
+
 // 將單品加入衣櫃
 export const addSingleItem = async (userId: string, singleItem: ClothesType.singleItem) => {
   const clothes = await Clothes.findOneAndUpdate(
@@ -31,12 +40,12 @@ export const addSingleItem = async (userId: string, singleItem: ClothesType.sing
 
 // 刪除這位使用者衣櫃的某件單品
 export const deleteSingleItem = async (userd: string, singleItemId: string) => {
-  const clothes = await Clothes.findOneAndUpdate(
+  const singleItem = await Clothes.findOneAndUpdate(
     { userId: userd },
     { $pull: { list: { _id: singleItemId } } },
     {
       returnDocument: 'after',
     }
   );
-  return clothes;
+  return singleItem;
 }
