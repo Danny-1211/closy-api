@@ -2,6 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { config } from '../types/env';
 import { OUTFIT_SYSTEM_INSTRUCTION, VIRTUAL_OUTFIT_BASE_DIRECTIVES } from '../constants/gemini';
 import { OutfitContext, GeminiOutfitResponse, VirtualOutfitItem } from '../types/gemini';
+import { preprocessMannequinImage, postProcessGeneratedImage } from '../utils/outfitImage';
 
 const aiInstance = new GoogleGenAI({ apiKey: config.GEMINI_API_KEY });
 
@@ -152,6 +153,7 @@ export async function generateVirtualOutfitImage(
   clothesItems: VirtualOutfitItem[]
 ): Promise<Buffer> {
   const strictPrompt = buildVirtualOutfitPrompt(clothesItems);
+  const processedModelBuffer = await preprocessMannequinImage(modelBuffer);
 
   const response = await aiInstance.models.generateContent({
     model: 'gemini-2.5-flash-image',
@@ -160,7 +162,7 @@ export async function generateVirtualOutfitImage(
         role: 'user',
         parts: [
           { text: strictPrompt },
-          { inlineData: { mimeType: 'image/webp', data: modelBuffer.toString('base64') } },
+          { inlineData: { mimeType: 'image/png', data: processedModelBuffer.toString('base64') } },
           ...clothesItems.map(item => ({
             inlineData: { mimeType: 'image/jpeg', data: item.buffer.toString('base64') },
           })),
@@ -169,6 +171,10 @@ export async function generateVirtualOutfitImage(
     ],
     config: {
       responseModalities: ['IMAGE'],
+      imageConfig: {
+        aspectRatio: '9:16',
+        imageSize: '1K',
+      },
     },
   });
   const parts = response.candidates?.[0]?.content?.parts ?? [];
@@ -178,5 +184,6 @@ export async function generateVirtualOutfitImage(
     throw { statusCode: 500, message: 'AI 未回傳圖片，請稍後再試' };
   }
 
-  return Buffer.from(imagePart.inlineData.data, 'base64');
+  const rawBuffer = Buffer.from(imagePart.inlineData.data, 'base64');
+  return postProcessGeneratedImage(rawBuffer);
 }
