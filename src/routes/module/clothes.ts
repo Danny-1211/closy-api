@@ -279,7 +279,22 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 200 },
                status: { type: 'boolean', example: true },
                message: { type: 'string', example: '單品加入衣櫃成功' },
-               data: { type: 'object', example: {} }
+               data: {
+                 type: 'object',
+                 properties: {
+                   _id: { type: 'string', example: '660a1b2c3d4e5f6g7h8i9j22' },
+                   category: { type: 'string', example: 'top' },
+                   cloudImgUrl: { type: 'string', example: 'https://example.com/clothes-url.jpg' },
+                   imageHash: { type: 'string', example: 'd41d8cd98f00b204e9800998ecf8427e' },
+                   name: { type: 'string', example: '白襯衫' },
+                   color: { type: 'string', example: 'white' },
+                   occasions: { type: 'array', items: { type: 'string' }, example: ['socialGathering', 'campusCasual'] },
+                   seasons: { type: 'array', items: { type: 'string' }, example: ['spring', 'summer'] },
+                   brand: { type: 'string', example: 'Uniqlo' },
+                   createdAt: { type: 'string', format: 'date-time', example: '2024-04-01T08:00:00.000Z' },
+                   updatedAt: { type: 'string', format: 'date-time', example: '2024-04-10T12:30:00.000Z' }
+                 }
+               }
              }
            }
          }
@@ -405,6 +420,23 @@ clothesRouter.delete('/:id', authMiddleWare, async (req, res) => {
        }
      }
 
+     #swagger.responses[400] = {
+       description: '請求錯誤 (未提供單品 ID)',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 400 },
+               status: { type: 'boolean', example: false },
+               message: { type: 'string', example: '請提供單品 id' },
+               data: { type: 'object', example: null }
+             }
+           }
+         }
+       }
+     }
+
      #swagger.responses[404] = {
        description: '找不到指定單品',
        content: {
@@ -500,22 +532,17 @@ clothesRouter.patch('/:id', authMiddleWare, async (req, res) => {
              data: {
                type: 'object',
                properties: {
-                 singleItem: {
-                   type: 'object',
-                   properties: {
-                     _id: { type: 'string', example: '664f1a2b3c4d5e6f7a8b9c0d' },
-                     category: { type: 'string', example: 'top' },
-                     name: { type: 'string', example: '白色T恤12212' },
-                     color: { type: 'string', example: 'white' },
-                     occasions: { type: 'array', items: { type: 'string' }, example: ['campusCasual'] },
-                     seasons: { type: 'array', items: { type: 'string' }, example: ['spring'] },
-                     brand: { type: 'string', example: '' },
-                     cloudImgUrl: { type: 'string', example: 'https://example.com/image.jpg' },
-                     imageHash: { type: 'string', example: 'abc123def456' },
-                     createdAt: { type: 'string', example: '2024-06-01T00:00:00.000Z' },
-                     updatedAt: { type: 'string', example: '2024-06-15T00:00:00.000Z' }
-                   }
-                 }
+                 _id: { type: 'string', example: '664f1a2b3c4d5e6f7a8b9c0d' },
+                 category: { type: 'string', example: 'top' },
+                 name: { type: 'string', example: '白色T恤12212' },
+                 color: { type: 'string', example: 'white' },
+                 occasions: { type: 'array', items: { type: 'string' }, example: ['campusCasual'] },
+                 seasons: { type: 'array', items: { type: 'string' }, example: ['spring'] },
+                 brand: { type: 'string', example: '' },
+                 cloudImgUrl: { type: 'string', example: 'https://example.com/image.jpg' },
+                 imageHash: { type: 'string', example: 'abc123def456' },
+                 createdAt: { type: 'string', example: '2024-06-01T00:00:00.000Z' },
+                 updatedAt: { type: 'string', example: '2024-06-15T00:00:00.000Z' }
                }
              }
            }
