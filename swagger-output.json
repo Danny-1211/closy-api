@@ -3425,6 +3425,180 @@
       }
     },
     "/clothes/": {
+      "get": {
+        "tags": [
+          "Clothes"
+        ],
+        "summary": "取得衣櫃清單",
+        "description": "取得目前登入使用者的衣櫃單品清單，依最後更新時間降序排列。",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "取得衣櫃清單成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "list": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "660a1b2c3d4e5f6g7h8i9j22"
+                              },
+                              "category": {
+                                "type": "string",
+                                "example": "top"
+                              },
+                              "cloudImgUrl": {
+                                "type": "string",
+                                "example": "https://example.com/clothes-url.jpg"
+                              },
+                              "imageHash": {
+                                "type": "string",
+                                "example": "d41d8cd98f00b204e9800998ecf8427e"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "白襯衫"
+                              },
+                              "color": {
+                                "type": "string",
+                                "example": "white"
+                              },
+                              "occasions": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "example": [
+                                  "socialGathering",
+                                  "campusCasual"
+                                ]
+                              },
+                              "seasons": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "example": [
+                                  "spring",
+                                  "summer"
+                                ]
+                              },
+                              "brand": {
+                                "type": "string",
+                                "example": "Uniqlo"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-04-01T08:00:00.000Z"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-04-10T12:30:00.000Z"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "內部伺服器錯誤或其他錯誤訊息"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "Clothes"
@@ -3442,612 +3616,56 @@
         ],
         "responses": {
           "200": {
-            "description": "處理成功",
+            "description": "新增成功",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "type": {
-                      "type": "string",
-                      "example": "object"
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
                     },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "string"
-                            },
-                            "example": {
-                              "type": "string",
-                              "example": "單品加入衣櫃成功"
-                            }
-                          }
-                        },
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "object"
-                            },
-                            "description": {
-                              "type": "string",
-                              "example": "更新後的衣櫃資料 (包含所有單品清單)"
-                            },
-                            "properties": {
-                              "type": "object",
-                              "properties": {
-                                "message": {
-                                  "type": "object",
-                                  "properties": {
-                                    "type": {
-                                      "type": "string",
-                                      "example": "string"
-                                    },
-                                    "example": {
-                                      "type": "string",
-                                      "example": "單品加入衣櫃成功"
-                                    }
-                                  }
-                                },
-                                "list": {
-                                  "type": "object",
-                                  "properties": {
-                                    "type": {
-                                      "type": "string",
-                                      "example": "array"
-                                    },
-                                    "items": {
-                                      "type": "object",
-                                      "properties": {
-                                        "type": {
-                                          "type": "string",
-                                          "example": "object"
-                                        },
-                                        "properties": {
-                                          "type": "object",
-                                          "properties": {
-                                            "category": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "top"
-                                                }
-                                              }
-                                            },
-                                            "name": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "白襯衫"
-                                                }
-                                              }
-                                            },
-                                            "color": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "white"
-                                                }
-                                              }
-                                            },
-                                            "occasions": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "array"
-                                                },
-                                                "items": {
-                                                  "type": "object",
-                                                  "properties": {
-                                                    "type": {
-                                                      "type": "string",
-                                                      "example": "string"
-                                                    }
-                                                  }
-                                                },
-                                                "example": {
-                                                  "type": "array",
-                                                  "example": [
-                                                    "socialGathering",
-                                                    "campusCasual"
-                                                  ],
-                                                  "items": {
-                                                    "type": "string"
-                                                  }
-                                                }
-                                              }
-                                            },
-                                            "seasons": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "array"
-                                                },
-                                                "items": {
-                                                  "type": "object",
-                                                  "properties": {
-                                                    "type": {
-                                                      "type": "string",
-                                                      "example": "string"
-                                                    }
-                                                  }
-                                                },
-                                                "example": {
-                                                  "type": "array",
-                                                  "example": [
-                                                    "spring",
-                                                    "summer"
-                                                  ],
-                                                  "items": {
-                                                    "type": "string"
-                                                  }
-                                                }
-                                              }
-                                            },
-                                            "brand": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "Uniqlo"
-                                                }
-                                              }
-                                            },
-                                            "cloudImgUrl": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "https://example.com/clothes-url.jpg"
-                                                }
-                                              }
-                                            },
-                                            "imageHash": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "d41d8cd98f00b204e9800998ecf8427e"
-                                                }
-                                              }
-                                            },
-                                            "_id": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "660a1b2c3d4e5f6g7h8i9j22"
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "example": "object"
+                    "status": {
+                      "type": "boolean",
+                      "example": true
                     },
-                    "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "單品加入衣櫃成功"
+                    },
+                    "data": {
                       "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "string"
-                            },
-                            "example": {
-                              "type": "string",
-                              "example": "單品加入衣櫃成功"
-                            }
-                          }
-                        },
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "object"
-                            },
-                            "description": {
-                              "type": "string",
-                              "example": "更新後的衣櫃資料 (包含所有單品清單)"
-                            },
-                            "properties": {
-                              "type": "object",
-                              "properties": {
-                                "message": {
-                                  "type": "object",
-                                  "properties": {
-                                    "type": {
-                                      "type": "string",
-                                      "example": "string"
-                                    },
-                                    "example": {
-                                      "type": "string",
-                                      "example": "單品加入衣櫃成功"
-                                    }
-                                  }
-                                },
-                                "list": {
-                                  "type": "object",
-                                  "properties": {
-                                    "type": {
-                                      "type": "string",
-                                      "example": "array"
-                                    },
-                                    "items": {
-                                      "type": "object",
-                                      "properties": {
-                                        "type": {
-                                          "type": "string",
-                                          "example": "object"
-                                        },
-                                        "properties": {
-                                          "type": "object",
-                                          "properties": {
-                                            "category": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "top"
-                                                }
-                                              }
-                                            },
-                                            "name": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "白襯衫"
-                                                }
-                                              }
-                                            },
-                                            "color": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "white"
-                                                }
-                                              }
-                                            },
-                                            "occasions": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "array"
-                                                },
-                                                "items": {
-                                                  "type": "object",
-                                                  "properties": {
-                                                    "type": {
-                                                      "type": "string",
-                                                      "example": "string"
-                                                    }
-                                                  }
-                                                },
-                                                "example": {
-                                                  "type": "array",
-                                                  "example": [
-                                                    "socialGathering",
-                                                    "campusCasual"
-                                                  ],
-                                                  "items": {
-                                                    "type": "string"
-                                                  }
-                                                }
-                                              }
-                                            },
-                                            "seasons": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "array"
-                                                },
-                                                "items": {
-                                                  "type": "object",
-                                                  "properties": {
-                                                    "type": {
-                                                      "type": "string",
-                                                      "example": "string"
-                                                    }
-                                                  }
-                                                },
-                                                "example": {
-                                                  "type": "array",
-                                                  "example": [
-                                                    "spring",
-                                                    "summer"
-                                                  ],
-                                                  "items": {
-                                                    "type": "string"
-                                                  }
-                                                }
-                                              }
-                                            },
-                                            "brand": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "Uniqlo"
-                                                }
-                                              }
-                                            },
-                                            "cloudImgUrl": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "https://example.com/clothes-url.jpg"
-                                                }
-                                              }
-                                            },
-                                            "imageHash": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "d41d8cd98f00b204e9800998ecf8427e"
-                                                }
-                                              }
-                                            },
-                                            "_id": {
-                                              "type": "object",
-                                              "properties": {
-                                                "type": {
-                                                  "type": "string",
-                                                  "example": "string"
-                                                },
-                                                "example": {
-                                                  "type": "string",
-                                                  "example": "660a1b2c3d4e5f6g7h8i9j22"
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
+                      "example": {}
                     }
-                  },
-                  "xml": {
-                    "name": "main"
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "請求錯誤 (可能原因：缺少必要參數)",
+            "description": "請求錯誤 (可能原因：缺少必要參數或參數格式錯誤)",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "type": {
-                      "type": "string",
-                      "example": "object"
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
                     },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "statusCode": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "integer"
-                            },
-                            "example": {
-                              "type": "number",
-                              "example": 400
-                            }
-                          }
-                        },
-                        "status": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "boolean"
-                            },
-                            "example": {
-                              "type": "boolean",
-                              "example": false
-                            }
-                          }
-                        },
-                        "message": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "string"
-                            },
-                            "example": {
-                              "type": "string",
-                              "example": "請提供正確的單品參數"
-                            }
-                          }
-                        },
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "object"
-                            },
-                            "example": {}
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "example": "object"
+                    "status": {
+                      "type": "boolean",
+                      "example": false
                     },
-                    "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "請提供正確的單品參數"
+                    },
+                    "data": {
                       "type": "object",
-                      "properties": {
-                        "statusCode": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "integer"
-                            },
-                            "example": {
-                              "type": "number",
-                              "example": 400
-                            }
-                          }
-                        },
-                        "status": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "boolean"
-                            },
-                            "example": {
-                              "type": "boolean",
-                              "example": false
-                            }
-                          }
-                        },
-                        "message": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "string"
-                            },
-                            "example": {
-                              "type": "string",
-                              "example": "請提供正確的單品參數"
-                            }
-                          }
-                        },
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "object"
-                            },
-                            "example": {}
-                          }
-                        }
-                      }
+                      "example": null
                     }
-                  },
-                  "xml": {
-                    "name": "main"
                   }
                 }
               }
@@ -4060,135 +3678,22 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "type": {
-                      "type": "string",
-                      "example": "object"
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
                     },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "statusCode": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "integer"
-                            },
-                            "example": {
-                              "type": "number",
-                              "example": 401
-                            }
-                          }
-                        },
-                        "status": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "boolean"
-                            },
-                            "example": {
-                              "type": "boolean",
-                              "example": false
-                            }
-                          }
-                        },
-                        "message": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "string"
-                            },
-                            "example": {
-                              "type": "string",
-                              "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
-                            }
-                          }
-                        },
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "object"
-                            },
-                            "example": {}
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "example": "object"
+                    "status": {
+                      "type": "boolean",
+                      "example": false
                     },
-                    "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
                       "type": "object",
-                      "properties": {
-                        "statusCode": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "integer"
-                            },
-                            "example": {
-                              "type": "number",
-                              "example": 401
-                            }
-                          }
-                        },
-                        "status": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "boolean"
-                            },
-                            "example": {
-                              "type": "boolean",
-                              "example": false
-                            }
-                          }
-                        },
-                        "message": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "string"
-                            },
-                            "example": {
-                              "type": "string",
-                              "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
-                            }
-                          }
-                        },
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "object"
-                            },
-                            "example": {}
-                          }
-                        }
-                      }
+                      "example": null
                     }
-                  },
-                  "xml": {
-                    "name": "main"
                   }
                 }
               }
@@ -4201,135 +3706,22 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "type": {
-                      "type": "string",
-                      "example": "object"
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
                     },
-                    "properties": {
-                      "type": "object",
-                      "properties": {
-                        "statusCode": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "integer"
-                            },
-                            "example": {
-                              "type": "number",
-                              "example": 500
-                            }
-                          }
-                        },
-                        "status": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "boolean"
-                            },
-                            "example": {
-                              "type": "boolean",
-                              "example": false
-                            }
-                          }
-                        },
-                        "message": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "string"
-                            },
-                            "example": {
-                              "type": "string",
-                              "example": "內部伺服器錯誤或其他錯誤訊息"
-                            }
-                          }
-                        },
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "object"
-                            },
-                            "example": {}
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "example": "object"
+                    "status": {
+                      "type": "boolean",
+                      "example": false
                     },
-                    "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "內部伺服器錯誤或其他錯誤訊息"
+                    },
+                    "data": {
                       "type": "object",
-                      "properties": {
-                        "statusCode": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "integer"
-                            },
-                            "example": {
-                              "type": "number",
-                              "example": 500
-                            }
-                          }
-                        },
-                        "status": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "boolean"
-                            },
-                            "example": {
-                              "type": "boolean",
-                              "example": false
-                            }
-                          }
-                        },
-                        "message": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "string"
-                            },
-                            "example": {
-                              "type": "string",
-                              "example": "內部伺服器錯誤或其他錯誤訊息"
-                            }
-                          }
-                        },
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "object"
-                            },
-                            "example": {}
-                          }
-                        }
-                      }
+                      "example": null
                     }
-                  },
-                  "xml": {
-                    "name": "main"
                   }
                 }
               }
@@ -4409,6 +3801,678 @@
         }
       }
     },
+    "/clothes/{id}": {
+      "get": {
+        "tags": [
+          "Clothes"
+        ],
+        "summary": "取得單一單品",
+        "description": "依據單品 ID 取得使用者衣櫃中指定的單品資訊。",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "660a1b2c3d4e5f6g7h8i9j22"
+            },
+            "description": "要查詢的單品 ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查詢成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "單品查詢成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "660a1b2c3d4e5f6g7h8i9j22"
+                        },
+                        "category": {
+                          "type": "string",
+                          "example": "top"
+                        },
+                        "cloudImgUrl": {
+                          "type": "string",
+                          "example": "https://example.com/clothes-url.jpg"
+                        },
+                        "imageHash": {
+                          "type": "string",
+                          "example": "d41d8cd98f00b204e9800998ecf8427e"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "白襯衫"
+                        },
+                        "color": {
+                          "type": "string",
+                          "example": "white"
+                        },
+                        "occasions": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": [
+                            "socialGathering",
+                            "campusCasual"
+                          ]
+                        },
+                        "seasons": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": [
+                            "spring",
+                            "summer"
+                          ]
+                        },
+                        "brand": {
+                          "type": "string",
+                          "example": "Uniqlo"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-04-01T08:00:00.000Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2024-04-10T12:30:00.000Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "請求錯誤 (未提供單品 ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請提供單品 id"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /   無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到指定單品",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "找不到單品"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "內部伺服器錯誤或其他錯誤訊息"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Clothes"
+        ],
+        "summary": "刪除單品",
+        "description": "從使用者的衣櫃中刪除指定的單品。",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "660a1b2c3d4e5f6g7h8i9j22"
+            },
+            "description": "要刪除的單品 ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "刪除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "單品刪除成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到指定單品",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "找不到單品"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "內部伺服器錯誤或其他錯誤訊息"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Clothes"
+        ],
+        "summary": "更新指定單品資訊",
+        "description": "根據單品 id 更新單品的部分或全部欄位（category、name、color、occasions、seasons、brand、cloudImgUrl、imageHash）",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "單品更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "單品更新成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "singleItem": {
+                          "type": "object",
+                          "properties": {
+                            "_id": {
+                              "type": "string",
+                              "example": "664f1a2b3c4d5e6f7a8b9c0d"
+                            },
+                            "category": {
+                              "type": "string",
+                              "example": "top"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "白色T恤12212"
+                            },
+                            "color": {
+                              "type": "string",
+                              "example": "white"
+                            },
+                            "occasions": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "campusCasual"
+                              ]
+                            },
+                            "seasons": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "spring"
+                              ]
+                            },
+                            "brand": {
+                              "type": "string",
+                              "example": ""
+                            },
+                            "cloudImgUrl": {
+                              "type": "string",
+                              "example": "https://example.com/image.jpg"
+                            },
+                            "imageHash": {
+                              "type": "string",
+                              "example": "abc123def456"
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "example": "2024-06-01T00:00:00.000Z"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "example": "2024-06-15T00:00:00.000Z"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "請求錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請提供單品 id"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "找不到單品",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "找不到單品"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器發生錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "description": "服裝分類 (top / bottom / outerwear / shoes / skirt / dress)",
+                    "example": "top"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "單品名稱",
+                    "example": "白色T恤12212"
+                  },
+                  "color": {
+                    "type": "string",
+                    "description": "顏色 (black / white / gray / brown / yellow / orange / pink / green / blue / purple)",
+                    "example": "white"
+                  },
+                  "occasions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "適合場合 (socialGathering / campusCasual / businessCasual / professional)",
+                    "example": [
+                      "campusCasual"
+                    ]
+                  },
+                  "seasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "適合季節 (spring / summer / autumn / winter)",
+                    "example": [
+                      "spring"
+                    ]
+                  },
+                  "brand": {
+                    "type": "string",
+                    "description": "品牌",
+                    "example": ""
+                  },
+                  "cloudImgUrl": {
+                    "type": "string",
+                    "description": "圖片雲端 URL",
+                    "example": "https://example.com/image.jpg"
+                  },
+                  "imageHash": {
+                    "type": "string",
+                    "description": "圖片 hash 值",
+                    "example": "abc123def456"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/home/": {
       "get": {
         "tags": [
@@ -4427,20 +4491,13 @@
           {
             "name": "day",
             "in": "query",
+            "required": false,
+            "description": "查詢日期，today（今日）或 tomorrow（明日），預設為 today",
             "schema": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "default": {
-                  "type": "string",
-                  "example": "today"
-                }
-              }
-            },
-            "description": "查詢日期，today（今日）或 tomorrow（明日），預設為 today"
+              "type": "string",
+              "example": "today",
+              "default": "today"
+            }
           }
         ],
         "responses": {

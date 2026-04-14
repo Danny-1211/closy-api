@@ -1,4 +1,5 @@
 type singleItem = {
+  _id?: string;
   category: string;
   cloudImgUrl: string;
   imageHash: string;
@@ -7,6 +8,8 @@ type singleItem = {
   occasions: string[];
   seasons: string[];
   brand: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 type Clothes = {

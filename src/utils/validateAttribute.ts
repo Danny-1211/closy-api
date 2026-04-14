@@ -84,6 +84,22 @@ export function validateClothesSeasons(seasons: unknown): boolean {
   return !seasons.some(id => !CLOTHES_SEASONS_SET.find(s => s.seasonId === id));
 }
 
+// 檢查 PATCH 更新單品時的 partial 欄位是否合法
+// 只驗證前端有帶進來的 key（用 'key' in body 判斷），回傳 true 表示合法，false 表示不合法
+export function validateClothesPartialItem(body: unknown): boolean {
+  if (typeof body !== 'object' || body === null) return false;
+  const b = body as Record<string, unknown>;
+  if ('category' in b && !validateClothesCategory(b.category)) return false;
+  if ('color' in b && !validateClothesColor(b.color)) return false;
+  if ('occasions' in b && !validateClothesOccasions(b.occasions)) return false;
+  if ('seasons' in b && !validateClothesSeasons(b.seasons)) return false;
+  if ('name' in b && (typeof b.name !== 'string' || !b.name)) return false;
+  if ('brand' in b && typeof b.brand !== 'string') return false;
+  if ('cloudImgUrl' in b && (typeof b.cloudImgUrl !== 'string' || !b.cloudImgUrl)) return false;
+  if ('imageHash' in b && typeof b.imageHash !== 'string') return false;
+  return true;
+}
+
 // 檢查單品所有必填欄位是否完整且合法
 // 回傳 true 表示全部合法，false 表示至少有一項不合法
 export function validateClothesItem(body: {
