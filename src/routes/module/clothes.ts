@@ -345,12 +345,12 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
   try {
     const userId = req.user!.userId;
     const singleItem: ClothesType.singleItem = { category, cloudImgUrl, imageHash: imageHash || '', name, color, occasions, seasons, brand };
-    const clothes = await addSingleItem(userId, singleItem);
+    const newItem = await addSingleItem(userId, singleItem);
     return res.status(200).json({
       statusCode: 200,
       status: true,
       message: '單品加入衣櫃成功',
-      data: {}
+      data: newItem
     });
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);
@@ -616,9 +616,7 @@ clothesRouter.patch('/:id', authMiddleWare, async (req, res) => {
       statusCode: 200,
       status: true,
       message: '單品更新成功',
-      data: {
-        singleItem: updatedSingleItem
-      }
+      data: updatedSingleItem
     });
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);
