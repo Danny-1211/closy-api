@@ -227,14 +227,14 @@ clothesRouter.get('/:id', authMiddleWare, async (req, res) => {
   try {
     const userId = req.user!.userId;
     const singleItem = await getUserSpecificClothes(userId, singleItemId);
-    if (!singleItem) {
+    if (!singleItem || !singleItem.list || singleItem.list.length === 0) {
       return errorHandler({ statusCode: 404, message: '找不到單品' }, res);
     }
     return res.status(200).json({
       statusCode: 200,
       status: true,
       message: '單品查詢成功',
-      data: singleItem
+      data: singleItem.list[0]
     });
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);
