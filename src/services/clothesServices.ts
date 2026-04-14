@@ -35,13 +35,15 @@ export const addSingleItem = async (userId: string, singleItem: ClothesType.sing
       upsert: true
     }
   );
-  return clothes;
+
+  if (!clothes) return null;
+  return clothes.list[clothes.list.length - 1];
 }
 
 // 刪除這位使用者衣櫃的某件單品
 export const deleteSingleItem = async (userId: string, singleItemId: string) => {
   const singleItem = await Clothes.findOneAndUpdate(
-    { userId: userId },
+    { userId: userId, 'list._id': singleItemId },
     { $pull: { list: { _id: singleItemId } } },
     {
       returnDocument: 'after',
