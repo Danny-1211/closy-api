@@ -1,9 +1,9 @@
 import express from 'express';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { errorHandler } from '../../utils/errorMessage';
-import { addSingleItem, deleteSingleItem, getUserClothes, getUserSpecificClothes } from '../../services/clothesServices';
+import { addSingleItem, deleteSingleItem, getUserClothes, getUserSpecificClothes, updateSingleItem } from '../../services/clothesServices';
 import * as ClothesType from '../../types/clothes';
-import { validateClothesItem } from '../../utils/validateAttribute';
+import { validateClothesItem, validateClothesPartialItem } from '../../utils/validateAttribute';
 
 const clothesRouter = express.Router();
 
@@ -459,6 +459,171 @@ clothesRouter.delete('/:id', authMiddleWare, async (req, res) => {
     return errorHandler(err as { statusCode: number; message: string }, res);
   }
 });
+
+clothesRouter.patch('/:id', authMiddleWare, async (req, res) => {
+  /* #swagger.tags = ['Clothes']
+   #swagger.summary = '更新指定單品資訊'
+   #swagger.description = '根據單品 id 更新單品的部分或全部欄位（category、name、color、occasions、seasons、brand、cloudImgUrl、imageHash）'
+   #swagger.security = [{ "bearerAuth": [] }]
+
+   #swagger.requestBody = {
+     required: true,
+     content: {
+       'application/json': {
+         schema: {
+           type: 'object',
+           properties: {
+             category: { type: 'string', description: '服裝分類 (top / bottom / outerwear / shoes / skirt / dress)', example: 'top' },
+             name: { type: 'string', description: '單品名稱', example: '白色T恤12212' },
+             color: { type: 'string', description: '顏色 (black / white / gray / brown / yellow / orange / pink / green / blue / purple)', example: 'white' },
+             occasions: { type: 'array', items: { type: 'string' }, description: '適合場合 (socialGathering / campusCasual / businessCasual / professional)', example: ['campusCasual'] },
+             seasons: { type: 'array', items: { type: 'string' }, description: '適合季節 (spring / summer / autumn / winter)', example: ['spring'] },
+             brand: { type: 'string', description: '品牌', example: '' },
+             cloudImgUrl: { type: 'string', description: '圖片雲端 URL', example: 'https://example.com/image.jpg' },
+             imageHash: { type: 'string', description: '圖片 hash 值', example: 'abc123def456' }
+           }
+         }
+       }
+     }
+   }
+
+   #swagger.responses[200] = {
+     description: '單品更新成功',
+     content: {
+       'application/json': {
+         schema: {
+           type: 'object',
+           properties: {
+             statusCode: { type: 'integer', example: 200 },
+             status: { type: 'boolean', example: true },
+             message: { type: 'string', example: '單品更新成功' },
+             data: {
+               type: 'object',
+               properties: {
+                 singleItem: {
+                   type: 'object',
+                   properties: {
+                     _id: { type: 'string', example: '664f1a2b3c4d5e6f7a8b9c0d' },
+                     category: { type: 'string', example: 'top' },
+                     name: { type: 'string', example: '白色T恤12212' },
+                     color: { type: 'string', example: 'white' },
+                     occasions: { type: 'array', items: { type: 'string' }, example: ['campusCasual'] },
+                     seasons: { type: 'array', items: { type: 'string' }, example: ['spring'] },
+                     brand: { type: 'string', example: '' },
+                     cloudImgUrl: { type: 'string', example: 'https://example.com/image.jpg' },
+                     imageHash: { type: 'string', example: 'abc123def456' },
+                     createdAt: { type: 'string', example: '2024-06-01T00:00:00.000Z' },
+                     updatedAt: { type: 'string', example: '2024-06-15T00:00:00.000Z' }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     }
+   }
+
+   #swagger.responses[400] = {
+     description: '請求錯誤',
+     content: {
+       'application/json': {
+         schema: {
+           type: 'object',
+           properties: {
+             statusCode: { type: 'integer', example: 400 },
+             status: { type: 'boolean', example: false },
+             message: { type: 'string', example: '請提供單品 id' },
+             data: { type: 'object', example: null }
+           }
+         }
+       }
+     }
+   }
+
+   #swagger.responses[401] = {
+     description: '未授權',
+     content: {
+       'application/json': {
+         schema: {
+           type: 'object',
+           properties: {
+             statusCode: { type: 'integer', example: 401 },
+             status: { type: 'boolean', example: false },
+             message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入' },
+             data: { type: 'object', example: null }
+           }
+         }
+       }
+     }
+   }
+
+   #swagger.responses[404] = {
+     description: '找不到單品',
+     content: {
+       'application/json': {
+         schema: {
+           type: 'object',
+           properties: {
+             statusCode: { type: 'integer', example: 404 },
+             status: { type: 'boolean', example: false },
+             message: { type: 'string', example: '找不到單品' },
+             data: { type: 'object', example: null }
+           }
+         }
+       }
+     }
+   }
+
+   #swagger.responses[500] = {
+     description: '伺服器發生錯誤',
+     content: {
+       'application/json': {
+         schema: {
+           type: 'object',
+           properties: {
+             statusCode: { type: 'integer', example: 500 },
+             status: { type: 'boolean', example: false },
+             message: { type: 'string', example: '伺服器發生錯誤' },
+             data: { type: 'object', example: null }
+           }
+         }
+       }
+     }
+   }
+*/
+
+  try {
+    const userId = req.user!.userId;
+    const singleItemId = req.params.id;
+
+    if (!singleItemId || typeof singleItemId !== 'string') {
+      return errorHandler({ statusCode: 400, message: '請提供單品 id' }, res);
+    }
+
+    if (!validateClothesPartialItem(req.body)) {
+      return errorHandler({ statusCode: 400, message: '請提供正確的單品參數' }, res);
+    }
+
+    const singleItem: Partial<ClothesType.singleItem> = req.body;
+    const updatedSingleItem = await updateSingleItem(userId, singleItemId, singleItem);
+
+    if (!updatedSingleItem) {
+      return errorHandler({ statusCode: 404, message: '找不到單品' }, res);
+    }
+
+    return res.status(200).json({
+      statusCode: 200,
+      status: true,
+      message: '單品更新成功',
+      data: {
+        singleItem: updatedSingleItem
+      }
+    });
+  } catch (err) {
+    return errorHandler(err as { statusCode: number; message: string }, res);
+  }
+})
 
 
 
