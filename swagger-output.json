@@ -4615,16 +4615,27 @@
                                 "type": "object",
                                 "properties": {
                                   "category": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "example": "top"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "example": "白色基本款 T-shirt"
+                                  },
+                                  "brand": {
+                                    "type": "string",
+                                    "example": "UNIQLO"
                                   },
                                   "cloudImgUrl": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "example": "https://res.cloudinary.com/test/image.jpg"
                                   }
                                 }
                               }
                             },
                             "reasoning": {
-                              "type": "string"
+                              "type": "string",
+                              "example": "這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。"
                             }
                           }
                         },
@@ -4633,80 +4644,27 @@
                           "description": "指定日期的天氣資訊",
                           "properties": {
                             "temperature": {
-                              "type": "string"
+                              "type": "string",
+                              "example": "24"
                             },
                             "weather": {
-                              "type": "string"
+                              "type": "string",
+                              "example": "多雲"
                             },
                             "weatherCode": {
-                              "type": "string"
+                              "type": "string",
+                              "example": "03"
                             },
                             "weatherDescription": {
-                              "type": "string"
+                              "type": "string",
+                              "example": "多雲，早晚稍涼，日夜溫差大，建議攜帶薄外套。"
                             }
                           }
                         },
                         "city": {
-                          "type": "string"
+                          "type": "string",
+                          "example": "臺北市"
                         }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "Today": {
-                    "summary": "取得今日穿搭建議成功",
-                    "value": {
-                      "statusCode": 200,
-                      "status": true,
-                      "message": "取得今日穿搭建議成功",
-                      "data": {
-                        "recommendation": {
-                          "selectedItems": [
-                            {
-                              "category": "top",
-                              "cloudImgUrl": "https://storage.googleapis.com/test/item1.jpg"
-                            },
-                            {
-                              "category": "bottom",
-                              "cloudImgUrl": "https://storage.googleapis.com/test/item2.jpg"
-                            }
-                          ],
-                          "reasoning": "這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。"
-                        },
-                        "weather": {
-                          "temperature": "24",
-                          "weather": "多雲",
-                          "weatherCode": "03",
-                          "weatherDescription": "多雲，早晚稍涼，日夜溫差大，建議攜帶薄外套。"
-                        },
-                        "city": "臺北市"
-                      }
-                    }
-                  },
-                  "Tomorrow": {
-                    "summary": "取得明日穿搭建議成功",
-                    "value": {
-                      "statusCode": 200,
-                      "status": true,
-                      "message": "取得明日穿搭建議成功",
-                      "data": {
-                        "recommendation": {
-                          "selectedItems": [
-                            {
-                              "category": "outerwear",
-                              "cloudImgUrl": "https://storage.googleapis.com/test/item3.jpg"
-                            }
-                          ],
-                          "reasoning": "明日預測較涼，建議穿著長袖與薄外套。"
-                        },
-                        "weather": {
-                          "temperature": "22",
-                          "weather": "陰天",
-                          "weatherCode": "04",
-                          "weatherDescription": "陰天，有局部短暫陣雨的機會。"
-                        },
-                        "city": "臺北市"
                       }
                     }
                   }
@@ -4730,23 +4688,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "day 參數只接受 today 或 tomorrow"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "InvalidDay": {
-                    "summary": "day 參數不合法",
-                    "value": {
-                      "statusCode": 400,
-                      "status": false,
-                      "message": "day 參數只接受 today 或 tomorrow",
-                      "data": null
                     }
                   }
                 }
@@ -4769,41 +4716,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "MissingToken": {
-                    "summary": "未提供 Token",
-                    "value": {
-                      "statusCode": 401,
-                      "status": false,
-                      "message": "未提供 Token 或格式錯誤",
-                      "data": null
-                    }
-                  },
-                  "InvalidFormat": {
-                    "summary": "格式錯誤",
-                    "value": {
-                      "statusCode": 401,
-                      "status": false,
-                      "message": "無效的 Token 格式",
-                      "data": null
-                    }
-                  },
-                  "ExpiredOrInvalid": {
-                    "summary": "憑證過期或無效",
-                    "value": {
-                      "statusCode": 401,
-                      "status": false,
-                      "message": "無效的憑證或憑證已過期，請重新登入",
-                      "data": null
                     }
                   }
                 }
@@ -4826,32 +4744,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "找不到使用者"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "UserNotFound": {
-                    "summary": "找不到使用者",
-                    "value": {
-                      "statusCode": 404,
-                      "status": false,
-                      "message": "找不到使用者",
-                      "data": null
-                    }
-                  },
-                  "LocationNotFound": {
-                    "summary": "位置資訊未找到",
-                    "value": {
-                      "statusCode": 404,
-                      "status": false,
-                      "message": "使用者位置資訊未找到",
-                      "data": null
                     }
                   }
                 }
@@ -4874,41 +4772,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "伺服器發生不可預期的錯誤"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "WeatherFailed": {
-                    "summary": "取得天氣失敗",
-                    "value": {
-                      "statusCode": 500,
-                      "status": false,
-                      "message": "取得今天天氣資訊失敗",
-                      "data": null
-                    }
-                  },
-                  "AIFailed": {
-                    "summary": "AI 服務異常",
-                    "value": {
-                      "statusCode": 500,
-                      "status": false,
-                      "message": "AI 未回傳結果，請稍後再試",
-                      "data": null
-                    }
-                  },
-                  "AIFormatError": {
-                    "summary": "AI 推薦格式錯誤",
-                    "value": {
-                      "statusCode": 500,
-                      "status": false,
-                      "message": "AI 推薦結果格式錯誤",
-                      "data": null
                     }
                   }
                 }
@@ -4993,23 +4862,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "selectedItems 不可為空"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "EmptyItems": {
-                    "summary": "未提供或 selectedItems 為空",
-                    "value": {
-                      "statusCode": 400,
-                      "status": false,
-                      "message": "selectedItems 不可為空",
-                      "data": null
                     }
                   }
                 }
@@ -5032,32 +4890,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "MissingToken": {
-                    "summary": "未提供 Token",
-                    "value": {
-                      "statusCode": 401,
-                      "status": false,
-                      "message": "未提供 Token 或格式錯誤",
-                      "data": null
-                    }
-                  },
-                  "ExpiredOrInvalid": {
-                    "summary": "憑證過期或無效",
-                    "value": {
-                      "statusCode": 401,
-                      "status": false,
-                      "message": "無效的憑證或憑證已過期，請重新登入",
-                      "data": null
                     }
                   }
                 }
@@ -5080,23 +4918,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "找不到使用者"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "UserNotFound": {
-                    "summary": "找不到使用者",
-                    "value": {
-                      "statusCode": 404,
-                      "status": false,
-                      "message": "找不到使用者",
-                      "data": null
                     }
                   }
                 }
@@ -5119,32 +4946,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "伺服器發生不可預期的錯誤"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "GenerateFailed": {
-                    "summary": "伺服器端錯誤",
-                    "value": {
-                      "statusCode": 500,
-                      "status": false,
-                      "message": "伺服器發生不可預期的錯誤",
-                      "data": null
-                    }
-                  },
-                  "AIFailed": {
-                    "summary": "AI 服務異常",
-                    "value": {
-                      "statusCode": 500,
-                      "status": false,
-                      "message": "AI 未回傳圖片，請稍後再試",
-                      "data": null
                     }
                   }
                 }
