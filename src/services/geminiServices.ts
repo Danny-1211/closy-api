@@ -1,5 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
-import { config } from '../types/env';
+import { config } from '../config/env';
 import { OUTFIT_SYSTEM_INSTRUCTION, VIRTUAL_OUTFIT_BASE_DIRECTIVES } from '../constants/gemini';
 import { OutfitContext, GeminiOutfitResponse, VirtualOutfitItem } from '../types/gemini';
 import { preprocessMannequinImage, postProcessGeneratedImage } from '../utils/outfitImage';

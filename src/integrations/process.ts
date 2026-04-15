@@ -1,6 +1,6 @@
 import axios from 'axios';
 import crypto from 'crypto';
-import { config } from '../types/env';
+import { config } from '../config/env';
 import { uploadToCloudinary } from './cloudinary';
 import { checkDuplicateByHash } from '../services/clothesServices';
 

@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { config } from './types/env';
+import { config } from './config/env';
 import { connectDB } from './config/db';
 import { router } from './routes/routerAdmin';
 import { corsOptions } from './config/cors';

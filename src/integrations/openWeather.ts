@@ -1,6 +1,6 @@
 // 取得 OpenWeatherApi 天氣資訊
 import axios from 'axios';
-import { config } from '../types/env';
+import { config } from '../config/env';
 import { Location } from '../types/user';
 import { getCurrentLocation } from '../utils/weather';
 import { filterForecast } from '../utils/weather';

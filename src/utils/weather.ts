@@ -1,6 +1,6 @@
 // 使用 Google Reverse Geocoding API 取得目前位置的城市名稱
 import axios from 'axios';
-import { config } from '../types/env';
+import { config } from '../config/env';
 import { DayWeather, FilteredForecast } from '../types/gemini';
 
 function findDaySlot(times: Array<{ StartTime: string }>, dateStr: string): any {

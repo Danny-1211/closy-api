@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import axios from 'axios';
-import { config } from '../types/env';
+import { config } from '../config/env';
 
 cloudinary.config({
   cloud_name: config.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
