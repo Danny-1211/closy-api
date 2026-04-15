@@ -1,8 +1,5 @@
 import swaggerAutogen from 'swagger-autogen';
-import { config } from '../types/env';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { config } from './env';
 
 const port = process.env.PORT || config.PORT;
 
