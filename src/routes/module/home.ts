@@ -307,7 +307,8 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                      category: { type: 'string', description: '服飾類別' }
                    }
                  }
-               }
+               },
+               occasion: { type: 'string', description: '場合（例如：casual、formal、sport）', example: 'casual' }
              }
            },
            examples: {
@@ -316,7 +317,8 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                value: {
                  selectedItems: [
                    { cloudImgUrl: 'https://res.cloudinary.com/test/image.jpg', category: 'top' }
-                 ]
+                 ],
+                 occasion: 'casual'
                }
              }
            }
@@ -337,7 +339,8 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                data: {
                  type: 'object',
                  properties: {
-                   imageUrl: { type: 'string', example: 'https://res.cloudinary.com/test/image.jpg' }
+                   imageUrl: { type: 'string', example: 'https://res.cloudinary.com/test/image.jpg' },
+                   occasion: { type: 'string', example: 'casual' }
                  }
                }
              }
@@ -453,6 +456,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
   */
   try {
     const userId = req.user!.userId;
+    const userOccasion = req.body.occasion
     const selectedItems: { cloudImgUrl: string; category: string }[] = req.body.selectedItems;
 
     if (!Array.isArray(selectedItems) || selectedItems.length === 0) {
@@ -469,7 +473,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
     const clothesItems: VirtualOutfitItem[] = await Promise.all(
       selectedItems.map(async (item) => ({
         buffer: await downloadImgFromCloudinary(item.cloudImgUrl),
-        category: item.category,
+        category: item.category
       }))
     );
 
@@ -480,7 +484,10 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
       statusCode: 200,
       status: true,
       message: '虛擬穿搭圖片生成成功',
-      data: { imageUrl }
+      data: {
+        imageUrl,
+        occasion: userOccasion
+      }
     });
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);

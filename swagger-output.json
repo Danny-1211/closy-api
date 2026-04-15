@@ -4965,6 +4965,10 @@
                         "imageUrl": {
                           "type": "string",
                           "example": "https://res.cloudinary.com/test/image.jpg"
+                        },
+                        "occasion": {
+                          "type": "string",
+                          "example": "casual"
                         }
                       }
                     }
@@ -5176,6 +5180,11 @@
                         }
                       }
                     }
+                  },
+                  "occasion": {
+                    "type": "string",
+                    "description": "場合（例如：casual、formal、sport）",
+                    "example": "casual"
                   }
                 }
               },
@@ -5188,7 +5197,8 @@
                         "cloudImgUrl": "https://res.cloudinary.com/test/image.jpg",
                         "category": "top"
                       }
-                    ]
+                    ],
+                    "occasion": "casual"
                   }
                 }
               }
