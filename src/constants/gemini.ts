@@ -18,9 +18,8 @@ export const OUTFIT_SYSTEM_INSTRUCTION = `
 5. 衣服的穿搭需要考慮到天氣資訊
 6. 回傳格式必須是合法的 JSON，結構如下：
 {
-
   "selectedItems": [
-    { "category": "<category>", "cloudImgUrl": "<cloudImgUrl>" }
+    { "category": "<category>", "name": "<name>", "brand": "brand ?  <brand>: "" ", "cloudImgUrl": "<cloudImgUrl>" }
   ],
   "occasion": "使用者資訊: 場合的 value ( occasions )",
   "reasoning": "搭配理由（繁體中文，2-4句）"
