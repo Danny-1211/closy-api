@@ -39,8 +39,10 @@ function isValidGeminiResponse(value: unknown): value is GeminiOutfitResponse {
       (item) =>
         typeof item === 'object' &&
         item !== null &&
-        typeof (item as { category: string; cloudImgUrl: string }).category === 'string' &&
-        typeof (item as { category: string; cloudImgUrl: string }).cloudImgUrl === 'string'
+        typeof (item as { category: string; cloudImgUrl: string; name: string; brand: string }).category === 'string' &&
+        typeof (item as { category: string; cloudImgUrl: string; name: string; brand: string }).cloudImgUrl === 'string' &&
+        typeof (item as { category: string; cloudImgUrl: string; name: string; brand: string }).name === 'string' &&
+        typeof (item as { category: string; cloudImgUrl: string; name: string; brand: string }).brand === 'string'
     ) &&
     typeof (value as GeminiOutfitResponse).reasoning === 'string'
   );

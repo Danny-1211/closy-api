@@ -23,7 +23,7 @@ export type OutfitContext = {
 };
 
 export type GeminiOutfitResponse = {
-  selectedItems: { category: string; cloudImgUrl: string }[];
+  selectedItems: { category: string; cloudImgUrl: string; name: string; brand: string }[];
   reasoning: string;
 };
 
