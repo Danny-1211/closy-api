@@ -1,7 +1,7 @@
 import express from 'express';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { errorHandler } from '../../utils/errorMessage';
-import { addOutfit, getOutfits, deleteOutfit } from '../../services/outfitServices';
+import { addOutfit, getOutfits, deleteOutfit, getOccasionSummary } from '../../services/outfitServices';
 import { validateOutfitOccasion } from '../../utils/validateAttribute';
 const outfitRouter = express.Router();
 
@@ -136,7 +136,7 @@ outfitRouter.get('/', authMiddleWare, async (req, res) => {
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);
   }
-})
+});
 
 outfitRouter.post('/', authMiddleWare, async (req, res) => {
   /* #swagger.tags = ['Outfit']
@@ -152,7 +152,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
              type: 'object',
              required: ['cloudImgUrl', 'occasion', 'selectedItems'],
              properties: {
-               cloudImgUrl: { type: 'string', description: '穿搭圖片雲端 URL', example: 'https://example.com/outfit-url.jpg' },
+               outfitImgUrl: { type: 'string', description: '穿搭圖片雲端 URL', example: 'https://example.com/outfit-url.jpg' },
                occasion: { type: 'string', description: '穿搭場合', example: 'campusCasual' },
                selectedItems: {
                  type: 'array',
@@ -261,7 +261,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);
   }
-})
+});
 
 outfitRouter.delete('/:id', authMiddleWare, async (req, res) => {
   /* #swagger.tags = ['Outfit']
@@ -286,33 +286,7 @@ outfitRouter.delete('/:id', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 200 },
                status: { type: 'boolean', example: true },
                message: { type: 'string', example: '刪除成功' },
-               data: {
-                 type: 'object',
-                 properties: {
-                   list: {
-                     type: 'object',
-                     properties: {
-                       _id: { type: 'string', example: '664f1a2b3c4d5e6f7a8b9c0d' },
-                       outfitImgUrl: { type: 'string', example: 'https://example.com/outfit.jpg' },
-                       occasion: { type: 'string', example: 'campusCasual' },
-                       selectedItems: {
-                         type: 'array',
-                         items: {
-                           type: 'object',
-                           properties: {
-                             cloudImgUrl: { type: 'string', example: 'https://example.com/item.jpg' },
-                             name: { type: 'string', example: '白襯衫' },
-                             brand: { type: 'string', example: 'Uniqlo' },
-                             category: { type: 'string', example: 'top' }
-                           }
-                         }
-                       },
-                       createdAt: { type: 'string', example: '2024-06-01T12:00:00.000Z' },
-                       updatedAt: { type: 'string', example: '2024-06-01T12:00:00.000Z' }
-                     }
-                   }
-                 }
-               }
+               data: { type: 'object', example: {} }
              }
            }
          }
@@ -385,8 +359,97 @@ outfitRouter.delete('/:id', authMiddleWare, async (req, res) => {
       statusCode: 200,
       status: true,
       message: '刪除成功',
+      data: {}
+    });
+  } catch (err) {
+    return errorHandler(err as { statusCode: number; message: string }, res);
+  }
+});
+
+outfitRouter.get('/summary', authMiddleWare, async (req, res) => {
+  /* #swagger.tags = ['Outfit']
+     #swagger.summary = '取得場合分類統計'
+     #swagger.description = '取得各個場合的穿搭總數及最近的更新日期。'
+     #swagger.security = [{ "bearerAuth": [] }]
+
+     #swagger.responses[200] = {
+       description: '取得場合列表成功',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 200 },
+               status: { type: 'boolean', example: true },
+               message: { type: 'string', example: '取得場合列表成功' },
+               data: {
+                 type: 'object',
+                 properties: {
+                   summaryList: {
+                     type: 'array',
+                     items: {
+                       type: 'object',
+                       properties: {
+                         occasionId: { type: 'string', example: 'campusCasual' },
+                         count: { type: 'integer', example: 5 },
+                         recentDates: { 
+                           type: 'array', 
+                           items: { type: 'string', example: '2024/6/1' } 
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     }
+
+     #swagger.responses[401] = {
+       description: '身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 401 },
+               status: { type: 'boolean', example: false },
+               message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入' },
+               data: { type: 'object', example: null }
+             }
+           }
+         }
+       }
+     }
+
+     #swagger.responses[500] = {
+       description: '伺服器錯誤',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 500 },
+               status: { type: 'boolean', example: false },
+               message: { type: 'string', example: '內部伺服器錯誤或其他錯誤訊息' },
+               data: { type: 'object', example: null }
+             }
+           }
+         }
+       }
+     }
+  */
+  try {
+    const userId = req.user!.userId;
+    const summaryList = await getOccasionSummary(userId);
+    return res.status(200).json({
+      statusCode: 200,
+      status: true,
+      message: '取得場合列表成功',
       data: {
-        list: OutfitList
+        summaryList
       }
     });
   } catch (err) {

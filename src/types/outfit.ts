@@ -6,13 +6,19 @@ type OccasionType = typeof CLOTHES_OCCASIONS_SET[number]['occasionId'];
 type selectedItems = Pick<singleItem, 'cloudImgUrl' | 'name' | 'brand' | 'category'>;
 
 type OutfitItem = {
-    userId: string;
-    outfitImgUrl: string;
-    occasion: OccasionType;
-    selectedItems: selectedItems[];
-    createdAt: Date;
-    updatedAt: Date;
+  userId: string;
+  outfitImgUrl: string;
+  occasion: OccasionType;
+  selectedItems: selectedItems[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type OccasionSummaryItem = {
+  occasionId: OccasionType;
+  count: number;
+  recentDates: string[];
 };
 
 
-export { OutfitItem, selectedItems, OccasionType }
+export { OutfitItem, selectedItems, OccasionType, OccasionSummaryItem }

@@ -18,7 +18,7 @@ const outfitItemSchema = new Schema<OutfitType.OutfitItem>(
         occasion: { type: String, required: true, index: true },
         selectedItems: { type: [selectedItemsSchema], default: [] }
     },
-    { timestamps: true },
+    { timestamps: true }
 );
 
 outfitItemSchema.index({ userId: 1, occasions: 1 });
