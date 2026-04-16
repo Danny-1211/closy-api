@@ -15,12 +15,4 @@ type OutfitItem = {
 };
 
 
-type GetOutfitsQuery = {
-    occasion?: OccasionType;
-};
-
-type GetOutfitsResponse = {
-    list: OutfitItem[];
-};
-
-export { OutfitItem, selectedItems, GetOutfitsQuery, GetOutfitsResponse }
+export { OutfitItem, selectedItems, OccasionType }

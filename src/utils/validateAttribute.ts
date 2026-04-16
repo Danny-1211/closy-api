@@ -1,6 +1,7 @@
 // 驗證屬性是否正確
 import { COLORS_SET, STYLES_SET, OCCASIONS_SET, genderOptions } from '../constants/user';
 import { CLOTHES_COLORS_SET, CLOTHES_OCCASIONS_SET, CLOTHES_SEASONS_SET, CLOTHES_CATEGORIES_SET } from '../constants/clothes';
+import { OccasionType } from '../types/outfit';
 
 // ── User 偏好設定驗證 ──────────────────────────────────────────
 
@@ -38,7 +39,6 @@ export function validateUserAuthorization(longitude: unknown, latitude: unknown)
   if (typeof longitude === 'number' && typeof latitude === 'number') return false;
   return true;
 }
-
 
 // 將經緯度四捨五入到小數第三位（給 OpenWeather API 使用）
 export function roundCoordinate(value: number): number {
@@ -120,4 +120,11 @@ export function validateClothesItem(body: {
   if (!validateClothesOccasions(occasions)) return false;
   if (!validateClothesSeasons(seasons)) return false;
   return true;
+}
+
+// ── 穿搭（Outfit）驗證 ────────────────────────────────────────
+
+export function validateOutfitOccasion(occasion: unknown): occasion is OccasionType {
+  if (typeof occasion !== 'string') return false;
+  return !!CLOTHES_OCCASIONS_SET.find(occasionSet => occasionSet.occasionId === occasion);
 }
