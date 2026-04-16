@@ -51,74 +51,27 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
                          items: {
                            type: 'object',
                            properties: {
-                             category: { type: 'string' },
-                             cloudImgUrl: { type: 'string' }
+                             category: { type: 'string', example: 'top' },
+                             name: { type: 'string', example: '白色基本款 T-shirt' },
+                             brand: { type: 'string', example: 'UNIQLO' },
+                             cloudImgUrl: { type: 'string', example: 'https://res.cloudinary.com/test/image.jpg' }
                            }
                          }
                        },
-                       reasoning: { type: 'string' }
+                       reasoning: { type: 'string', example: '這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。' }
                      }
                    },
                    weather: {
                      type: 'object',
                      description: '指定日期的天氣資訊',
                      properties: {
-                       temperature: { type: 'string' },
-                       weather: { type: 'string' },
-                       weatherCode: { type: 'string' },
-                       weatherDescription: { type: 'string' }
+                       temperature: { type: 'string', example: '24' },
+                       weather: { type: 'string', example: '多雲' },
+                       weatherCode: { type: 'string', example: '03' },
+                       weatherDescription: { type: 'string', example: '多雲，早晚稍涼，日夜溫差大，建議攜帶薄外套。' }
                      }
                    },
-                   city: { type: 'string' }
-                 }
-               }
-             }
-           },
-           examples: {
-             Today: {
-               summary: '取得今日穿搭建議成功',
-               value: {
-                 statusCode: 200,
-                 status: true,
-                 message: '取得今日穿搭建議成功',
-                 data: {
-                   recommendation: {
-                     selectedItems: [
-                       { category: 'top', cloudImgUrl: 'https://storage.googleapis.com/test/item1.jpg' },
-                       { category: 'bottom', cloudImgUrl: 'https://storage.googleapis.com/test/item2.jpg' }
-                     ],
-                     reasoning: '這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。'
-                   },
-                   weather: {
-                     temperature: '24',
-                     weather: '多雲',
-                     weatherCode: '03',
-                     weatherDescription: '多雲，早晚稍涼，日夜溫差大，建議攜帶薄外套。'
-                   },
-                   city: '臺北市'
-                 }
-               }
-             },
-             Tomorrow: {
-               summary: '取得明日穿搭建議成功',
-               value: {
-                 statusCode: 200,
-                 status: true,
-                 message: '取得明日穿搭建議成功',
-                 data: {
-                   recommendation: {
-                     selectedItems: [
-                       { category: 'outerwear', cloudImgUrl: 'https://storage.googleapis.com/test/item3.jpg' }
-                     ],
-                     reasoning: '明日預測較涼，建議穿著長袖與薄外套。'
-                   },
-                   weather: {
-                     temperature: '22',
-                     weather: '陰天',
-                     weatherCode: '04',
-                     weatherDescription: '陰天，有局部短暫陣雨的機會。'
-                   },
-                   city: '臺北市'
+                   city: { type: 'string', example: '臺北市' }
                  }
                }
              }
@@ -136,19 +89,8 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string' },
-               data: { type: 'object', nullable: true, example: null }
-             }
-           },
-           examples: {
-             InvalidDay: {
-               summary: 'day 參數不合法',
-               value: {
-                 statusCode: 400,
-                 status: false,
-                 message: 'day 參數只接受 today 或 tomorrow',
-                 data: null
-               }
+               message: { type: 'string', example: 'day 參數只接受 today 或 tomorrow' },
+               data: { type: 'object', example: null }
              }
            }
          }
@@ -164,22 +106,8 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 401 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string' },
-               data: { type: 'object', nullable: true, example: null }
-             }
-           },
-           examples: {
-             MissingToken: {
-               summary: '未提供 Token',
-               value: { statusCode: 401, status: false, message: '未提供 Token 或格式錯誤', data: null }
-             },
-             InvalidFormat: {
-               summary: '格式錯誤',
-               value: { statusCode: 401, status: false, message: '無效的 Token 格式', data: null }
-             },
-             ExpiredOrInvalid: {
-               summary: '憑證過期或無效',
-               value: { statusCode: 401, status: false, message: '無效的憑證或憑證已過期，請重新登入', data: null }
+               message: { type: 'string', example: '未提供 Token 或格式錯誤' },
+               data: { type: 'object', example: null }
              }
            }
          }
@@ -195,18 +123,8 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 404 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string' },
-               data: { type: 'object', nullable: true, example: null }
-             }
-           },
-           examples: {
-             UserNotFound: {
-               summary: '找不到使用者',
-               value: { statusCode: 404, status: false, message: '找不到使用者', data: null }
-             },
-             LocationNotFound: {
-               summary: '位置資訊未找到',
-               value: { statusCode: 404, status: false, message: '使用者位置資訊未找到', data: null }
+               message: { type: 'string', example: '找不到使用者' },
+               data: { type: 'object', example: null }
              }
            }
          }
@@ -222,22 +140,8 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 500 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string' },
-               data: { type: 'object', nullable: true, example: null }
-             }
-           },
-           examples: {
-             WeatherFailed: {
-               summary: '取得天氣失敗',
-               value: { statusCode: 500, status: false, message: '取得今天天氣資訊失敗', data: null }
-             },
-             AIFailed: {
-               summary: 'AI 服務異常',
-               value: { statusCode: 500, status: false, message: 'AI 未回傳結果，請稍後再試', data: null }
-             },
-             AIFormatError: {
-               summary: 'AI 推薦格式錯誤',
-               value: { statusCode: 500, status: false, message: 'AI 推薦結果格式錯誤', data: null }
+               message: { type: 'string', example: '伺服器發生不可預期的錯誤' },
+               data: { type: 'object', example: null }
              }
            }
          }
@@ -307,7 +211,8 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                      category: { type: 'string', description: '服飾類別' }
                    }
                  }
-               }
+               },
+               occasion: { type: 'string', description: '場合（例如：casual、formal、sport）', example: 'casual' }
              }
            },
            examples: {
@@ -316,7 +221,8 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                value: {
                  selectedItems: [
                    { cloudImgUrl: 'https://res.cloudinary.com/test/image.jpg', category: 'top' }
-                 ]
+                 ],
+                 occasion: 'casual'
                }
              }
            }
@@ -337,7 +243,8 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                data: {
                  type: 'object',
                  properties: {
-                   imageUrl: { type: 'string', example: 'https://res.cloudinary.com/test/image.jpg' }
+                   imageUrl: { type: 'string', example: 'https://res.cloudinary.com/test/image.jpg' },
+                   occasion: { type: 'string', example: 'casual' }
                  }
                }
              }
@@ -355,19 +262,8 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string' },
-               data: { type: 'object', nullable: true, example: null }
-             }
-           },
-           examples: {
-             EmptyItems: {
-               summary: '未提供或 selectedItems 為空',
-               value: {
-                 statusCode: 400,
-                 status: false,
-                 message: 'selectedItems 不可為空',
-                 data: null
-               }
+               message: { type: 'string', example: 'selectedItems 不可為空' },
+               data: { type: 'object', example: null }
              }
            }
          }
@@ -383,18 +279,8 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 401 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string' },
-               data: { type: 'object', nullable: true, example: null }
-             }
-           },
-           examples: {
-             MissingToken: {
-               summary: '未提供 Token',
-               value: { statusCode: 401, status: false, message: '未提供 Token 或格式錯誤', data: null }
-             },
-             ExpiredOrInvalid: {
-               summary: '憑證過期或無效',
-               value: { statusCode: 401, status: false, message: '無效的憑證或憑證已過期，請重新登入', data: null }
+               message: { type: 'string', example: '未提供 Token 或格式錯誤' },
+               data: { type: 'object', example: null }
              }
            }
          }
@@ -410,14 +296,8 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 404 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string' },
-               data: { type: 'object', nullable: true, example: null }
-             }
-           },
-           examples: {
-             UserNotFound: {
-               summary: '找不到使用者',
-               value: { statusCode: 404, status: false, message: '找不到使用者', data: null }
+               message: { type: 'string', example: '找不到使用者' },
+               data: { type: 'object', example: null }
              }
            }
          }
@@ -433,18 +313,8 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 500 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string' },
-               data: { type: 'object', nullable: true, example: null }
-             }
-           },
-           examples: {
-             GenerateFailed: {
-               summary: '伺服器端錯誤',
-               value: { statusCode: 500, status: false, message: '伺服器發生不可預期的錯誤', data: null }
-             },
-             AIFailed: {
-               summary: 'AI 服務異常',
-               value: { statusCode: 500, status: false, message: 'AI 未回傳圖片，請稍後再試', data: null }
+               message: { type: 'string', example: '伺服器發生不可預期的錯誤' },
+               data: { type: 'object', example: null }
              }
            }
          }
@@ -453,6 +323,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
   */
   try {
     const userId = req.user!.userId;
+    const userOccasion = req.body.occasion;
     const selectedItems: { cloudImgUrl: string; category: string }[] = req.body.selectedItems;
 
     if (!Array.isArray(selectedItems) || selectedItems.length === 0) {
@@ -469,18 +340,21 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
     const clothesItems: VirtualOutfitItem[] = await Promise.all(
       selectedItems.map(async (item) => ({
         buffer: await downloadImgFromCloudinary(item.cloudImgUrl),
-        category: item.category,
+        category: item.category
       }))
     );
 
     const resultBuffer = await generateVirtualOutfitImage(modelBuffer, clothesItems);
-    const imageUrl = await uploadToCloudinary(resultBuffer, `closy/users/outfits/${userId}`);
+    const outfitImgUrl = await uploadToCloudinary(resultBuffer, `closy/users/outfits/${userId}`);
 
     return res.status(200).json({
       statusCode: 200,
       status: true,
       message: '虛擬穿搭圖片生成成功',
-      data: { imageUrl }
+      data: {
+        outfitImgUrl,
+        occasion: userOccasion,
+      }
     });
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);

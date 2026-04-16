@@ -1,7 +1,7 @@
 // google 登入驗證路由
 import express from 'express';
 import { loginWithGoogle } from '../../services/authServices';
-import { config } from '../../types/env';
+import { config } from '../../config/env';
 import { errorHandler } from '../../utils/errorMessage';
 
 const authRouter = express.Router();

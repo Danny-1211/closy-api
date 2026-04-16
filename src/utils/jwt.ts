@@ -1,6 +1,6 @@
 // JWT 工具函式：產生與驗證 Token
 import jwt from 'jsonwebtoken';
-import { config } from '../types/env';
+import { config } from '../config/env';
 import { UserPayload } from '../types/express';
 export const signToken = (userId: string): string => {
   return jwt.sign({ userId }, config.JWT_SECRET, { expiresIn: config.JWT_EXPIRES_IN });

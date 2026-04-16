@@ -4019,7 +4019,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /  無效的憑證或憑證已過期，請重新登入"
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /   無效的憑證或憑證已過期，請重新登入"
                     },
                     "data": {
                       "type": "object",
@@ -4615,16 +4615,27 @@
                                 "type": "object",
                                 "properties": {
                                   "category": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "example": "top"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "example": "白色基本款 T-shirt"
+                                  },
+                                  "brand": {
+                                    "type": "string",
+                                    "example": "UNIQLO"
                                   },
                                   "cloudImgUrl": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "example": "https://res.cloudinary.com/test/image.jpg"
                                   }
                                 }
                               }
                             },
                             "reasoning": {
-                              "type": "string"
+                              "type": "string",
+                              "example": "這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。"
                             }
                           }
                         },
@@ -4633,80 +4644,27 @@
                           "description": "指定日期的天氣資訊",
                           "properties": {
                             "temperature": {
-                              "type": "string"
+                              "type": "string",
+                              "example": "24"
                             },
                             "weather": {
-                              "type": "string"
+                              "type": "string",
+                              "example": "多雲"
                             },
                             "weatherCode": {
-                              "type": "string"
+                              "type": "string",
+                              "example": "03"
                             },
                             "weatherDescription": {
-                              "type": "string"
+                              "type": "string",
+                              "example": "多雲，早晚稍涼，日夜溫差大，建議攜帶薄外套。"
                             }
                           }
                         },
                         "city": {
-                          "type": "string"
+                          "type": "string",
+                          "example": "臺北市"
                         }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "Today": {
-                    "summary": "取得今日穿搭建議成功",
-                    "value": {
-                      "statusCode": 200,
-                      "status": true,
-                      "message": "取得今日穿搭建議成功",
-                      "data": {
-                        "recommendation": {
-                          "selectedItems": [
-                            {
-                              "category": "top",
-                              "cloudImgUrl": "https://storage.googleapis.com/test/item1.jpg"
-                            },
-                            {
-                              "category": "bottom",
-                              "cloudImgUrl": "https://storage.googleapis.com/test/item2.jpg"
-                            }
-                          ],
-                          "reasoning": "這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。"
-                        },
-                        "weather": {
-                          "temperature": "24",
-                          "weather": "多雲",
-                          "weatherCode": "03",
-                          "weatherDescription": "多雲，早晚稍涼，日夜溫差大，建議攜帶薄外套。"
-                        },
-                        "city": "臺北市"
-                      }
-                    }
-                  },
-                  "Tomorrow": {
-                    "summary": "取得明日穿搭建議成功",
-                    "value": {
-                      "statusCode": 200,
-                      "status": true,
-                      "message": "取得明日穿搭建議成功",
-                      "data": {
-                        "recommendation": {
-                          "selectedItems": [
-                            {
-                              "category": "outerwear",
-                              "cloudImgUrl": "https://storage.googleapis.com/test/item3.jpg"
-                            }
-                          ],
-                          "reasoning": "明日預測較涼，建議穿著長袖與薄外套。"
-                        },
-                        "weather": {
-                          "temperature": "22",
-                          "weather": "陰天",
-                          "weatherCode": "04",
-                          "weatherDescription": "陰天，有局部短暫陣雨的機會。"
-                        },
-                        "city": "臺北市"
                       }
                     }
                   }
@@ -4730,23 +4688,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "day 參數只接受 today 或 tomorrow"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "InvalidDay": {
-                    "summary": "day 參數不合法",
-                    "value": {
-                      "statusCode": 400,
-                      "status": false,
-                      "message": "day 參數只接受 today 或 tomorrow",
-                      "data": null
                     }
                   }
                 }
@@ -4769,41 +4716,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "MissingToken": {
-                    "summary": "未提供 Token",
-                    "value": {
-                      "statusCode": 401,
-                      "status": false,
-                      "message": "未提供 Token 或格式錯誤",
-                      "data": null
-                    }
-                  },
-                  "InvalidFormat": {
-                    "summary": "格式錯誤",
-                    "value": {
-                      "statusCode": 401,
-                      "status": false,
-                      "message": "無效的 Token 格式",
-                      "data": null
-                    }
-                  },
-                  "ExpiredOrInvalid": {
-                    "summary": "憑證過期或無效",
-                    "value": {
-                      "statusCode": 401,
-                      "status": false,
-                      "message": "無效的憑證或憑證已過期，請重新登入",
-                      "data": null
                     }
                   }
                 }
@@ -4826,32 +4744,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "找不到使用者"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "UserNotFound": {
-                    "summary": "找不到使用者",
-                    "value": {
-                      "statusCode": 404,
-                      "status": false,
-                      "message": "找不到使用者",
-                      "data": null
-                    }
-                  },
-                  "LocationNotFound": {
-                    "summary": "位置資訊未找到",
-                    "value": {
-                      "statusCode": 404,
-                      "status": false,
-                      "message": "使用者位置資訊未找到",
-                      "data": null
                     }
                   }
                 }
@@ -4874,41 +4772,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "伺服器發生不可預期的錯誤"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "WeatherFailed": {
-                    "summary": "取得天氣失敗",
-                    "value": {
-                      "statusCode": 500,
-                      "status": false,
-                      "message": "取得今天天氣資訊失敗",
-                      "data": null
-                    }
-                  },
-                  "AIFailed": {
-                    "summary": "AI 服務異常",
-                    "value": {
-                      "statusCode": 500,
-                      "status": false,
-                      "message": "AI 未回傳結果，請稍後再試",
-                      "data": null
-                    }
-                  },
-                  "AIFormatError": {
-                    "summary": "AI 推薦格式錯誤",
-                    "value": {
-                      "statusCode": 500,
-                      "status": false,
-                      "message": "AI 推薦結果格式錯誤",
-                      "data": null
                     }
                   }
                 }
@@ -4965,6 +4834,10 @@
                         "imageUrl": {
                           "type": "string",
                           "example": "https://res.cloudinary.com/test/image.jpg"
+                        },
+                        "occasion": {
+                          "type": "string",
+                          "example": "casual"
                         }
                       }
                     }
@@ -4989,23 +4862,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "selectedItems 不可為空"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "EmptyItems": {
-                    "summary": "未提供或 selectedItems 為空",
-                    "value": {
-                      "statusCode": 400,
-                      "status": false,
-                      "message": "selectedItems 不可為空",
-                      "data": null
                     }
                   }
                 }
@@ -5028,32 +4890,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "MissingToken": {
-                    "summary": "未提供 Token",
-                    "value": {
-                      "statusCode": 401,
-                      "status": false,
-                      "message": "未提供 Token 或格式錯誤",
-                      "data": null
-                    }
-                  },
-                  "ExpiredOrInvalid": {
-                    "summary": "憑證過期或無效",
-                    "value": {
-                      "statusCode": 401,
-                      "status": false,
-                      "message": "無效的憑證或憑證已過期，請重新登入",
-                      "data": null
                     }
                   }
                 }
@@ -5076,23 +4918,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "找不到使用者"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "UserNotFound": {
-                    "summary": "找不到使用者",
-                    "value": {
-                      "statusCode": 404,
-                      "status": false,
-                      "message": "找不到使用者",
-                      "data": null
                     }
                   }
                 }
@@ -5115,32 +4946,12 @@
                       "example": false
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "伺服器發生不可預期的錯誤"
                     },
                     "data": {
                       "type": "object",
-                      "nullable": true,
                       "example": null
-                    }
-                  }
-                },
-                "examples": {
-                  "GenerateFailed": {
-                    "summary": "伺服器端錯誤",
-                    "value": {
-                      "statusCode": 500,
-                      "status": false,
-                      "message": "伺服器發生不可預期的錯誤",
-                      "data": null
-                    }
-                  },
-                  "AIFailed": {
-                    "summary": "AI 服務異常",
-                    "value": {
-                      "statusCode": 500,
-                      "status": false,
-                      "message": "AI 未回傳圖片，請稍後再試",
-                      "data": null
                     }
                   }
                 }
@@ -5176,6 +4987,11 @@
                         }
                       }
                     }
+                  },
+                  "occasion": {
+                    "type": "string",
+                    "description": "場合（例如：casual、formal、sport）",
+                    "example": "casual"
                   }
                 }
               },
@@ -5188,13 +5004,686 @@
                         "cloudImgUrl": "https://res.cloudinary.com/test/image.jpg",
                         "category": "top"
                       }
-                    ]
+                    ],
+                    "occasion": "casual"
                   }
                 }
               }
             }
           }
         }
+      }
+    },
+    "/outfit/": {
+      "get": {
+        "tags": [
+          "Outfit"
+        ],
+        "summary": "取得穿搭清單",
+        "description": "取得目前登入使用者的穿搭列表，可選擇性地依場合篩選。",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "occasion",
+            "in": "query",
+            "required": false,
+            "description": "場合篩選（可選）。有效值：socialGathering / campusCasual / businessCasual / professional",
+            "schema": {
+              "type": "string",
+              "example": "campusCasual"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "取得穿搭清單成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "list": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "664f1a2b3c4d5e6f7a8b9c0d"
+                              },
+                              "outfitImgUrl": {
+                                "type": "string",
+                                "example": "https://example.com/outfit.jpg"
+                              },
+                              "occasion": {
+                                "type": "string",
+                                "example": "campusCasual"
+                              },
+                              "selectedItems": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "cloudImgUrl": {
+                                      "type": "string",
+                                      "example": "https://example.com/item.jpg"
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "example": "白襯衫"
+                                    },
+                                    "brand": {
+                                      "type": "string",
+                                      "example": "Uniqlo"
+                                    },
+                                    "category": {
+                                      "type": "string",
+                                      "example": "top"
+                                    }
+                                  }
+                                }
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "example": "2024-06-01T12:00:00.000Z"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "example": "2024-06-01T12:00:00.000Z"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "請求錯誤 (場合參數不合法)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請提供正確的場合"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "內部伺服器錯誤或其他錯誤訊息"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Outfit"
+        ],
+        "summary": "新增穿搭",
+        "description": "將生成的穿搭影像及單品記錄儲存。",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "新增成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "新增成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "請求錯誤 (新增失敗)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "新增失敗"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "內部伺服器錯誤或其他錯誤訊息"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "cloudImgUrl",
+                  "occasion",
+                  "selectedItems"
+                ],
+                "properties": {
+                  "outfitImgUrl": {
+                    "type": "string",
+                    "description": "穿搭圖片雲端 URL",
+                    "example": "https://example.com/outfit-url.jpg"
+                  },
+                  "occasion": {
+                    "type": "string",
+                    "description": "穿搭場合",
+                    "example": "campusCasual"
+                  },
+                  "selectedItems": {
+                    "type": "array",
+                    "description": "搭配的單品清單",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "cloudImgUrl",
+                        "name",
+                        "category"
+                      ],
+                      "properties": {
+                        "cloudImgUrl": {
+                          "type": "string",
+                          "example": "https://example.com/item-url.jpg"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "白襯衫"
+                        },
+                        "brand": {
+                          "type": "string",
+                          "example": "Uniqlo"
+                        },
+                        "category": {
+                          "type": "string",
+                          "example": "top"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/outfit/{id}": {
+      "delete": {
+        "tags": [
+          "Outfit"
+        ],
+        "summary": "刪除穿搭",
+        "description": "依穿搭 ID 刪除指定穿搭紀錄。",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "664f1a2b3c4d5e6f7a8b9c0d"
+            },
+            "description": "穿搭 ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "刪除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "刪除成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "請求錯誤 (未提供 ID 或刪除失敗)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請提供單品 id / 刪除失敗"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "內部伺服器錯誤或其他錯誤訊息"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/outfit/summary": {
+      "get": {
+        "tags": [
+          "Outfit"
+        ],
+        "summary": "取得場合分類統計",
+        "description": "取得各個場合的穿搭總數及最近的更新日期。",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得場合列表成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "取得場合列表成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "summaryList": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "occasionId": {
+                                "type": "string",
+                                "example": "campusCasual"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "example": 5
+                              },
+                              "recentDates": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "example": "2024/6/1"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "內部伺服器錯誤或其他錯誤訊息"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   },

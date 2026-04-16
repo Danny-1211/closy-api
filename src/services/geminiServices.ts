@@ -1,5 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
-import { config } from '../types/env';
+import { config } from '../config/env';
 import { OUTFIT_SYSTEM_INSTRUCTION, VIRTUAL_OUTFIT_BASE_DIRECTIVES } from '../constants/gemini';
 import { OutfitContext, GeminiOutfitResponse, VirtualOutfitItem } from '../types/gemini';
 import { preprocessMannequinImage, postProcessGeneratedImage } from '../utils/outfitImage';
@@ -39,8 +39,10 @@ function isValidGeminiResponse(value: unknown): value is GeminiOutfitResponse {
       (item) =>
         typeof item === 'object' &&
         item !== null &&
-        typeof (item as { category: string; cloudImgUrl: string }).category === 'string' &&
-        typeof (item as { category: string; cloudImgUrl: string }).cloudImgUrl === 'string'
+        typeof (item as { category: string; cloudImgUrl: string; name: string; brand: string }).category === 'string' &&
+        typeof (item as { category: string; cloudImgUrl: string; name: string; brand: string }).cloudImgUrl === 'string' &&
+        typeof (item as { category: string; cloudImgUrl: string; name: string; brand: string }).name === 'string' &&
+        typeof (item as { category: string; cloudImgUrl: string; name: string; brand: string }).brand === 'string'
     ) &&
     typeof (value as GeminiOutfitResponse).reasoning === 'string'
   );
