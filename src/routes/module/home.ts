@@ -345,14 +345,14 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
     );
 
     const resultBuffer = await generateVirtualOutfitImage(modelBuffer, clothesItems);
-    const imageUrl = await uploadToCloudinary(resultBuffer, `closy/users/outfits/${userId}`);
+    const outfitImgUrl = await uploadToCloudinary(resultBuffer, `closy/users/outfits/${userId}`);
 
     return res.status(200).json({
       statusCode: 200,
       status: true,
       message: '虛擬穿搭圖片生成成功',
       data: {
-        imageUrl,
+        outfitImgUrl,
         occasion: userOccasion,
       }
     });
