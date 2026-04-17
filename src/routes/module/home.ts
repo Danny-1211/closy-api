@@ -59,6 +59,7 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
                            }
                          }
                        },
+                       occasion: { type: 'string', enum: ['socialGathering', 'campusCasual', 'businessCasual', 'professional'], example: 'socialGathering' },
                        reasoning: { type: 'string', example: '這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。' }
                      }
                    },
@@ -208,13 +209,16 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                  description: '選擇的衣物列表，不可為空',
                  items: {
                    type: 'object',
+                   required: ['cloudImgUrl', 'category', 'name', 'brand'],
                    properties: {
                      cloudImgUrl: { type: 'string', example: 'https://res.cloudinary.com/test/image.jpg' },
-                     category: { type: 'string', example: 'top' }
+                     category: { type: 'string', enum: ['top', 'bottom', 'outerwear', 'shoes', 'skirt', 'dress'], example: 'top' },
+                     name: { type: 'string', example: '白色基本款 T-shirt' },
+                     brand: { type: 'string', example: 'UNIQLO' }
                    }
                  }
                },
-               occasion: { type: 'string', description: '場合（可選）', example: 'casual' }
+               occasion: { type: 'string', description: '場合（必填）', enum: ['socialGathering', 'campusCasual', 'businessCasual', 'professional'], example: 'socialGathering' }
              }
            }
          }
