@@ -7,7 +7,7 @@ const devRouter = express.Router();
 
 // 強制附加的 JSON 回傳格式規則（此部分不可被使用者修改）
 const FORCED_JSON_RULE = `
-6. 回傳格式必須是合法的 JSON，結構如下：
+7. 回傳格式必須是合法的 JSON，結構如下：
 {
   "selectedItems": [
     { "category": "<category>", "name": "<name>", "brand": "brand ?  <brand>: \\"\\" ", "cloudImgUrl": "<cloudImgUrl>" }
@@ -29,12 +29,12 @@ devRouter.get('/outfit-instruction', (_req, res) => {
   try {
     const fileContent = fs.readFileSync(GEMINI_CONSTANTS_PATH, 'utf-8');
     const match = fileContent.match(/export const OUTFIT_SYSTEM_INSTRUCTION = `([\s\S]*?)`;/);
-    if (!match) {
+    if (!match || match[1] === undefined) {
       return res.status(500).json({ message: '無法解析 OUTFIT_SYSTEM_INSTRUCTION' });
     }
     // 找到第 6 條的起始位置並截斷，只回傳可編輯部分
     const fullInstruction = match[1];
-    const rule6Index = fullInstruction.indexOf('\n6. 回傳格式');
+    const rule6Index = fullInstruction.indexOf('\n7. 回傳格式');
     const editablePart = rule6Index !== -1 ? fullInstruction.slice(0, rule6Index) : fullInstruction;
     return res.json({ instruction: editablePart });
   } catch {
