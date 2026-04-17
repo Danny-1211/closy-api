@@ -10,6 +10,7 @@ import { DayWeather, OutfitContext, VirtualOutfitItem } from '../../types/gemini
 import { getWeather } from '../../integrations/openWeather';
 import { downloadImgFromCloudinary, uploadToCloudinary } from '../../integrations/cloudinary';
 import * as ClothesType from '../../types/clothes';
+import { validateOutfitOccasion } from '../../utils/validateAttribute';
 
 type MongooseSingleItem = ClothesType.singleItem & { toObject(): any };
 
@@ -328,6 +329,10 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
 
     if (!Array.isArray(selectedItems) || selectedItems.length === 0) {
       return errorHandler({ statusCode: 400, message: 'selectedItems 不可為空' }, res);
+    }
+
+    if (userOccasion && !validateOutfitOccasion(userOccasion)) {
+      return errorHandler({ statusCode: 400, message: '請提供正確的場合' }, res);
     }
 
     const user = await getUserInformation(userId);
