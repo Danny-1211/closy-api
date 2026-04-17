@@ -10,6 +10,7 @@ import { DayWeather, OutfitContext, VirtualOutfitItem } from '../../types/gemini
 import { getWeather } from '../../integrations/openWeather';
 import { downloadImgFromCloudinary, uploadToCloudinary } from '../../integrations/cloudinary';
 import * as ClothesType from '../../types/clothes';
+import { validateOutfitOccasion } from '../../utils/validateAttribute';
 
 type MongooseSingleItem = ClothesType.singleItem & { toObject(): any };
 
@@ -58,6 +59,7 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
                            }
                          }
                        },
+                       occasion: { type: 'string', enum: ['socialGathering', 'campusCasual', 'businessCasual', 'professional'], example: 'socialGathering' },
                        reasoning: { type: 'string', example: '這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。' }
                      }
                    },
@@ -191,7 +193,7 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
 homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
   /* #swagger.tags = ['Home']
      #swagger.summary = '生成虛擬穿搭圖片'
-     #swagger.description = '根據使用者選擇的服飾與使用者的性別，使用 AI 生成穿搭圖片，需要攜帶 Bearer Token'
+     #swagger.description = '根據使用者選擇的衣物，使用 AI 合成虛擬穿搭圖片，需要攜帶 Bearer Token'
      #swagger.security = [{ "bearerAuth": [] }]
 
      #swagger.requestBody = {
@@ -200,30 +202,23 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
          'application/json': {
            schema: {
              type: 'object',
+             required: ['selectedItems'],
              properties: {
                selectedItems: {
                  type: 'array',
-                 description: '選擇的服飾項目列表',
+                 description: '選擇的衣物列表，不可為空',
                  items: {
                    type: 'object',
+                   required: ['cloudImgUrl', 'category', 'name', 'brand'],
                    properties: {
-                     cloudImgUrl: { type: 'string', description: '圖片 URL' },
-                     category: { type: 'string', description: '服飾類別' }
+                     cloudImgUrl: { type: 'string', example: 'https://res.cloudinary.com/test/image.jpg' },
+                     category: { type: 'string', enum: ['top', 'bottom', 'outerwear', 'shoes', 'skirt', 'dress'], example: 'top' },
+                     name: { type: 'string', example: '白色基本款 T-shirt' },
+                     brand: { type: 'string', example: 'UNIQLO' }
                    }
                  }
                },
-               occasion: { type: 'string', description: '場合（例如：casual、formal、sport）', example: 'casual' }
-             }
-           },
-           examples: {
-             ValidRequest: {
-               summary: '有效的請求範例',
-               value: {
-                 selectedItems: [
-                   { cloudImgUrl: 'https://res.cloudinary.com/test/image.jpg', category: 'top' }
-                 ],
-                 occasion: 'casual'
-               }
+               occasion: { type: 'string', description: '場合（必填）', enum: ['socialGathering', 'campusCasual', 'businessCasual', 'professional'], example: 'socialGathering' }
              }
            }
          }
@@ -243,7 +238,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                data: {
                  type: 'object',
                  properties: {
-                   imageUrl: { type: 'string', example: 'https://res.cloudinary.com/test/image.jpg' },
+                   outfitImgUrl: { type: 'string', example: 'https://res.cloudinary.com/test/closy/users/outfits/abc123/outfit.jpg' },
                    occasion: { type: 'string', example: 'casual' }
                  }
                }
@@ -254,7 +249,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
      }
 
      #swagger.responses[400] = {
-       description: '參數錯誤',
+       description: '參數錯誤（selectedItems 不可為空 / 請提供正確的場合）',
        content: {
          'application/json': {
            schema: {
@@ -324,10 +319,14 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
   try {
     const userId = req.user!.userId;
     const userOccasion = req.body.occasion;
-    const selectedItems: { cloudImgUrl: string; category: string }[] = req.body.selectedItems;
+    const selectedItems: { cloudImgUrl: string; category: string, name: string, brand: string }[] = req.body.selectedItems;
 
     if (!Array.isArray(selectedItems) || selectedItems.length === 0) {
       return errorHandler({ statusCode: 400, message: 'selectedItems 不可為空' }, res);
+    }
+
+    if (!validateOutfitOccasion(userOccasion)) {
+      return errorHandler({ statusCode: 400, message: '請提供正確的場合' }, res);
     }
 
     const user = await getUserInformation(userId);

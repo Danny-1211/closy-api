@@ -4019,7 +4019,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /   無效的憑證或憑證已過期，請重新登入"
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /  無效的憑證或憑證已過期，請重新登入"
                     },
                     "data": {
                       "type": "object",
@@ -4633,6 +4633,16 @@
                                 }
                               }
                             },
+                            "occasion": {
+                              "type": "string",
+                              "enum": [
+                                "socialGathering",
+                                "campusCasual",
+                                "businessCasual",
+                                "professional"
+                              ],
+                              "example": "socialGathering"
+                            },
                             "reasoning": {
                               "type": "string",
                               "example": "這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。"
@@ -4798,7 +4808,7 @@
           "Home"
         ],
         "summary": "生成虛擬穿搭圖片",
-        "description": "根據使用者選擇的服飾與使用者的性別，使用 AI 生成穿搭圖片，需要攜帶 Bearer Token",
+        "description": "根據使用者選擇的衣物，使用 AI 合成虛擬穿搭圖片，需要攜帶 Bearer Token",
         "parameters": [
           {
             "name": "authorization",
@@ -4831,9 +4841,9 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "imageUrl": {
+                        "outfitImgUrl": {
                           "type": "string",
-                          "example": "https://res.cloudinary.com/test/image.jpg"
+                          "example": "https://res.cloudinary.com/test/closy/users/outfits/abc123/outfit.jpg"
                         },
                         "occasion": {
                           "type": "string",
@@ -4847,7 +4857,7 @@
             }
           },
           "400": {
-            "description": "參數錯誤",
+            "description": "參數錯誤（selectedItems 不可為空 / 請提供正確的場合）",
             "content": {
               "application/json": {
                 "schema": {
@@ -4970,42 +4980,59 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "selectedItems"
+                ],
                 "properties": {
                   "selectedItems": {
                     "type": "array",
-                    "description": "選擇的服飾項目列表",
+                    "description": "選擇的衣物列表，不可為空",
                     "items": {
                       "type": "object",
+                      "required": [
+                        "cloudImgUrl",
+                        "category",
+                        "name",
+                        "brand"
+                      ],
                       "properties": {
                         "cloudImgUrl": {
                           "type": "string",
-                          "description": "圖片 URL"
+                          "example": "https://res.cloudinary.com/test/image.jpg"
                         },
                         "category": {
                           "type": "string",
-                          "description": "服飾類別"
+                          "enum": [
+                            "top",
+                            "bottom",
+                            "outerwear",
+                            "shoes",
+                            "skirt",
+                            "dress"
+                          ],
+                          "example": "top"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "白色基本款 T-shirt"
+                        },
+                        "brand": {
+                          "type": "string",
+                          "example": "UNIQLO"
                         }
                       }
                     }
                   },
                   "occasion": {
                     "type": "string",
-                    "description": "場合（例如：casual、formal、sport）",
-                    "example": "casual"
-                  }
-                }
-              },
-              "examples": {
-                "ValidRequest": {
-                  "summary": "有效的請求範例",
-                  "value": {
-                    "selectedItems": [
-                      {
-                        "cloudImgUrl": "https://res.cloudinary.com/test/image.jpg",
-                        "category": "top"
-                      }
+                    "description": "場合（必填）",
+                    "enum": [
+                      "socialGathering",
+                      "campusCasual",
+                      "businessCasual",
+                      "professional"
                     ],
-                    "occasion": "casual"
+                    "example": "socialGathering"
                   }
                 }
               }
@@ -5258,7 +5285,7 @@
             }
           },
           "400": {
-            "description": "請求錯誤 (新增失敗)",
+            "description": "請求錯誤（請提供完整的穿搭資訊 / 請提供正確的場合 / 新增失敗）",
             "content": {
               "application/json": {
                 "schema": {
@@ -5274,7 +5301,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "新增失敗"
+                      "example": "請提供完整的穿搭資訊"
                     },
                     "data": {
                       "type": "object",

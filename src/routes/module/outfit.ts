@@ -192,7 +192,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
      }
 
      #swagger.responses[400] = {
-       description: '請求錯誤 (新增失敗)',
+       description: '請求錯誤（請提供完整的穿搭資訊 / 請提供正確的場合 / 新增失敗）',
        content: {
          'application/json': {
            schema: {
@@ -200,7 +200,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string', example: '新增失敗' },
+               message: { type: 'string', example: '請提供完整的穿搭資訊' },
                data: { type: 'object', example: null }
              }
            }
@@ -243,6 +243,15 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
      }
   */
   const { outfitImgUrl, occasion, selectedItems } = req.body;
+
+  if (!outfitImgUrl || !occasion || !Array.isArray(selectedItems) || selectedItems.length === 0) {
+    return errorHandler({ statusCode: 400, message: '請提供完整的穿搭資訊' }, res);
+  }
+
+  if (!validateOutfitOccasion(occasion)) {
+    return errorHandler({ statusCode: 400, message: '請提供正確的場合' }, res);
+  }
+
   try {
     const userId = req.user!.userId;
     const outfitItem = { userId, outfitImgUrl, occasion, selectedItems }

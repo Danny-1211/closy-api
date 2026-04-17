@@ -21,6 +21,6 @@ const outfitItemSchema = new Schema<OutfitType.OutfitItem>(
     { timestamps: true }
 );
 
-outfitItemSchema.index({ userId: 1, occasions: 1 });
+outfitItemSchema.index({ userId: 1, occasion: 1 });
 
 export const Outfit = model('Outfit', outfitItemSchema);
