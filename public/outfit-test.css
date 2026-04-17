@@ -1,0 +1,348 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: #0F172A;
+  color: #CBD5E1;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  padding: 24px 16px 48px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* 背景裝飾：模糊圓形漸層 */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px;
+  left: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99, 40, 180, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -150px;
+  right: -150px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(30, 80, 160, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* 主標題：最亮的非純白 */
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #F8FAFC;
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+.subtitle {
+  font-size: 0.88rem;
+  color: #64748B;
+  margin-bottom: 28px;
+}
+
+/* 玻璃面板 */
+.card {
+  background: rgba(30, 41, 59, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+/* 區塊標題：中等亮度，加重字重 */
+.card-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #E2E8F0;
+  margin-bottom: 16px;
+}
+
+/* ── Auth 區：玻璃 ID 卡 ── */
+#auth-section .user-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+/* 頭像：紫色發光圓框 */
+#auth-section img.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(168, 85, 247, 0.65);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.35);
+  flex-shrink: 0;
+}
+#auth-section .user-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #E2E8F0;
+  flex: 1;
+}
+
+/* Google Sign-In 容器 */
+#g_id_onload, #google-btn-wrap {
+  min-height: 44px;
+}
+
+/* ── 按鈕 ── */
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  transition: all 0.2s;
+}
+
+/* 主按鈕：垂直漸層 + 發光陰影 */
+.btn-primary {
+  background: linear-gradient(180deg, #9333EA 0%, #A855F7 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+}
+.btn-primary:hover {
+  background: linear-gradient(180deg, #A855F7 0%, #C084FC 100%);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.55);
+  transform: translateY(-1px);
+}
+.btn-primary:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(168, 85, 247, 0.35); }
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.07);
+  color: #CBD5E1;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.2); }
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #FCA5A5;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+.btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
+
+/* ── Textarea（可編輯） ── */
+textarea {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: #CBD5E1;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  padding: 14px;
+  resize: vertical;
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+  transition: border-color 0.2s;
+}
+textarea:focus { outline: none; border-color: rgba(168, 85, 247, 0.55); }
+
+/* ── JSON 鎖定區（代碼高亮） ── */
+.locked-label {
+  font-size: 0.75rem;
+  color: #475569;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.locked-label::before { content: '🔒'; font-size: 0.7rem; }
+
+.code-block {
+  width: 100%;
+  background: rgba(8, 14, 28, 0.75);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+  font-size: 0.82rem;
+  line-height: 1.75;
+  overflow-x: auto;
+  white-space: pre;
+}
+/* 語法高亮色票 */
+.code-block .jk  { color: #7DD3FC; }   /* key：淺藍 */
+.code-block .jv  { color: #86EFAC; }   /* string value：淺綠 */
+.code-block .jp  { color: #FCD34D; }   /* placeholder (<...>)：琥珀黃 */
+.code-block .jb  { color: #F8FAFC; }   /* 括號/花括號：近白 */
+.code-block .jc  { color: #94A3B8; }   /* 一般說明文字：灰 */
+
+/* ── Day 選擇 ── */
+.day-options { display: flex; gap: 10px; }
+.day-opt {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(15, 23, 42, 0.45);
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: #94A3B8;
+  transition: all 0.18s;
+  user-select: none;
+}
+.day-opt.active {
+  background: rgba(147, 51, 234, 0.18);
+  border-color: rgba(168, 85, 247, 0.5);
+  color: #D8B4FE;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
+}
+
+/* ── Toast 狀態提示 ── */
+.status-bar {
+  font-size: 0.83rem;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 10px;
+  margin-top: 14px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.status-bar.info {
+  background: rgba(30, 64, 120, 0.3);
+  color: #93C5FD;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.status-bar.success {
+  background: rgba(20, 83, 45, 0.3);
+  color: #86EFAC;
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.12);
+}
+.status-bar.error {
+  background: rgba(100, 20, 20, 0.3);
+  color: #FCA5A5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.1);
+}
+.status-bar.show { display: flex; }
+
+/* ── 結果展示 ── */
+#result-section { display: none; }
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+
+.weather-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.weather-chip {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  color: #94A3B8;
+}
+.weather-chip span { color: #E2E8F0; font-weight: 600; }
+
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.item-card {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.item-card:hover { border-color: rgba(168, 85, 247, 0.3); }
+.item-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: #1E293B;
+}
+.item-card .item-info { padding: 10px 8px; }
+.item-card .item-category {
+  font-size: 0.7rem;
+  color: #A78BFA;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+.item-card .item-name {
+  font-size: 0.78rem;
+  color: #CBD5E1;
+  font-weight: 500;
+  margin-bottom: 2px;
+  word-break: break-all;
+}
+.item-card .item-brand { font-size: 0.72rem; color: #64748B; }
+
+.reasoning-box {
+  background: rgba(15, 23, 42, 0.4);
+  border-left: 3px solid #A855F7;
+  border-radius: 0 10px 10px 0;
+  padding: 14px 16px;
+  font-size: 0.88rem;
+  line-height: 1.75;
+  color: #CBD5E1;
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* RWD */
+@media (max-width: 600px) {
+  h1 { font-size: 1.25rem; }
+  .card { padding: 16px; }
+  .items-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+}

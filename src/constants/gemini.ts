@@ -15,13 +15,12 @@ export const OUTFIT_SYSTEM_INSTRUCTION = `
 2. 必須包含至少一件上衣（category 為 top 或 dress），如果是使用者性別是男性則不應該出現 dress，女性則不拘
 3. 若清單有 bottom 或 skirt，也應搭配一件，如果是使用者性別是男性則不應該出現 skirt，女性則不拘
 4. 鞋子（shoes）和外套（outerwear）視天氣與場合決定是否加入
-5. 衣服的穿搭需要考慮到天氣資訊
+5. 衣服的穿搭需要考慮到天氣資訊123123
 6. 回傳格式必須是合法的 JSON，結構如下：
 {
   "selectedItems": [
-    { "category": "<category>", "name": "<name>", "brand": "brand ?  <brand>: "" ", "cloudImgUrl": "<cloudImgUrl>" }
+    { "category": "<category>", "name": "<name>", "brand": "brand ?  <brand>: \"\" ", "cloudImgUrl": "<cloudImgUrl>" }
   ],
   "occasion": "使用者資訊: 場合的 value ( occasions )",
   "reasoning": "搭配理由（繁體中文，2-4句）"
-}
-`;
+}`;
