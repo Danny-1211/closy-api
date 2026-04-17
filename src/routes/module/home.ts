@@ -192,7 +192,7 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
 homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
   /* #swagger.tags = ['Home']
      #swagger.summary = '生成虛擬穿搭圖片'
-     #swagger.description = '根據使用者選擇的服飾與使用者的性別，使用 AI 生成穿搭圖片，需要攜帶 Bearer Token'
+     #swagger.description = '根據使用者選擇的衣物，使用 AI 合成虛擬穿搭圖片，需要攜帶 Bearer Token'
      #swagger.security = [{ "bearerAuth": [] }]
 
      #swagger.requestBody = {
@@ -201,30 +201,20 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
          'application/json': {
            schema: {
              type: 'object',
+             required: ['selectedItems'],
              properties: {
                selectedItems: {
                  type: 'array',
-                 description: '選擇的服飾項目列表',
+                 description: '選擇的衣物列表，不可為空',
                  items: {
                    type: 'object',
                    properties: {
-                     cloudImgUrl: { type: 'string', description: '圖片 URL' },
-                     category: { type: 'string', description: '服飾類別' }
+                     cloudImgUrl: { type: 'string', example: 'https://res.cloudinary.com/test/image.jpg' },
+                     category: { type: 'string', example: 'top' }
                    }
                  }
                },
-               occasion: { type: 'string', description: '場合（例如：casual、formal、sport）', example: 'casual' }
-             }
-           },
-           examples: {
-             ValidRequest: {
-               summary: '有效的請求範例',
-               value: {
-                 selectedItems: [
-                   { cloudImgUrl: 'https://res.cloudinary.com/test/image.jpg', category: 'top' }
-                 ],
-                 occasion: 'casual'
-               }
+               occasion: { type: 'string', description: '場合（可選）', example: 'casual' }
              }
            }
          }
@@ -244,7 +234,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
                data: {
                  type: 'object',
                  properties: {
-                   imageUrl: { type: 'string', example: 'https://res.cloudinary.com/test/image.jpg' },
+                   outfitImgUrl: { type: 'string', example: 'https://res.cloudinary.com/test/closy/users/outfits/abc123/outfit.jpg' },
                    occasion: { type: 'string', example: 'casual' }
                  }
                }
@@ -255,7 +245,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
      }
 
      #swagger.responses[400] = {
-       description: '參數錯誤',
+       description: '參數錯誤（selectedItems 不可為空 / 請提供正確的場合）',
        content: {
          'application/json': {
            schema: {
@@ -331,7 +321,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
       return errorHandler({ statusCode: 400, message: 'selectedItems 不可為空' }, res);
     }
 
-    if (userOccasion && !validateOutfitOccasion(userOccasion)) {
+    if (!validateOutfitOccasion(userOccasion)) {
       return errorHandler({ statusCode: 400, message: '請提供正確的場合' }, res);
     }
 
