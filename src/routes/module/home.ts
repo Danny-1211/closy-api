@@ -315,7 +315,7 @@ homeRouter.post('/outfit', authMiddleWare, async (req, res) => {
   try {
     const userId = req.user!.userId;
     const userOccasion = req.body.occasion;
-    const selectedItems: { cloudImgUrl: string; category: string }[] = req.body.selectedItems;
+    const selectedItems: { cloudImgUrl: string; category: string, name: string, brand: string }[] = req.body.selectedItems;
 
     if (!Array.isArray(selectedItems) || selectedItems.length === 0) {
       return errorHandler({ statusCode: 400, message: 'selectedItems 不可為空' }, res);
