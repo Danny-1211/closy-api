@@ -4633,6 +4633,16 @@
                                 }
                               }
                             },
+                            "occasion": {
+                              "type": "string",
+                              "enum": [
+                                "socialGathering",
+                                "campusCasual",
+                                "businessCasual",
+                                "professional"
+                              ],
+                              "example": "socialGathering"
+                            },
                             "reasoning": {
                               "type": "string",
                               "example": "這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。"
