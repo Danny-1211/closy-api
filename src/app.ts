@@ -15,6 +15,8 @@ app.use(express.json());
 
 app.use(router);
 
+app.use(express.static('public'));
+
 const startServer = async (): Promise<void> => {
   try {
     await connectDB();
