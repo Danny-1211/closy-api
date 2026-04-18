@@ -423,10 +423,10 @@
       // 天氣資訊
       const weatherRow = document.getElementById('weather-row');
       weatherRow.innerHTML = `
-      <div class="weather-chip">城市：<span>${city || '—'}</span></div>
-      <div class="weather-chip">溫度：<span>${weather.temperature}°C</span></div>
-      <div class="weather-chip">天氣：<span>${weather.weather}</span></div>
-      <div class="weather-chip" style="flex:1;min-width:200px;">說明：<span>${weather.weatherDescription}</span></div>
+      <div class="weather-chip">城市：<span>${escapeHtml(city) || '—'}</span></div>
+      <div class="weather-chip">溫度：<span>${escapeHtml(weather.temperature)}°C</span></div>
+      <div class="weather-chip">天氣：<span>${escapeHtml(weather.weather)}</span></div>
+      <div class="weather-chip" style="flex:1;min-width:200px;">說明：<span>${escapeHtml(weather.weatherDescription)}</span></div>
     `;
 
       // 推薦服飾
@@ -498,7 +498,7 @@
 
     // 渲染鎖定的 JSON 規則區塊
     function renderLockedRule() {
-      const raw = `6. 回傳格式必須是合法的 JSON，結構如下：\n{\n  "selectedItems": [\n    { "category": "&lt;category&gt;", "name": "&lt;name&gt;", "brand": "&lt;brand&gt;", "cloudImgUrl": "&lt;cloudImgUrl&gt;" }\n  ],\n  "occasion": "使用者資訊: 場合的 value ( occasions )",\n  "reasoning": "搭配理由（繁體中文，2-4句）"\n}`;
+      const raw = `7. 回傳格式必須是合法的 JSON，結構如下：\n{\n  "selectedItems": [\n    { "category": "&lt;category&gt;", "name": "&lt;name&gt;", "brand": "&lt;brand&gt;", "cloudImgUrl": "&lt;cloudImgUrl&gt;" }\n  ],\n  "occasion": "使用者資訊: 場合的 value ( occasions )",\n  "reasoning": "搭配理由（繁體中文，2-4句）"\n}`;
       const el = document.getElementById('locked-rule');
       // raw 已含 &lt;/&gt; 跳脫，直接套高亮
       el.innerHTML = raw
@@ -506,7 +506,7 @@
         .replace(/("(?:[^"\\]|\\.)*")(\s*:)/g, (_, k, colon) => `<span class="jk">${k}</span>${colon}`)
         .replace(/&lt;[^&]*?&gt;/g, m => `<span class="jp">${m}</span>`)
         .replace(/"([^"]*)"/g, m => `<span class="jv">${m}</span>`)
-        .replace(/^(6\. .*)$/m, m => `<span class="jc">${m}</span>`);
+        .replace(/^(7\. .*)$/m, m => `<span class="jc">${m}</span>`);
     }
 
     // ── Modal 開關 ───────────────────────────────────────────

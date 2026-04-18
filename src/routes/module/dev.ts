@@ -10,7 +10,7 @@ const FORCED_JSON_RULE = `
 7. 回傳格式必須是合法的 JSON，結構如下：
 {
   "selectedItems": [
-    { "category": "<category>", "name": "<name>", "brand": "brand ?  <brand>: \\"\\" ", "cloudImgUrl": "<cloudImgUrl>" }
+    { "category": "<category>", "name": "<name>", "brand": "<brand>", "cloudImgUrl": "<cloudImgUrl>" }
   ],
   "occasion": "使用者資訊: 場合的 value ( occasions )",
   "reasoning": "搭配理由（繁體中文，2-4句）"
@@ -24,7 +24,7 @@ devRouter.get('/config', (_req, res) => {
   res.json({ googleClientId: config.GOOGLE_CLIENT_ID });
 });
 
-// 讀取目前的 OUTFIT_SYSTEM_INSTRUCTION，去除第 6 條後回傳可編輯部分
+// 讀取目前的 OUTFIT_SYSTEM_INSTRUCTION，去除第 7 條後回傳可編輯部分
 devRouter.get('/outfit-instruction', (_req, res) => {
   try {
     const fileContent = fs.readFileSync(GEMINI_CONSTANTS_PATH, 'utf-8');
@@ -32,22 +32,26 @@ devRouter.get('/outfit-instruction', (_req, res) => {
     if (!match || match[1] === undefined) {
       return res.status(500).json({ message: '無法解析 OUTFIT_SYSTEM_INSTRUCTION' });
     }
-    // 找到第 6 條的起始位置並截斷，只回傳可編輯部分
+    // 找到第 7 條的起始位置並截斷，只回傳可編輯部分
     const fullInstruction = match[1];
-    const rule6Index = fullInstruction.indexOf('\n7. 回傳格式');
-    const editablePart = rule6Index !== -1 ? fullInstruction.slice(0, rule6Index) : fullInstruction;
+    const rule7Index = fullInstruction.indexOf('\n7. 回傳格式');
+    const editablePart = rule7Index !== -1 ? fullInstruction.slice(0, rule7Index) : fullInstruction;
     return res.json({ instruction: editablePart });
   } catch {
     return res.status(500).json({ message: '讀取 gemini.ts 失敗' });
   }
 });
 
-// 更新 OUTFIT_SYSTEM_INSTRUCTION，強制附加第 6 條 JSON 格式規則後寫入檔案
+// 更新 OUTFIT_SYSTEM_INSTRUCTION，強制附加第 7 條 JSON 格式規則後寫入檔案
 devRouter.put('/outfit-instruction', (req, res) => {
   try {
     const { instruction } = req.body;
     if (typeof instruction !== 'string') {
       return res.status(400).json({ message: 'instruction 必須為字串' });
+    }
+    // 反引號可跳脫 template literal 並注入任意程式碼
+    if (instruction.includes('`')) {
+      return res.status(400).json({ message: 'instruction 不可包含反引號（`）' });
     }
     // 組合最終指令：使用者編輯部分 + 強制附加的 JSON 格式規則
     const finalInstruction = instruction.trimEnd() + FORCED_JSON_RULE;
@@ -72,10 +76,21 @@ interface AttemptRecord {
 }
 const attemptMap = new Map<string, AttemptRecord>();
 
+// 每小時清除已過期的鎖定記錄，避免 Map 無限成長
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, record] of attemptMap) {
+    if (record.lockedUntil && now >= record.lockedUntil) {
+      attemptMap.delete(ip);
+    }
+  }
+}, 60 * 60 * 1000);
+
 // 驗證測試頁密碼，比對 config.TEST_PASSWORD
 devRouter.post('/verify-test-password', (req, res) => {
   const forwarded = req.headers['x-forwarded-for'];
-  const ip = (Array.isArray(forwarded) ? forwarded[0] ?? '' : forwarded ?? '').split(',')[0].trim() || req.socket.remoteAddress || 'unknown';
+  const raw = Array.isArray(forwarded) ? forwarded[0] ?? '' : forwarded ?? '';
+  const ip = raw.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
 
   const record = attemptMap.get(ip) ?? { count: 0, lockedUntil: null };
 
