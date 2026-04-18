@@ -63,8 +63,32 @@ devRouter.put('/outfit-instruction', (req, res) => {
   }
 });
 
+const MAX_ATTEMPTS = 3;
+const LOCKOUT_MS = 60 * 60 * 1000;
+
+interface AttemptRecord {
+  count: number;
+  lockedUntil: number | null;
+}
+const attemptMap = new Map<string, AttemptRecord>();
+
 // 驗證測試頁密碼，比對 config.TEST_PASSWORD
 devRouter.post('/verify-test-password', (req, res) => {
+  const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0].trim() || req.socket.remoteAddress || 'unknown';
+
+  const record = attemptMap.get(ip) ?? { count: 0, lockedUntil: null };
+
+  if (record.lockedUntil && Date.now() < record.lockedUntil) {
+    const remaining = Math.ceil((record.lockedUntil - Date.now()) / 60000);
+    return res.status(429).json({ success: false, message: `已鎖定，請 ${remaining} 分鐘後再試` });
+  }
+
+  // 鎖定已過期，重置
+  if (record.lockedUntil && Date.now() >= record.lockedUntil) {
+    record.count = 0;
+    record.lockedUntil = null;
+  }
+
   const { password } = req.body;
   if (!password || typeof password !== 'string') {
     return res.status(400).json({ success: false, message: '請提供密碼' });
@@ -72,10 +96,22 @@ devRouter.post('/verify-test-password', (req, res) => {
   if (!config.TEST_PASSWORD) {
     return res.status(500).json({ success: false, message: '伺服器未設定 TEST_PASSWORD' });
   }
+
   if (password === config.TEST_PASSWORD) {
+    attemptMap.delete(ip);
     return res.json({ success: true });
   }
-  return res.status(401).json({ success: false, message: '密碼錯誤' });
+
+  record.count += 1;
+  if (record.count >= MAX_ATTEMPTS) {
+    record.lockedUntil = Date.now() + LOCKOUT_MS;
+    attemptMap.set(ip, record);
+    return res.status(429).json({ success: false, message: '錯誤次數過多，已鎖定 60 分鐘' });
+  }
+
+  attemptMap.set(ip, record);
+  const remaining = MAX_ATTEMPTS - record.count;
+  return res.status(401).json({ success: false, message: `密碼錯誤，還剩 ${remaining} 次機會` });
 });
 
 export { devRouter };
