@@ -3404,10 +3404,10 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "imageUrl"
+                  "cloudinaryImageUrl"
                 ],
                 "properties": {
-                  "imageUrl": {
+                  "cloudinaryImageUrl": {
                     "type": "string",
                     "description": "Cloudinary 圖片網址",
                     "example": "https://res.cloudinary.com/xxx/image/upload/v1/system/abc123.png"
@@ -4019,7 +4019,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /  無效的憑證或憑證已過期，請重新登入"
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /   無效的憑證或憑證已過期，請重新登入"
                     },
                     "data": {
                       "type": "object",
