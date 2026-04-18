@@ -229,7 +229,7 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
       }
     }
   */
-  const imageUrl = req.body.imageUrl;
+  const imageUrl = req.body.cloudinaryImageUrl;
   const imageHash = req.body.imageHash;
   if (!imageUrl) {
     return errorHandler({ statusCode: 400, message: '未提供圖片網址' }, res);
