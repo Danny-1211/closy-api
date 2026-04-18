@@ -8,9 +8,303 @@
   <link rel="stylesheet" href="/outfit-test.css" />
 </head>
 <body>
+
+<!-- 密碼驗證 Overlay -->
+<div id="password-overlay">
+  <div class="pw-glow"></div>
+  <div class="pw-card">
+    <div class="pw-icon">🔐</div>
+    <h2 class="pw-title">測試頁面存取驗證</h2>
+    <p class="pw-desc">此頁面僅供內部測試使用，請輸入密碼繼續</p>
+    <input
+      type="password"
+      id="password-input"
+      class="pw-input"
+      placeholder="輸入存取密碼..."
+      onkeydown="if(event.key==='Enter') verifyPassword()"
+    />
+    <button class="pw-btn" id="pw-submit-btn" onclick="verifyPassword()">確認</button>
+    <div class="pw-error" id="password-error"></div>
+  </div>
+</div>
+
+<style>
+  /* 密碼 Overlay 全螢幕遮罩 */
+  #password-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #0F172A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* 背景裝飾圓（暗紫色 radial-gradient） */
+  .pw-glow {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(88, 28, 135, 0.35) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  /* 玻璃擬態卡片 */
+  .pw-card {
+    position: relative;
+    z-index: 1;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .pw-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+  }
+
+  .pw-title {
+    color: #CBD5E1;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  .pw-desc {
+    color: #64748B;
+    font-size: 0.875rem;
+    margin: 0 0 28px;
+    line-height: 1.5;
+  }
+
+  .pw-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    color: #CBD5E1;
+    font-size: 1rem;
+    padding: 12px 16px;
+    outline: none;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .pw-input:focus {
+    border-color: rgba(139, 92, 246, 0.6);
+  }
+
+  .pw-input::placeholder {
+    color: #475569;
+  }
+
+  .pw-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #6D28D9, #4F46E5);
+    border: none;
+    border-radius: 10px;
+    color: #E2E8F0;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 13px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .pw-btn:hover { opacity: 0.9; }
+  .pw-btn:active { transform: scale(0.98); }
+  .pw-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .pw-error {
+    margin-top: 12px;
+    color: #F87171;
+    font-size: 0.875rem;
+    min-height: 20px;
+  }
+
+  /* 手機版調整 */
+  @media (max-width: 480px) {
+    .pw-card {
+      margin: 16px;
+      padding: 36px 24px;
+    }
+  }
+
+  /* 偏好設定卡片（獨立列，全寬） */
+  .pref-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .pref-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .pref-chevron {
+    color: #64748B;
+    font-size: 1rem;
+    transition: transform 0.2s;
+  }
+
+  .pref-chevron.open {
+    transform: rotate(180deg);
+  }
+
+  .pref-group {
+    margin-bottom: 14px;
+  }
+
+  .pref-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .pref-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .pref-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+
+  .pref-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    color: #94A3B8;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .pref-tag:has(input:checked) {
+    background: rgba(109, 40, 217, 0.25);
+    border-color: rgba(139, 92, 246, 0.5);
+    color: #C4B5FD;
+  }
+
+  .pref-tag input {
+    display: none;
+  }
+
+  .pref-save-btn {
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    background: rgba(79, 70, 229, 0.3);
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    border-radius: 6px;
+    color: #A5B4FC;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .pref-save-btn:hover {
+    background: rgba(79, 70, 229, 0.5);
+  }
+
+  .pref-status {
+    font-size: 0.75rem;
+    margin-top: 4px;
+    min-height: 16px;
+    color: #64748B;
+  }
+
+  .pref-status.ok { color: #4ADE80; }
+  .pref-status.err { color: #F87171; }
+</style>
+
 <div class="container">
   <h1>穿搭推薦 Prompt 測試工具</h1>
   <p class="subtitle">修改 OUTFIT_SYSTEM_INSTRUCTION 並即時測試 GET /home 穿搭建議輸出</p>
+
+  <!-- 偏好設定（獨立列） -->
+  <div class="card pref-card" id="pref-section">
+      <div class="pref-header" onclick="togglePrefMenu()">
+        <span class="card-title" style="margin:0">偏好設定</span>
+        <span class="pref-chevron" id="pref-chevron">▾</span>
+      </div>
+      <div id="pref-body" style="display:none; margin-top:12px;">
+
+        <!-- 場合（單選） -->
+        <div class="pref-group">
+          <div class="pref-label">場合</div>
+          <div class="pref-tags" id="pref-occasions">
+            <label class="pref-tag"><input type="radio" name="occasion" value="socialGathering"> 社交聚會</label>
+            <label class="pref-tag"><input type="radio" name="occasion" value="campusCasual"> 校園休閒</label>
+            <label class="pref-tag"><input type="radio" name="occasion" value="businessCasual"> 商務休閒</label>
+            <label class="pref-tag"><input type="radio" name="occasion" value="professional"> 專業職場</label>
+          </div>
+          <button class="pref-save-btn" onclick="savePrefOccasion()">儲存場合</button>
+          <div class="pref-status" id="pref-occasion-status"></div>
+        </div>
+
+        <!-- 色系（多選） -->
+        <div class="pref-group">
+          <div class="pref-label">色系</div>
+          <div class="pref-tags" id="pref-colors">
+            <label class="pref-tag"><input type="checkbox" value="black"> 黑</label>
+            <label class="pref-tag"><input type="checkbox" value="white"> 白</label>
+            <label class="pref-tag"><input type="checkbox" value="gray"> 灰</label>
+            <label class="pref-tag"><input type="checkbox" value="brown"> 棕</label>
+            <label class="pref-tag"><input type="checkbox" value="yellow"> 黃</label>
+            <label class="pref-tag"><input type="checkbox" value="orange"> 橙</label>
+            <label class="pref-tag"><input type="checkbox" value="pink"> 粉</label>
+            <label class="pref-tag"><input type="checkbox" value="green"> 綠</label>
+            <label class="pref-tag"><input type="checkbox" value="blue"> 藍</label>
+            <label class="pref-tag"><input type="checkbox" value="purple"> 紫</label>
+          </div>
+          <button class="pref-save-btn" onclick="savePrefColors()">儲存色系</button>
+          <div class="pref-status" id="pref-colors-status"></div>
+        </div>
+
+        <!-- 風格（多選） -->
+        <div class="pref-group">
+          <div class="pref-label">風格</div>
+          <div class="pref-tags" id="pref-styles">
+            <label class="pref-tag"><input type="checkbox" value="simple"> 簡約</label>
+            <label class="pref-tag"><input type="checkbox" value="street"> 街頭</label>
+            <label class="pref-tag"><input type="checkbox" value="outdoor"> 戶外</label>
+            <label class="pref-tag"><input type="checkbox" value="american"> 美式</label>
+            <label class="pref-tag"><input type="checkbox" value="japanese"> 日系</label>
+            <label class="pref-tag"><input type="checkbox" value="korean"> 韓系</label>
+            <label class="pref-tag"><input type="checkbox" value="retro"> 復古</label>
+            <label class="pref-tag"><input type="checkbox" value="city"> 都會</label>
+            <label class="pref-tag"><input type="checkbox" value="sweety"> 甜美</label>
+          </div>
+          <button class="pref-save-btn" onclick="savePrefStyles()">儲存風格</button>
+          <div class="pref-status" id="pref-styles-status"></div>
+        </div>
+
+      </div>
+  </div>
 
   <!-- Auth 區 + 新增衣服按鈕（並排） -->
   <div class="top-row">
@@ -248,6 +542,7 @@
     } else {
       avatar.style.display = 'none';
     }
+    loadUserPreferences();
   }
 
   function logout() {
@@ -587,6 +882,138 @@
     document.getElementById('upload-status').className = 'status-bar';
     document.getElementById('clothes-save-status').className = 'status-bar';
     closeAddClothesModal();
+  }
+
+  // ── 偏好設定 Menu ────────────────────────────────────────
+
+  // 展開 / 收起偏好設定面板
+  function togglePrefMenu() {
+    const body = document.getElementById('pref-body');
+    const chevron = document.getElementById('pref-chevron');
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    chevron.classList.toggle('open', !isOpen);
+  }
+
+  // 從 GET /user/information 載入目前偏好並填入 UI
+  async function loadUserPreferences() {
+    if (!jwtToken) return;
+    try {
+      const { data } = await axios.get('/user/information', {
+        headers: { Authorization: `Bearer ${jwtToken}` }
+      });
+      if (!data.status) return;
+      const prefs = data.data.preferences || {};
+
+      // 場合（單選）
+      if (prefs.occasions) {
+        const radio = document.querySelector(`#pref-occasions input[value="${prefs.occasions}"]`);
+        if (radio) radio.checked = true;
+      }
+
+      // 色系（多選）
+      (prefs.colors || []).forEach(c => {
+        const cb = document.querySelector(`#pref-colors input[value="${c}"]`);
+        if (cb) cb.checked = true;
+      });
+
+      // 風格（多選）
+      (prefs.styles || []).forEach(s => {
+        const cb = document.querySelector(`#pref-styles input[value="${s}"]`);
+        if (cb) cb.checked = true;
+      });
+    } catch {}
+  }
+
+  // 儲存場合
+  async function savePrefOccasion() {
+    if (!jwtToken) return;
+    const radio = document.querySelector('#pref-occasions input:checked');
+    if (!radio) { setPrefStatus('pref-occasion-status', '請選擇場合', false); return; }
+    try {
+      await axios.patch('/user/preferences/occasions', { occasionId: radio.value }, {
+        headers: { Authorization: `Bearer ${jwtToken}` }
+      });
+      setPrefStatus('pref-occasion-status', '已儲存', true);
+    } catch (e) {
+      setPrefStatus('pref-occasion-status', e.response?.data?.message || '儲存失敗', false);
+    }
+  }
+
+  // 儲存色系
+  async function savePrefColors() {
+    if (!jwtToken) return;
+    const colors = Array.from(document.querySelectorAll('#pref-colors input:checked')).map(cb => cb.value);
+    try {
+      await axios.patch('/user/preferences/colors', { colors }, {
+        headers: { Authorization: `Bearer ${jwtToken}` }
+      });
+      setPrefStatus('pref-colors-status', '已儲存', true);
+    } catch (e) {
+      setPrefStatus('pref-colors-status', e.response?.data?.message || '儲存失敗', false);
+    }
+  }
+
+  // 儲存風格
+  async function savePrefStyles() {
+    if (!jwtToken) return;
+    const styles = Array.from(document.querySelectorAll('#pref-styles input:checked')).map(cb => cb.value);
+    try {
+      await axios.patch('/user/preferences/styles', { styles }, {
+        headers: { Authorization: `Bearer ${jwtToken}` }
+      });
+      setPrefStatus('pref-styles-status', '已儲存', true);
+    } catch (e) {
+      setPrefStatus('pref-styles-status', e.response?.data?.message || '儲存失敗', false);
+    }
+  }
+
+  // 顯示偏好設定儲存狀態
+  function setPrefStatus(id, msg, ok) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = `pref-status ${ok ? 'ok' : 'err'}`;
+    setTimeout(() => { el.textContent = ''; el.className = 'pref-status'; }, 2500);
+  }
+
+  // ── 密碼 Overlay ────────────────────────────────────────
+  // 頁面載入時檢查 sessionStorage，已驗證則直接隱藏 overlay
+  (function checkTestAuth() {
+    if (sessionStorage.getItem('test_auth') === 'granted') {
+      document.getElementById('password-overlay').style.display = 'none';
+    }
+  })();
+
+  // 呼叫後端驗證密碼，成功後寫入 sessionStorage 並隱藏 overlay
+  async function verifyPassword() {
+    const input = document.getElementById('password-input');
+    const errorEl = document.getElementById('password-error');
+    const btn = document.getElementById('pw-submit-btn');
+    const password = input.value;
+
+    if (!password) {
+      errorEl.textContent = '請輸入密碼';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '驗證中...';
+    errorEl.textContent = '';
+
+    try {
+      const { data } = await axios.post('/dev/verify-test-password', { password });
+      if (data.success) {
+        sessionStorage.setItem('test_auth', 'granted');
+        document.getElementById('password-overlay').style.display = 'none';
+      }
+    } catch (e) {
+      errorEl.textContent = e.response?.data?.message || '密碼錯誤，請再試一次';
+      input.value = '';
+      input.focus();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '確認';
+    }
   }
 
   // 啟動

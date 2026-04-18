@@ -15,4 +15,5 @@ export type EnvConfig = {
   CLOUDINARY_API_KEY: string;
   CLOUDINARY_API_SECRET: string;
   GOOGLE_GEOCODING_API_KEY: string;
+  TEST_PASSWORD: string;
 };

@@ -63,4 +63,19 @@ devRouter.put('/outfit-instruction', (req, res) => {
   }
 });
 
+// 驗證測試頁密碼，比對 config.TEST_PASSWORD
+devRouter.post('/verify-test-password', (req, res) => {
+  const { password } = req.body;
+  if (!password || typeof password !== 'string') {
+    return res.status(400).json({ success: false, message: '請提供密碼' });
+  }
+  if (!config.TEST_PASSWORD) {
+    return res.status(500).json({ success: false, message: '伺服器未設定 TEST_PASSWORD' });
+  }
+  if (password === config.TEST_PASSWORD) {
+    return res.json({ success: true });
+  }
+  return res.status(401).json({ success: false, message: '密碼錯誤' });
+});
+
 export { devRouter };

@@ -17,4 +17,5 @@ export const config: EnvConfig = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || '',
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || '',
   GOOGLE_GEOCODING_API_KEY: process.env.GOOGLE_GEOCODING_API_KEY || '',
+  TEST_PASSWORD: process.env.TEST_PASSWORD || '',
 };
