@@ -147,9 +147,9 @@ processRouter.post('/analyze-clothes', authMiddleWare, async (req, res) => {
         "application/json": {
           schema: {
             type: "object",
-            required: ["imageUrl"],
+            required: ["cloudinaryImageUrl"],
             properties: {
-              imageUrl: {
+              cloudinaryImageUrl: {
                 type: "string",
                 description: 'Cloudinary 圖片網址',
                 example: 'https://res.cloudinary.com/xxx/image/upload/v1/system/abc123.png'
