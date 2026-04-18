@@ -1,252 +1,37 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow">
   <title>穿搭推薦 Prompt 測試工具</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
   <link rel="stylesheet" href="/outfit-test.css" />
 </head>
+
 <body>
 
-<!-- 密碼驗證 Overlay -->
-<div id="password-overlay">
-  <div class="pw-glow"></div>
-  <div class="pw-card">
-    <div class="pw-icon">🔐</div>
-    <h2 class="pw-title">測試頁面存取驗證</h2>
-    <p class="pw-desc">此頁面僅供內部測試使用，請輸入密碼繼續</p>
-    <input
-      type="password"
-      id="password-input"
-      class="pw-input"
-      placeholder="輸入存取密碼..."
-      onkeydown="if(event.key==='Enter') verifyPassword()"
-    />
-    <button class="pw-btn" id="pw-submit-btn" onclick="verifyPassword()">確認</button>
-    <div class="pw-error" id="password-error"></div>
+  <!-- 密碼驗證 Overlay -->
+  <div id="password-overlay">
+    <div class="pw-glow"></div>
+    <div class="pw-card">
+      <div class="pw-icon">🔐</div>
+      <h2 class="pw-title">測試頁面存取驗證</h2>
+      <p class="pw-desc">此頁面僅供內部測試使用，請輸入密碼繼續</p>
+      <input type="password" id="password-input" class="pw-input" placeholder="輸入存取密碼..."
+        onkeydown="if(event.key==='Enter') verifyPassword()" />
+      <button class="pw-btn" id="pw-submit-btn" onclick="verifyPassword()">確認</button>
+      <div class="pw-error" id="password-error"></div>
+    </div>
   </div>
-</div>
 
-<style>
-  /* 密碼 Overlay 全螢幕遮罩 */
-  #password-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: #0F172A;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
+  <div class="container">
+    <h1>穿搭推薦 Prompt 測試工具</h1>
+    <p class="subtitle">修改 OUTFIT_SYSTEM_INSTRUCTION 並即時測試 GET /home 穿搭建議輸出</p>
 
-  /* 背景裝飾圓（暗紫色 radial-gradient） */
-  .pw-glow {
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(88, 28, 135, 0.35) 0%, transparent 70%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-  }
-
-  /* 玻璃擬態卡片 */
-  .pw-card {
-    position: relative;
-    z-index: 1;
-    background: rgba(30, 41, 59, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 20px;
-    padding: 48px 40px;
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  }
-
-  .pw-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-  }
-
-  .pw-title {
-    color: #CBD5E1;
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin: 0 0 8px;
-  }
-
-  .pw-desc {
-    color: #64748B;
-    font-size: 0.875rem;
-    margin: 0 0 28px;
-    line-height: 1.5;
-  }
-
-  .pw-input {
-    width: 100%;
-    box-sizing: border-box;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 10px;
-    color: #CBD5E1;
-    font-size: 1rem;
-    padding: 12px 16px;
-    outline: none;
-    margin-bottom: 16px;
-    transition: border-color 0.2s;
-  }
-
-  .pw-input:focus {
-    border-color: rgba(139, 92, 246, 0.6);
-  }
-
-  .pw-input::placeholder {
-    color: #475569;
-  }
-
-  .pw-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #6D28D9, #4F46E5);
-    border: none;
-    border-radius: 10px;
-    color: #E2E8F0;
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 13px;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-  }
-
-  .pw-btn:hover { opacity: 0.9; }
-  .pw-btn:active { transform: scale(0.98); }
-  .pw-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .pw-error {
-    margin-top: 12px;
-    color: #F87171;
-    font-size: 0.875rem;
-    min-height: 20px;
-  }
-
-  /* 手機版調整 */
-  @media (max-width: 480px) {
-    .pw-card {
-      margin: 16px;
-      padding: 36px 24px;
-    }
-  }
-
-  /* 偏好設定卡片（獨立列，全寬） */
-  .pref-card {
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .pref-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .pref-chevron {
-    color: #64748B;
-    font-size: 1rem;
-    transition: transform 0.2s;
-  }
-
-  .pref-chevron.open {
-    transform: rotate(180deg);
-  }
-
-  .pref-group {
-    margin-bottom: 14px;
-  }
-
-  .pref-group:last-child {
-    margin-bottom: 0;
-  }
-
-  .pref-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #64748B;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 6px;
-  }
-
-  .pref-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-bottom: 8px;
-  }
-
-  .pref-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.78rem;
-    color: #94A3B8;
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    padding: 3px 8px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
-  }
-
-  .pref-tag:has(input:checked) {
-    background: rgba(109, 40, 217, 0.25);
-    border-color: rgba(139, 92, 246, 0.5);
-    color: #C4B5FD;
-  }
-
-  .pref-tag input {
-    display: none;
-  }
-
-  .pref-save-btn {
-    font-size: 0.78rem;
-    padding: 4px 12px;
-    background: rgba(79, 70, 229, 0.3);
-    border: 1px solid rgba(139, 92, 246, 0.35);
-    border-radius: 6px;
-    color: #A5B4FC;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-
-  .pref-save-btn:hover {
-    background: rgba(79, 70, 229, 0.5);
-  }
-
-  .pref-status {
-    font-size: 0.75rem;
-    margin-top: 4px;
-    min-height: 16px;
-    color: #64748B;
-  }
-
-  .pref-status.ok { color: #4ADE80; }
-  .pref-status.err { color: #F87171; }
-</style>
-
-<div class="container">
-  <h1>穿搭推薦 Prompt 測試工具</h1>
-  <p class="subtitle">修改 OUTFIT_SYSTEM_INSTRUCTION 並即時測試 GET /home 穿搭建議輸出</p>
-
-  <!-- 偏好設定（獨立列） -->
-  <div class="card pref-card" id="pref-section">
+    <!-- 偏好設定（獨立列） -->
+    <div class="card pref-card" id="pref-section">
       <div class="pref-header" onclick="togglePrefMenu()">
         <span class="card-title" style="margin:0">偏好設定</span>
         <span class="pref-chevron" id="pref-chevron">▾</span>
@@ -304,340 +89,349 @@
         </div>
 
       </div>
-  </div>
+    </div>
 
-  <!-- Auth 區 + 新增衣服按鈕（並排） -->
-  <div class="top-row">
-    <div class="card" id="auth-section">
-      <div class="card-title">身份驗證</div>
-      <div id="login-area">
-        <!-- Google Sign-In 按鈕由 JS 動態注入 -->
-        <div id="google-btn-wrap"></div>
-      </div>
-      <div id="user-area" style="display:none;">
-        <div class="user-info">
-          <img class="avatar" id="user-avatar" src="" alt="avatar" />
-          <span class="user-name" id="user-name-text"></span>
-          <button class="btn-danger" onclick="logout()">登出</button>
+    <!-- Auth 區 + 新增衣服按鈕（並排） -->
+    <div class="top-row">
+      <div class="card" id="auth-section">
+        <div class="card-title">身份驗證</div>
+        <div id="login-area">
+          <!-- Google Sign-In 按鈕由 JS 動態注入 -->
+          <div id="google-btn-wrap"></div>
+        </div>
+        <div id="user-area" style="display:none;">
+          <div class="user-info">
+            <img class="avatar" id="user-avatar" src="" alt="avatar" />
+            <span class="user-name" id="user-name-text"></span>
+            <button class="btn-danger" onclick="logout()">登出</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="card add-clothes-card">
-      <div class="card-title">衣櫃管理</div>
-      <button class="btn-primary" onclick="openAddClothesModal()">＋ 新增衣服至衣櫃</button>
-    </div>
-  </div>
-
-  <!-- OUTFIT_SYSTEM_INSTRUCTION 編輯區 -->
-  <div class="card">
-    <div class="card-title">Outfit System Instruction（可編輯）</div>
-    <textarea id="instruction-textarea" rows="14" placeholder="載入中..."></textarea>
-    <div class="locked-label">以下 JSON 格式規則強制附加，無法修改</div>
-    <pre class="code-block" id="locked-rule"></pre>
-    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-      <button class="btn-primary" onclick="saveInstruction()">儲存指令</button>
-      <button class="btn-secondary" onclick="loadInstruction()">重新載入</button>
-    </div>
-    <div class="status-bar" id="save-status"></div>
-  </div>
-
-  <!-- 測試參數 -->
-  <div class="card">
-    <div class="card-title">測試參數</div>
-    <div class="day-options">
-      <div class="day-opt active" id="opt-today" onclick="selectDay('today')">今日（today）</div>
-      <div class="day-opt" id="opt-tomorrow" onclick="selectDay('tomorrow')">明日（tomorrow）</div>
-    </div>
-    <div style="margin-top:14px;">
-      <button class="btn-primary" id="test-btn" onclick="testHome()">測試穿搭推薦</button>
-    </div>
-    <div class="status-bar" id="test-status"></div>
-  </div>
-
-  <!-- 結果展示 -->
-  <div class="card" id="result-section">
-    <div class="card-title">推薦結果</div>
-
-    <div class="weather-row" id="weather-row"></div>
-
-    <div class="section-label">選取服飾</div>
-    <div class="items-grid" id="items-grid"></div>
-
-    <div class="section-label">搭配理由</div>
-    <div class="reasoning-box" id="reasoning-box"></div>
-  </div>
-</div>
-
-<!-- 新增衣服 Modal -->
-<div class="modal-overlay" id="add-clothes-modal" onclick="handleModalOverlayClick(event)">
-  <div class="modal-panel">
-    <div class="modal-header">
-      <span class="modal-title">新增衣服至衣櫃</span>
-      <button class="modal-close" onclick="closeAddClothesModal()">✕</button>
-    </div>
-
-    <div class="section-label">步驟 1 — 上傳照片並去背</div>
-    <div class="upload-area" onclick="document.getElementById('clothes-file-input').click()">
-      <input type="file" id="clothes-file-input" accept="image/jpeg,image/png,image/webp" onchange="previewOriginal(this)">
-      <div class="upload-hint">點擊選擇衣服照片<br><span>JPG / PNG / WebP，最大 5MB</span></div>
-    </div>
-
-    <div class="preview-row" id="clothes-preview-row">
-      <div class="preview-box">
-        <img id="original-preview" src="" alt="原始圖片">
-        <div class="preview-label">原始照片</div>
-      </div>
-      <div class="preview-box">
-        <img id="removed-bg-preview" src="" alt="去背後">
-        <div class="preview-label">去背後</div>
+      <div class="card add-clothes-card">
+        <div class="card-title">衣櫃管理</div>
+        <button class="btn-primary" onclick="openAddClothesModal()">＋ 新增衣服至衣櫃</button>
       </div>
     </div>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <button class="btn-primary" id="remove-bg-btn" onclick="removeBg()">去背</button>
-      <button class="btn-secondary" onclick="resetClothesForm()">清空</button>
+    <!-- OUTFIT_SYSTEM_INSTRUCTION 編輯區 -->
+    <div class="card">
+      <div class="card-title">Outfit System Instruction（可編輯）</div>
+      <textarea id="instruction-textarea" rows="14" placeholder="載入中..."></textarea>
+      <div class="locked-label">以下 JSON 格式規則強制附加，無法修改</div>
+      <pre class="code-block" id="locked-rule"></pre>
+      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <button class="btn-primary" onclick="saveInstruction()">儲存指令</button>
+        <button class="btn-secondary" onclick="loadInstruction()">重新載入</button>
+      </div>
+      <div class="status-bar" id="save-status"></div>
     </div>
-    <div class="status-bar" id="upload-status"></div>
 
-    <!-- 步驟 2：AI 分析結果表單 -->
-    <div id="analyze-form" style="display:none; margin-top:22px;">
-      <div class="section-label">步驟 2 — 確認 AI 分析結果（可修改後儲存）</div>
+    <!-- 測試參數 -->
+    <div class="card">
+      <div class="card-title">測試參數</div>
+      <div class="day-options">
+        <div class="day-opt active" id="opt-today" onclick="selectDay('today')">今日（today）</div>
+        <div class="day-opt" id="opt-tomorrow" onclick="selectDay('tomorrow')">明日（tomorrow）</div>
+      </div>
+      <div style="margin-top:14px;">
+        <button class="btn-primary" id="test-btn" onclick="testHome()">測試穿搭推薦</button>
+      </div>
+      <div class="status-bar" id="test-status"></div>
+    </div>
 
-      <input type="hidden" id="clothes-cloudImgUrl" value="">
+    <!-- 結果展示 -->
+    <div class="card" id="result-section">
+      <div class="card-title">推薦結果</div>
 
-      <div class="form-row">
+      <div class="weather-row" id="weather-row"></div>
+
+      <div class="section-label">選取服飾</div>
+      <div class="items-grid" id="items-grid"></div>
+
+      <div class="section-label">搭配理由</div>
+      <div class="reasoning-box" id="reasoning-box"></div>
+    </div>
+  </div>
+
+  <!-- 新增衣服 Modal -->
+  <div class="modal-overlay" id="add-clothes-modal" onclick="handleModalOverlayClick(event)">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <span class="modal-title">新增衣服至衣櫃</span>
+        <button class="modal-close" onclick="closeAddClothesModal()">✕</button>
+      </div>
+
+      <div class="section-label">步驟 1 — 上傳照片並去背</div>
+      <div class="upload-area" onclick="document.getElementById('clothes-file-input').click()">
+        <input type="file" id="clothes-file-input" accept="image/jpeg,image/png,image/webp"
+          onchange="previewOriginal(this)">
+        <div class="upload-hint">點擊選擇衣服照片<br><span>JPG / PNG / WebP，最大 5MB</span></div>
+      </div>
+
+      <div class="preview-row" id="clothes-preview-row">
+        <div class="preview-box">
+          <img id="original-preview" src="" alt="原始圖片">
+          <div class="preview-label">原始照片</div>
+        </div>
+        <div class="preview-box">
+          <img id="removed-bg-preview" src="" alt="去背後">
+          <div class="preview-label">去背後</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn-primary" id="remove-bg-btn" onclick="removeBg()">去背</button>
+        <button class="btn-secondary" onclick="resetClothesForm()">清空</button>
+      </div>
+      <div class="status-bar" id="upload-status"></div>
+
+      <!-- 步驟 2：AI 分析結果表單 -->
+      <div id="analyze-form" style="display:none; margin-top:22px;">
+        <div class="section-label">步驟 2 — 確認 AI 分析結果（可修改後儲存）</div>
+
+        <input type="hidden" id="clothes-cloudImgUrl" value="">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="clothes-category">類別 *</label>
+            <select class="form-select" id="clothes-category">
+              <option value="">請選擇</option>
+              <option value="top">上衣（top）</option>
+              <option value="bottom">下身（bottom）</option>
+              <option value="outerwear">外套（outerwear）</option>
+              <option value="dress">洋裝（dress）</option>
+              <option value="shoes">鞋子（shoes）</option>
+              <option value="accessory">配件（accessory）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="clothes-name">名稱 *</label>
+            <input class="form-input" type="text" id="clothes-name" placeholder="例：白色 T-shirt">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="clothes-color">顏色 *</label>
+            <input class="form-input" type="text" id="clothes-color" placeholder="例：白色">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="clothes-brand">品牌</label>
+            <input class="form-input" type="text" id="clothes-brand" placeholder="例：Uniqlo（選填）">
+          </div>
+        </div>
+
         <div class="form-group">
-          <label class="form-label" for="clothes-category">類別 *</label>
-          <select class="form-select" id="clothes-category">
-            <option value="">請選擇</option>
-            <option value="top">上衣（top）</option>
-            <option value="bottom">下身（bottom）</option>
-            <option value="outerwear">外套（outerwear）</option>
-            <option value="dress">洋裝（dress）</option>
-            <option value="shoes">鞋子（shoes）</option>
-            <option value="accessory">配件（accessory）</option>
-          </select>
+          <label class="form-label">季節 *</label>
+          <div class="checkbox-tags" id="seasons-container">
+            <label class="checkbox-tag"><input type="checkbox" value="spring" onchange="updateCheckboxTag(this)"> 春季
+              spring</label>
+            <label class="checkbox-tag"><input type="checkbox" value="summer" onchange="updateCheckboxTag(this)"> 夏季
+              summer</label>
+            <label class="checkbox-tag"><input type="checkbox" value="autumn" onchange="updateCheckboxTag(this)"> 秋季
+              autumn</label>
+            <label class="checkbox-tag"><input type="checkbox" value="winter" onchange="updateCheckboxTag(this)"> 冬季
+              winter</label>
+          </div>
         </div>
+
         <div class="form-group">
-          <label class="form-label" for="clothes-name">名稱 *</label>
-          <input class="form-input" type="text" id="clothes-name" placeholder="例：白色 T-shirt">
+          <label class="form-label">場合 *</label>
+          <div class="checkbox-tags" id="occasions-container">
+            <label class="checkbox-tag"><input type="checkbox" value="socialGathering"
+                onchange="updateCheckboxTag(this)"> 社交聚會</label>
+            <label class="checkbox-tag"><input type="checkbox" value="campusCasual" onchange="updateCheckboxTag(this)">
+              校園休閒</label>
+            <label class="checkbox-tag"><input type="checkbox" value="businessCasual"
+                onchange="updateCheckboxTag(this)"> 商務休閒</label>
+            <label class="checkbox-tag"><input type="checkbox" value="professional" onchange="updateCheckboxTag(this)">
+              專業職場</label>
+          </div>
         </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label" for="clothes-color">顏色 *</label>
-          <input class="form-input" type="text" id="clothes-color" placeholder="例：白色">
+        <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn-primary" id="save-clothes-btn" onclick="saveClothes()">加入衣櫃</button>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="clothes-brand">品牌</label>
-          <input class="form-input" type="text" id="clothes-brand" placeholder="例：Uniqlo（選填）">
-        </div>
+        <div class="status-bar" id="clothes-save-status"></div>
       </div>
-
-      <div class="form-group">
-        <label class="form-label">季節 *</label>
-        <div class="checkbox-tags" id="seasons-container">
-          <label class="checkbox-tag"><input type="checkbox" value="spring" onchange="updateCheckboxTag(this)"> 春季 spring</label>
-          <label class="checkbox-tag"><input type="checkbox" value="summer" onchange="updateCheckboxTag(this)"> 夏季 summer</label>
-          <label class="checkbox-tag"><input type="checkbox" value="autumn" onchange="updateCheckboxTag(this)"> 秋季 autumn</label>
-          <label class="checkbox-tag"><input type="checkbox" value="winter" onchange="updateCheckboxTag(this)"> 冬季 winter</label>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">場合 *</label>
-        <div class="checkbox-tags" id="occasions-container">
-          <label class="checkbox-tag"><input type="checkbox" value="socialGathering" onchange="updateCheckboxTag(this)"> 社交聚會</label>
-          <label class="checkbox-tag"><input type="checkbox" value="campusCasual" onchange="updateCheckboxTag(this)"> 校園休閒</label>
-          <label class="checkbox-tag"><input type="checkbox" value="businessCasual" onchange="updateCheckboxTag(this)"> 商務休閒</label>
-          <label class="checkbox-tag"><input type="checkbox" value="professional" onchange="updateCheckboxTag(this)"> 專業職場</label>
-        </div>
-      </div>
-
-      <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="btn-primary" id="save-clothes-btn" onclick="saveClothes()">加入衣櫃</button>
-      </div>
-      <div class="status-bar" id="clothes-save-status"></div>
     </div>
   </div>
-</div>
 
-<script>
-  // 當前選擇的 day
-  let selectedDay = 'today';
-  // JWT Token
-  let jwtToken = localStorage.getItem('dev_jwt_token') || '';
+  <script>
+    // 當前選擇的 day
+    let selectedDay = 'today';
+    // JWT Token
+    let jwtToken = localStorage.getItem('dev_jwt_token') || '';
 
-  // ── 初始化 ──────────────────────────────────────────────
-  async function init() {
-    // 若已有 token，直接顯示已登入狀態（從 localStorage 快取使用者資訊）
-    const cachedUser = localStorage.getItem('dev_user_info');
-    if (jwtToken && cachedUser) {
+    // ── 初始化 ──────────────────────────────────────────────
+    async function init() {
+      // 若已有 token，直接顯示已登入狀態（從 localStorage 快取使用者資訊）
+      const cachedUser = localStorage.getItem('dev_user_info');
+      if (jwtToken && cachedUser) {
+        try {
+          const user = JSON.parse(cachedUser);
+          showUserInfo(user);
+        } catch { }
+      }
+
+      // 動態取得 GOOGLE_CLIENT_ID 後掛載 Google Sign-In
       try {
-        const user = JSON.parse(cachedUser);
-        showUserInfo(user);
-      } catch {}
-    }
-
-    // 動態取得 GOOGLE_CLIENT_ID 後掛載 Google Sign-In
-    try {
-      const { data } = await axios.get('/dev/config');
-      if (data.googleClientId) {
-        mountGoogleSignIn(data.googleClientId);
+        const { data } = await axios.get('/dev/config');
+        if (data.googleClientId) {
+          mountGoogleSignIn(data.googleClientId);
+        }
+      } catch (e) {
+        console.warn('無法取得 Google Client ID', e);
       }
-    } catch (e) {
-      console.warn('無法取得 Google Client ID', e);
+
+      // 載入目前的 instruction
+      await loadInstruction();
     }
 
-    // 載入目前的 instruction
-    await loadInstruction();
-  }
+    // ── Google Sign-In ──────────────────────────────────────
+    function mountGoogleSignIn(clientId) {
+      // 動態插入 GSI script
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        // 初始化 Google Identity Services
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleGoogleCredential,
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById('google-btn-wrap'),
+          { theme: 'filled_black', size: 'large', text: 'signin_with', shape: 'rectangular' }
+        );
+      };
+      document.head.appendChild(script);
+    }
 
-  // ── Google Sign-In ──────────────────────────────────────
-  function mountGoogleSignIn(clientId) {
-    // 動態插入 GSI script
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      // 初始化 Google Identity Services
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleCredential,
-      });
-      window.google.accounts.id.renderButton(
-        document.getElementById('google-btn-wrap'),
-        { theme: 'filled_black', size: 'large', text: 'signin_with', shape: 'rectangular' }
-      );
-    };
-    document.head.appendChild(script);
-  }
-
-  // Google 登入回調：將 id_token 送至後端換取 JWT
-  async function handleGoogleCredential(response) {
-    try {
-      const { data } = await axios.post('/auth/google', { id_token: response.credential });
-      if (data.status) {
-        jwtToken = data.data.token;
-        localStorage.setItem('dev_jwt_token', jwtToken);
-        localStorage.setItem('dev_user_info', JSON.stringify(data.data.user));
-        showUserInfo(data.data.user);
-        showStatus('save-status', '登入成功', 'success');
+    // Google 登入回調：將 id_token 送至後端換取 JWT
+    async function handleGoogleCredential(response) {
+      try {
+        const { data } = await axios.post('/auth/google', { id_token: response.credential });
+        if (data.status) {
+          jwtToken = data.data.token;
+          localStorage.setItem('dev_jwt_token', jwtToken);
+          localStorage.setItem('dev_user_info', JSON.stringify(data.data.user));
+          showUserInfo(data.data.user);
+          showStatus('save-status', '登入成功', 'success');
+        }
+      } catch (e) {
+        showStatus('save-status', '登入失敗：' + (e.response?.data?.message || e.message), 'error');
       }
-    } catch (e) {
-      showStatus('save-status', '登入失敗：' + (e.response?.data?.message || e.message), 'error');
     }
-  }
 
-  function showUserInfo(user) {
-    document.getElementById('login-area').style.display = 'none';
-    document.getElementById('user-area').style.display = 'block';
-    document.getElementById('user-name-text').textContent = user.name || user.email || '使用者';
-    const avatar = document.getElementById('user-avatar');
-    if (user.avatar) {
-      avatar.src = user.avatar;
-    } else {
-      avatar.style.display = 'none';
-    }
-    loadUserPreferences();
-  }
-
-  function logout() {
-    jwtToken = '';
-    localStorage.removeItem('dev_jwt_token');
-    localStorage.removeItem('dev_user_info');
-    document.getElementById('login-area').style.display = 'block';
-    document.getElementById('user-area').style.display = 'none';
-    document.getElementById('result-section').style.display = 'none';
-  }
-
-  // ── Instruction 操作 ────────────────────────────────────
-  async function loadInstruction() {
-    try {
-      const { data } = await axios.get('/dev/outfit-instruction');
-      document.getElementById('instruction-textarea').value = data.instruction || '';
-    } catch (e) {
-      showStatus('save-status', '載入 instruction 失敗：' + (e.response?.data?.message || e.message), 'error');
-    }
-  }
-
-  async function saveInstruction() {
-    const instruction = document.getElementById('instruction-textarea').value;
-    if (!instruction.trim()) {
-      showStatus('save-status', 'Instruction 不可為空', 'error');
-      return;
-    }
-    showStatus('save-status', '儲存中，tsx watch 重啟後即生效...', 'info');
-    try {
-      const { data } = await axios.put('/dev/outfit-instruction', { instruction });
-      // 給 tsx watch 約 1.5 秒重啟，再重新載入 instruction 確認
-      setTimeout(async () => {
-        await loadInstruction();
-        showStatus('save-status', '✓ ' + data.message, 'success');
-      }, 1500);
-    } catch (e) {
-      showStatus('save-status', '儲存失敗：' + (e.response?.data?.message || e.message), 'error');
-    }
-  }
-
-  // ── Day 選擇 ────────────────────────────────────────────
-  function selectDay(day) {
-    selectedDay = day;
-    document.getElementById('opt-today').classList.toggle('active', day === 'today');
-    document.getElementById('opt-tomorrow').classList.toggle('active', day === 'tomorrow');
-  }
-
-  // ── 測試 GET /home ──────────────────────────────────────
-  async function testHome() {
-    if (!jwtToken) {
-      showStatus('test-status', '請先登入', 'error');
-      return;
-    }
-    const btn = document.getElementById('test-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;"></span>呼叫中...';
-    showStatus('test-status', '等待 AI 穿搭推薦回傳...', 'info');
-    document.getElementById('result-section').style.display = 'none';
-
-    try {
-      const { data } = await axios.get(`/home?day=${selectedDay}`, {
-        headers: { Authorization: `Bearer ${jwtToken}` }
-      });
-      if (data.status) {
-        renderResult(data.data);
-        showStatus('test-status', `✓ ${data.message}`, 'success');
+    function showUserInfo(user) {
+      document.getElementById('login-area').style.display = 'none';
+      document.getElementById('user-area').style.display = 'block';
+      document.getElementById('user-name-text').textContent = user.name || user.email || '使用者';
+      const avatar = document.getElementById('user-avatar');
+      if (user.avatar) {
+        avatar.src = user.avatar;
       } else {
-        showStatus('test-status', data.message, 'error');
+        avatar.style.display = 'none';
       }
-    } catch (e) {
-      const msg = e.response?.data?.message || e.message;
-      showStatus('test-status', '請求失敗：' + msg, 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '測試穿搭推薦';
+      loadUserPreferences();
     }
-  }
 
-  // ── 渲染結果 ────────────────────────────────────────────
-  function renderResult({ recommendation, weather, city }) {
-    const resultEl = document.getElementById('result-section');
-    resultEl.style.display = 'block';
+    function logout() {
+      jwtToken = '';
+      localStorage.removeItem('dev_jwt_token');
+      localStorage.removeItem('dev_user_info');
+      document.getElementById('login-area').style.display = 'block';
+      document.getElementById('user-area').style.display = 'none';
+      document.getElementById('result-section').style.display = 'none';
+    }
 
-    // 天氣資訊
-    const weatherRow = document.getElementById('weather-row');
-    weatherRow.innerHTML = `
+    // ── Instruction 操作 ────────────────────────────────────
+    async function loadInstruction() {
+      try {
+        const { data } = await axios.get('/dev/outfit-instruction');
+        document.getElementById('instruction-textarea').value = data.instruction || '';
+      } catch (e) {
+        showStatus('save-status', '載入 instruction 失敗：' + (e.response?.data?.message || e.message), 'error');
+      }
+    }
+
+    async function saveInstruction() {
+      const instruction = document.getElementById('instruction-textarea').value;
+      if (!instruction.trim()) {
+        showStatus('save-status', 'Instruction 不可為空', 'error');
+        return;
+      }
+      showStatus('save-status', '儲存中，tsx watch 重啟後即生效...', 'info');
+      try {
+        const { data } = await axios.put('/dev/outfit-instruction', { instruction });
+        // 給 tsx watch 約 1.5 秒重啟，再重新載入 instruction 確認
+        setTimeout(async () => {
+          await loadInstruction();
+          showStatus('save-status', '✓ ' + data.message, 'success');
+        }, 1500);
+      } catch (e) {
+        showStatus('save-status', '儲存失敗：' + (e.response?.data?.message || e.message), 'error');
+      }
+    }
+
+    // ── Day 選擇 ────────────────────────────────────────────
+    function selectDay(day) {
+      selectedDay = day;
+      document.getElementById('opt-today').classList.toggle('active', day === 'today');
+      document.getElementById('opt-tomorrow').classList.toggle('active', day === 'tomorrow');
+    }
+
+    // ── 測試 GET /home ──────────────────────────────────────
+    async function testHome() {
+      if (!jwtToken) {
+        showStatus('test-status', '請先登入', 'error');
+        return;
+      }
+      const btn = document.getElementById('test-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;"></span>呼叫中...';
+      showStatus('test-status', '等待 AI 穿搭推薦回傳...', 'info');
+      document.getElementById('result-section').style.display = 'none';
+
+      try {
+        const { data } = await axios.get(`/home?day=${selectedDay}`, {
+          headers: { Authorization: `Bearer ${jwtToken}` }
+        });
+        if (data.status) {
+          renderResult(data.data);
+          showStatus('test-status', `✓ ${data.message}`, 'success');
+        } else {
+          showStatus('test-status', data.message, 'error');
+        }
+      } catch (e) {
+        const msg = e.response?.data?.message || e.message;
+        showStatus('test-status', '請求失敗：' + msg, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '測試穿搭推薦';
+      }
+    }
+
+    // ── 渲染結果 ────────────────────────────────────────────
+    function renderResult({ recommendation, weather, city }) {
+      const resultEl = document.getElementById('result-section');
+      resultEl.style.display = 'block';
+
+      // 天氣資訊
+      const weatherRow = document.getElementById('weather-row');
+      weatherRow.innerHTML = `
       <div class="weather-chip">城市：<span>${city || '—'}</span></div>
       <div class="weather-chip">溫度：<span>${weather.temperature}°C</span></div>
       <div class="weather-chip">天氣：<span>${weather.weather}</span></div>
       <div class="weather-chip" style="flex:1;min-width:200px;">說明：<span>${weather.weatherDescription}</span></div>
     `;
 
-    // 推薦服飾
-    const grid = document.getElementById('items-grid');
-    grid.innerHTML = (recommendation.selectedItems || []).map(item => `
+      // 推薦服飾
+      const grid = document.getElementById('items-grid');
+      grid.innerHTML = (recommendation.selectedItems || []).map(item => `
       <div class="item-card">
         ${item.cloudImgUrl
           ? `<img src="${escapeHtml(item.cloudImgUrl)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.style.display='none'" />`
@@ -651,374 +445,375 @@
       </div>
     `).join('');
 
-    // 搭配理由
-    document.getElementById('reasoning-box').textContent = recommendation.reasoning || '—';
+      // 搭配理由
+      document.getElementById('reasoning-box').textContent = recommendation.reasoning || '—';
 
-    // 捲動到結果區
-    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+      // 捲動到結果區
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
-  // ── 工具函式 ────────────────────────────────────────────
+    // ── 工具函式 ────────────────────────────────────────────
 
-  // Toast 狀態提示（以 flex 排版，支援 spinner icon）
-  function showStatus(id, message, type) {
-    const el = document.getElementById(id);
-    el.className = `status-bar ${type} show`;
-    const icons = { info: '<span class="spinner"></span>', success: '✅', error: '❌' };
-    const icon = icons[type] || '';
-    el.innerHTML = `${icon}<span>${message}</span>`;
-  }
+    // Toast 狀態提示（以 flex 排版，支援 spinner icon）
+    function showStatus(id, message, type) {
+      const el = document.getElementById(id);
+      el.className = `status-bar ${type} show`;
+      const icons = { info: '<span class="spinner"></span>', success: '✅', error: '❌' };
+      const icon = icons[type] || '';
+      el.innerHTML = `${icon}<span>${message}</span>`;
+    }
 
-  // 純文字跳脫
-  function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+    // 純文字跳脫
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
 
-  // JSON 語法高亮：將文字轉成帶 span 的 HTML
-  function highlightJson(text) {
-    // 先跳脫 HTML 特殊字元
-    const escaped = text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+    // JSON 語法高亮：將文字轉成帶 span 的 HTML
+    function highlightJson(text) {
+      // 先跳脫 HTML 特殊字元
+      const escaped = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
 
-    return escaped
-      // 括號與花括號：近白
-      .replace(/[{}\[\]]/g, m => `<span class="jb">${m}</span>`)
-      // JSON key（引號包覆後接冒號）：淺藍
-      .replace(/(&quot;[^&]*?&quot;)(\s*:)/g, (_, k, colon) =>
-        `<span class="jk">${k}</span>${colon}`
-      )
-      // placeholder 值（&lt;...&gt;）：琥珀黃
-      .replace(/&lt;[^&]*?&gt;/g, m => `<span class="jp">${m}</span>`)
-      // 其餘引號字串（string value）：淺綠
-      .replace(/(&quot;(?!<span)[^&]*?&quot;)/g, m => `<span class="jv">${m}</span>`)
-      // 非包覆的說明文字行首（數字 + 點）：灰
-      .replace(/^(\d+\. .*)$/gm, m => `<span class="jc">${m}</span>`);
-  }
+      return escaped
+        // 括號與花括號：近白
+        .replace(/[{}\[\]]/g, m => `<span class="jb">${m}</span>`)
+        // JSON key（引號包覆後接冒號）：淺藍
+        .replace(/(&quot;[^&]*?&quot;)(\s*:)/g, (_, k, colon) =>
+          `<span class="jk">${k}</span>${colon}`
+        )
+        // placeholder 值（&lt;...&gt;）：琥珀黃
+        .replace(/&lt;[^&]*?&gt;/g, m => `<span class="jp">${m}</span>`)
+        // 其餘引號字串（string value）：淺綠
+        .replace(/(&quot;(?!<span)[^&]*?&quot;)/g, m => `<span class="jv">${m}</span>`)
+        // 非包覆的說明文字行首（數字 + 點）：灰
+        .replace(/^(\d+\. .*)$/gm, m => `<span class="jc">${m}</span>`);
+    }
 
-  // 渲染鎖定的 JSON 規則區塊
-  function renderLockedRule() {
-    const raw = `6. 回傳格式必須是合法的 JSON，結構如下：\n{\n  "selectedItems": [\n    { "category": "&lt;category&gt;", "name": "&lt;name&gt;", "brand": "&lt;brand&gt;", "cloudImgUrl": "&lt;cloudImgUrl&gt;" }\n  ],\n  "occasion": "使用者資訊: 場合的 value ( occasions )",\n  "reasoning": "搭配理由（繁體中文，2-4句）"\n}`;
-    const el = document.getElementById('locked-rule');
-    // raw 已含 &lt;/&gt; 跳脫，直接套高亮
-    el.innerHTML = raw
-      .replace(/[{}\[\]]/g, m => `<span class="jb">${m}</span>`)
-      .replace(/("(?:[^"\\]|\\.)*")(\s*:)/g, (_, k, colon) => `<span class="jk">${k}</span>${colon}`)
-      .replace(/&lt;[^&]*?&gt;/g, m => `<span class="jp">${m}</span>`)
-      .replace(/"([^"]*)"/g, m => `<span class="jv">${m}</span>`)
-      .replace(/^(6\. .*)$/m, m => `<span class="jc">${m}</span>`);
-  }
+    // 渲染鎖定的 JSON 規則區塊
+    function renderLockedRule() {
+      const raw = `6. 回傳格式必須是合法的 JSON，結構如下：\n{\n  "selectedItems": [\n    { "category": "&lt;category&gt;", "name": "&lt;name&gt;", "brand": "&lt;brand&gt;", "cloudImgUrl": "&lt;cloudImgUrl&gt;" }\n  ],\n  "occasion": "使用者資訊: 場合的 value ( occasions )",\n  "reasoning": "搭配理由（繁體中文，2-4句）"\n}`;
+      const el = document.getElementById('locked-rule');
+      // raw 已含 &lt;/&gt; 跳脫，直接套高亮
+      el.innerHTML = raw
+        .replace(/[{}\[\]]/g, m => `<span class="jb">${m}</span>`)
+        .replace(/("(?:[^"\\]|\\.)*")(\s*:)/g, (_, k, colon) => `<span class="jk">${k}</span>${colon}`)
+        .replace(/&lt;[^&]*?&gt;/g, m => `<span class="jp">${m}</span>`)
+        .replace(/"([^"]*)"/g, m => `<span class="jv">${m}</span>`)
+        .replace(/^(6\. .*)$/m, m => `<span class="jc">${m}</span>`);
+    }
 
-  // ── Modal 開關 ───────────────────────────────────────────
-  function openAddClothesModal() {
-    document.getElementById('add-clothes-modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeAddClothesModal() {
-    document.getElementById('add-clothes-modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  function handleModalOverlayClick(e) {
-    if (e.target === document.getElementById('add-clothes-modal')) {
+    // ── Modal 開關 ───────────────────────────────────────────
+    function openAddClothesModal() {
+      document.getElementById('add-clothes-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeAddClothesModal() {
+      document.getElementById('add-clothes-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function handleModalOverlayClick(e) {
+      if (e.target === document.getElementById('add-clothes-modal')) {
+        closeAddClothesModal();
+      }
+    }
+
+    // ── 新增衣服 ──────────────────────────────────────────────
+    let removedBgUrl = '';
+    let removedBgHash = '';
+
+    // 預覽原始圖片
+    function previewOriginal(input) {
+      if (!input.files.length) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.getElementById('original-preview');
+        img.src = e.target.result;
+        img.style.display = 'block';
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    // 呼叫 POST /remove-bg 進行去背
+    async function removeBg() {
+      if (!jwtToken) { showStatus('upload-status', '請先登入', 'error'); return; }
+      const fileInput = document.getElementById('clothes-file-input');
+      if (!fileInput.files.length) { showStatus('upload-status', '請先選擇圖片', 'error'); return; }
+
+      const btn = document.getElementById('remove-bg-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;"></span>去背中...';
+      showStatus('upload-status', '圖片上傳去背中，請稍候...', 'info');
+      document.getElementById('analyze-form').style.display = 'none';
+
+      const formData = new FormData();
+      formData.append('image', fileInput.files[0]);
+
+      try {
+        const { data } = await axios.post('/process/remove-bg', formData, {
+          headers: { Authorization: `Bearer ${jwtToken}` }
+        });
+        if (data.status) {
+          removedBgUrl = data.data.cloudinaryImageUrl;
+          removedBgHash = data.data.imageHash || '';
+          const prevImg = document.getElementById('removed-bg-preview');
+          prevImg.src = removedBgUrl;
+          prevImg.style.display = 'block';
+          showStatus('upload-status', '✓ 去背完成，AI 分析中...', 'success');
+          await analyzeClothes();
+        }
+      } catch (e) {
+        showStatus('upload-status', '去背失敗：' + (e.response?.data?.message || e.message), 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '去背';
+      }
+    }
+
+    // 呼叫 POST /analyze-clothes 取得 AI 屬性辨識
+    async function analyzeClothes() {
+      showStatus('upload-status', 'AI 辨識衣物屬性中...', 'info');
+      try {
+        const { data } = await axios.post('/process/analyze-clothes',
+          { imageUrl: removedBgUrl, imageHash: removedBgHash },
+          { headers: { Authorization: `Bearer ${jwtToken}` } }
+        );
+        if (data.status) {
+          fillAnalyzeForm(data.data);
+          document.getElementById('analyze-form').style.display = 'block';
+          document.getElementById('analyze-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          showStatus('upload-status', '✓ AI 分析完成，請確認後加入衣櫃', 'success');
+        }
+      } catch (e) {
+        showStatus('upload-status', 'AI 分析失敗：' + (e.response?.data?.message || e.message), 'error');
+      }
+    }
+
+    // 將 AI 分析結果填入表單
+    function fillAnalyzeForm(d) {
+      document.getElementById('clothes-cloudImgUrl').value = d.cloudImgUrl || '';
+      document.getElementById('clothes-category').value = d.category || '';
+      document.getElementById('clothes-name').value = d.name || '';
+      document.getElementById('clothes-color').value = d.color || '';
+      document.getElementById('clothes-brand').value = d.brand || '';
+
+      // 季節 checkboxes
+      ['spring', 'summer', 'autumn', 'winter'].forEach(s => {
+        const cb = document.querySelector(`#seasons-container input[value="${s}"]`);
+        if (cb) {
+          cb.checked = (d.seasons || []).includes(s);
+          cb.parentElement.classList.toggle('checked', cb.checked);
+        }
+      });
+
+      // 場合 checkboxes（依 AI 回傳值勾選固定四個選項）
+      const occasions = d.occasions || [];
+      document.querySelectorAll('#occasions-container input[type="checkbox"]').forEach(cb => {
+        cb.checked = occasions.includes(cb.value);
+        cb.parentElement.classList.toggle('checked', cb.checked);
+      });
+    }
+
+    // checkbox tag 視覺與狀態同步
+    function updateCheckboxTag(input) {
+      input.parentElement.classList.toggle('checked', input.checked);
+    }
+
+    // 呼叫 POST /clothes 將衣服存入資料庫
+    async function saveClothes() {
+      if (!jwtToken) { showStatus('clothes-save-status', '請先登入', 'error'); return; }
+
+      const category = document.getElementById('clothes-category').value;
+      const name = document.getElementById('clothes-name').value.trim();
+      const color = document.getElementById('clothes-color').value.trim();
+      const brand = document.getElementById('clothes-brand').value.trim();
+      const cloudImgUrl = document.getElementById('clothes-cloudImgUrl').value;
+
+      if (!category || !name || !color) {
+        showStatus('clothes-save-status', '類別、名稱、顏色為必填', 'error');
+        return;
+      }
+
+      const seasons = Array.from(document.querySelectorAll('#seasons-container input:checked')).map(cb => cb.value);
+      const occasions = Array.from(document.querySelectorAll('#occasions-container input:checked')).map(cb => cb.value);
+
+      const btn = document.getElementById('save-clothes-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;"></span>儲存中...';
+      showStatus('clothes-save-status', '儲存中...', 'info');
+
+      try {
+        const { data } = await axios.post('/clothes',
+          { category, cloudImgUrl, name, color, occasions, seasons, brand, imageHash: removedBgHash },
+          { headers: { Authorization: `Bearer ${jwtToken}` } }
+        );
+        if (data.status) {
+          showStatus('clothes-save-status', `✓ 衣服已加入衣櫃！ID: ${data.data._id}`, 'success');
+          setTimeout(resetClothesForm, 2500);
+        }
+      } catch (e) {
+        showStatus('clothes-save-status', '儲存失敗：' + (e.response?.data?.message || e.message), 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '加入衣櫃';
+      }
+    }
+
+    // 清空新增衣服表單
+    function resetClothesForm() {
+      removedBgUrl = '';
+      removedBgHash = '';
+      document.getElementById('clothes-file-input').value = '';
+      document.getElementById('original-preview').style.display = 'none';
+      document.getElementById('removed-bg-preview').style.display = 'none';
+      document.getElementById('analyze-form').style.display = 'none';
+      document.getElementById('upload-status').className = 'status-bar';
+      document.getElementById('clothes-save-status').className = 'status-bar';
       closeAddClothesModal();
     }
-  }
 
-  // ── 新增衣服 ──────────────────────────────────────────────
-  let removedBgUrl = '';
-  let removedBgHash = '';
+    // ── 偏好設定 Menu ────────────────────────────────────────
 
-  // 預覽原始圖片
-  function previewOriginal(input) {
-    if (!input.files.length) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = document.getElementById('original-preview');
-      img.src = e.target.result;
-      img.style.display = 'block';
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
+    // 展開 / 收起偏好設定面板
+    function togglePrefMenu() {
+      const body = document.getElementById('pref-body');
+      const chevron = document.getElementById('pref-chevron');
+      const isOpen = body.style.display !== 'none';
+      body.style.display = isOpen ? 'none' : 'block';
+      chevron.classList.toggle('open', !isOpen);
+    }
 
-  // 呼叫 POST /remove-bg 進行去背
-  async function removeBg() {
-    if (!jwtToken) { showStatus('upload-status', '請先登入', 'error'); return; }
-    const fileInput = document.getElementById('clothes-file-input');
-    if (!fileInput.files.length) { showStatus('upload-status', '請先選擇圖片', 'error'); return; }
+    // 從 GET /user/information 載入目前偏好並填入 UI
+    async function loadUserPreferences() {
+      if (!jwtToken) return;
+      try {
+        const { data } = await axios.get('/user/information', {
+          headers: { Authorization: `Bearer ${jwtToken}` }
+        });
+        if (!data.status) return;
+        const prefs = data.data.preferences || {};
 
-    const btn = document.getElementById('remove-bg-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;"></span>去背中...';
-    showStatus('upload-status', '圖片上傳去背中，請稍候...', 'info');
-    document.getElementById('analyze-form').style.display = 'none';
+        // 場合（單選）
+        if (prefs.occasions) {
+          const radio = document.querySelector(`#pref-occasions input[value="${prefs.occasions}"]`);
+          if (radio) radio.checked = true;
+        }
 
-    const formData = new FormData();
-    formData.append('image', fileInput.files[0]);
+        // 色系（多選）
+        (prefs.colors || []).forEach(c => {
+          const cb = document.querySelector(`#pref-colors input[value="${c}"]`);
+          if (cb) cb.checked = true;
+        });
 
-    try {
-      const { data } = await axios.post('/process/remove-bg', formData, {
-        headers: { Authorization: `Bearer ${jwtToken}` }
-      });
-      if (data.status) {
-        removedBgUrl = data.data.cloudinaryImageUrl;
-        removedBgHash = data.data.imageHash || '';
-        const prevImg = document.getElementById('removed-bg-preview');
-        prevImg.src = removedBgUrl;
-        prevImg.style.display = 'block';
-        showStatus('upload-status', '✓ 去背完成，AI 分析中...', 'success');
-        await analyzeClothes();
+        // 風格（多選）
+        (prefs.styles || []).forEach(s => {
+          const cb = document.querySelector(`#pref-styles input[value="${s}"]`);
+          if (cb) cb.checked = true;
+        });
+      } catch { }
+    }
+
+    // 儲存場合
+    async function savePrefOccasion() {
+      if (!jwtToken) return;
+      const radio = document.querySelector('#pref-occasions input:checked');
+      if (!radio) { setPrefStatus('pref-occasion-status', '請選擇場合', false); return; }
+      try {
+        await axios.patch('/user/preferences/occasions', { occasionId: radio.value }, {
+          headers: { Authorization: `Bearer ${jwtToken}` }
+        });
+        setPrefStatus('pref-occasion-status', '已儲存', true);
+      } catch (e) {
+        setPrefStatus('pref-occasion-status', e.response?.data?.message || '儲存失敗', false);
       }
-    } catch (e) {
-      showStatus('upload-status', '去背失敗：' + (e.response?.data?.message || e.message), 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '去背';
     }
-  }
 
-  // 呼叫 POST /analyze-clothes 取得 AI 屬性辨識
-  async function analyzeClothes() {
-    showStatus('upload-status', 'AI 辨識衣物屬性中...', 'info');
-    try {
-      const { data } = await axios.post('/process/analyze-clothes',
-        { imageUrl: removedBgUrl, imageHash: removedBgHash },
-        { headers: { Authorization: `Bearer ${jwtToken}` } }
-      );
-      if (data.status) {
-        fillAnalyzeForm(data.data);
-        document.getElementById('analyze-form').style.display = 'block';
-        document.getElementById('analyze-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        showStatus('upload-status', '✓ AI 分析完成，請確認後加入衣櫃', 'success');
+    // 儲存色系
+    async function savePrefColors() {
+      if (!jwtToken) return;
+      const colors = Array.from(document.querySelectorAll('#pref-colors input:checked')).map(cb => cb.value);
+      try {
+        await axios.patch('/user/preferences/colors', { colors }, {
+          headers: { Authorization: `Bearer ${jwtToken}` }
+        });
+        setPrefStatus('pref-colors-status', '已儲存', true);
+      } catch (e) {
+        setPrefStatus('pref-colors-status', e.response?.data?.message || '儲存失敗', false);
       }
-    } catch (e) {
-      showStatus('upload-status', 'AI 分析失敗：' + (e.response?.data?.message || e.message), 'error');
     }
-  }
 
-  // 將 AI 分析結果填入表單
-  function fillAnalyzeForm(d) {
-    document.getElementById('clothes-cloudImgUrl').value = d.cloudImgUrl || '';
-    document.getElementById('clothes-category').value = d.category || '';
-    document.getElementById('clothes-name').value = d.name || '';
-    document.getElementById('clothes-color').value = d.color || '';
-    document.getElementById('clothes-brand').value = d.brand || '';
-
-    // 季節 checkboxes
-    ['spring', 'summer', 'autumn', 'winter'].forEach(s => {
-      const cb = document.querySelector(`#seasons-container input[value="${s}"]`);
-      if (cb) {
-        cb.checked = (d.seasons || []).includes(s);
-        cb.parentElement.classList.toggle('checked', cb.checked);
+    // 儲存風格
+    async function savePrefStyles() {
+      if (!jwtToken) return;
+      const styles = Array.from(document.querySelectorAll('#pref-styles input:checked')).map(cb => cb.value);
+      try {
+        await axios.patch('/user/preferences/styles', { styles }, {
+          headers: { Authorization: `Bearer ${jwtToken}` }
+        });
+        setPrefStatus('pref-styles-status', '已儲存', true);
+      } catch (e) {
+        setPrefStatus('pref-styles-status', e.response?.data?.message || '儲存失敗', false);
       }
-    });
-
-    // 場合 checkboxes（依 AI 回傳值勾選固定四個選項）
-    const occasions = d.occasions || [];
-    document.querySelectorAll('#occasions-container input[type="checkbox"]').forEach(cb => {
-      cb.checked = occasions.includes(cb.value);
-      cb.parentElement.classList.toggle('checked', cb.checked);
-    });
-  }
-
-  // checkbox tag 視覺與狀態同步
-  function updateCheckboxTag(input) {
-    input.parentElement.classList.toggle('checked', input.checked);
-  }
-
-  // 呼叫 POST /clothes 將衣服存入資料庫
-  async function saveClothes() {
-    if (!jwtToken) { showStatus('clothes-save-status', '請先登入', 'error'); return; }
-
-    const category = document.getElementById('clothes-category').value;
-    const name = document.getElementById('clothes-name').value.trim();
-    const color = document.getElementById('clothes-color').value.trim();
-    const brand = document.getElementById('clothes-brand').value.trim();
-    const cloudImgUrl = document.getElementById('clothes-cloudImgUrl').value;
-
-    if (!category || !name || !color) {
-      showStatus('clothes-save-status', '類別、名稱、顏色為必填', 'error');
-      return;
     }
 
-    const seasons = Array.from(document.querySelectorAll('#seasons-container input:checked')).map(cb => cb.value);
-    const occasions = Array.from(document.querySelectorAll('#occasions-container input:checked')).map(cb => cb.value);
-
-    const btn = document.getElementById('save-clothes-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;"></span>儲存中...';
-    showStatus('clothes-save-status', '儲存中...', 'info');
-
-    try {
-      const { data } = await axios.post('/clothes',
-        { category, cloudImgUrl, name, color, occasions, seasons, brand, imageHash: removedBgHash },
-        { headers: { Authorization: `Bearer ${jwtToken}` } }
-      );
-      if (data.status) {
-        showStatus('clothes-save-status', `✓ 衣服已加入衣櫃！ID: ${data.data._id}`, 'success');
-        setTimeout(resetClothesForm, 2500);
-      }
-    } catch (e) {
-      showStatus('clothes-save-status', '儲存失敗：' + (e.response?.data?.message || e.message), 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '加入衣櫃';
-    }
-  }
-
-  // 清空新增衣服表單
-  function resetClothesForm() {
-    removedBgUrl = '';
-    removedBgHash = '';
-    document.getElementById('clothes-file-input').value = '';
-    document.getElementById('original-preview').style.display = 'none';
-    document.getElementById('removed-bg-preview').style.display = 'none';
-    document.getElementById('analyze-form').style.display = 'none';
-    document.getElementById('upload-status').className = 'status-bar';
-    document.getElementById('clothes-save-status').className = 'status-bar';
-    closeAddClothesModal();
-  }
-
-  // ── 偏好設定 Menu ────────────────────────────────────────
-
-  // 展開 / 收起偏好設定面板
-  function togglePrefMenu() {
-    const body = document.getElementById('pref-body');
-    const chevron = document.getElementById('pref-chevron');
-    const isOpen = body.style.display !== 'none';
-    body.style.display = isOpen ? 'none' : 'block';
-    chevron.classList.toggle('open', !isOpen);
-  }
-
-  // 從 GET /user/information 載入目前偏好並填入 UI
-  async function loadUserPreferences() {
-    if (!jwtToken) return;
-    try {
-      const { data } = await axios.get('/user/information', {
-        headers: { Authorization: `Bearer ${jwtToken}` }
-      });
-      if (!data.status) return;
-      const prefs = data.data.preferences || {};
-
-      // 場合（單選）
-      if (prefs.occasions) {
-        const radio = document.querySelector(`#pref-occasions input[value="${prefs.occasions}"]`);
-        if (radio) radio.checked = true;
-      }
-
-      // 色系（多選）
-      (prefs.colors || []).forEach(c => {
-        const cb = document.querySelector(`#pref-colors input[value="${c}"]`);
-        if (cb) cb.checked = true;
-      });
-
-      // 風格（多選）
-      (prefs.styles || []).forEach(s => {
-        const cb = document.querySelector(`#pref-styles input[value="${s}"]`);
-        if (cb) cb.checked = true;
-      });
-    } catch {}
-  }
-
-  // 儲存場合
-  async function savePrefOccasion() {
-    if (!jwtToken) return;
-    const radio = document.querySelector('#pref-occasions input:checked');
-    if (!radio) { setPrefStatus('pref-occasion-status', '請選擇場合', false); return; }
-    try {
-      await axios.patch('/user/preferences/occasions', { occasionId: radio.value }, {
-        headers: { Authorization: `Bearer ${jwtToken}` }
-      });
-      setPrefStatus('pref-occasion-status', '已儲存', true);
-    } catch (e) {
-      setPrefStatus('pref-occasion-status', e.response?.data?.message || '儲存失敗', false);
-    }
-  }
-
-  // 儲存色系
-  async function savePrefColors() {
-    if (!jwtToken) return;
-    const colors = Array.from(document.querySelectorAll('#pref-colors input:checked')).map(cb => cb.value);
-    try {
-      await axios.patch('/user/preferences/colors', { colors }, {
-        headers: { Authorization: `Bearer ${jwtToken}` }
-      });
-      setPrefStatus('pref-colors-status', '已儲存', true);
-    } catch (e) {
-      setPrefStatus('pref-colors-status', e.response?.data?.message || '儲存失敗', false);
-    }
-  }
-
-  // 儲存風格
-  async function savePrefStyles() {
-    if (!jwtToken) return;
-    const styles = Array.from(document.querySelectorAll('#pref-styles input:checked')).map(cb => cb.value);
-    try {
-      await axios.patch('/user/preferences/styles', { styles }, {
-        headers: { Authorization: `Bearer ${jwtToken}` }
-      });
-      setPrefStatus('pref-styles-status', '已儲存', true);
-    } catch (e) {
-      setPrefStatus('pref-styles-status', e.response?.data?.message || '儲存失敗', false);
-    }
-  }
-
-  // 顯示偏好設定儲存狀態
-  function setPrefStatus(id, msg, ok) {
-    const el = document.getElementById(id);
-    el.textContent = msg;
-    el.className = `pref-status ${ok ? 'ok' : 'err'}`;
-    setTimeout(() => { el.textContent = ''; el.className = 'pref-status'; }, 2500);
-  }
-
-  // ── 密碼 Overlay ────────────────────────────────────────
-  // 頁面載入時檢查 sessionStorage，已驗證則直接隱藏 overlay
-  (function checkTestAuth() {
-    if (sessionStorage.getItem('test_auth') === 'granted') {
-      document.getElementById('password-overlay').style.display = 'none';
-    }
-  })();
-
-  // 呼叫後端驗證密碼，成功後寫入 sessionStorage 並隱藏 overlay
-  async function verifyPassword() {
-    const input = document.getElementById('password-input');
-    const errorEl = document.getElementById('password-error');
-    const btn = document.getElementById('pw-submit-btn');
-    const password = input.value;
-
-    if (!password) {
-      errorEl.textContent = '請輸入密碼';
-      return;
+    // 顯示偏好設定儲存狀態
+    function setPrefStatus(id, msg, ok) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.className = `pref-status ${ok ? 'ok' : 'err'}`;
+      setTimeout(() => { el.textContent = ''; el.className = 'pref-status'; }, 2500);
     }
 
-    btn.disabled = true;
-    btn.textContent = '驗證中...';
-    errorEl.textContent = '';
-
-    try {
-      const { data } = await axios.post('/dev/verify-test-password', { password });
-      if (data.success) {
-        sessionStorage.setItem('test_auth', 'granted');
+    // ── 密碼 Overlay ────────────────────────────────────────
+    // 頁面載入時檢查 sessionStorage，已驗證則直接隱藏 overlay
+    (function checkTestAuth() {
+      if (sessionStorage.getItem('test_auth') === 'granted') {
         document.getElementById('password-overlay').style.display = 'none';
       }
-    } catch (e) {
-      errorEl.textContent = e.response?.data?.message || '密碼錯誤，請再試一次';
-      input.value = '';
-      input.focus();
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '確認';
-    }
-  }
+    })();
 
-  // 啟動
-  renderLockedRule();
-  init();
-</script>
+    // 呼叫後端驗證密碼，成功後寫入 sessionStorage 並隱藏 overlay
+    async function verifyPassword() {
+      const input = document.getElementById('password-input');
+      const errorEl = document.getElementById('password-error');
+      const btn = document.getElementById('pw-submit-btn');
+      const password = input.value;
+
+      if (!password) {
+        errorEl.textContent = '請輸入密碼';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '驗證中...';
+      errorEl.textContent = '';
+
+      try {
+        const { data } = await axios.post('/dev/verify-test-password', { password });
+        if (data.success) {
+          sessionStorage.setItem('test_auth', 'granted');
+          document.getElementById('password-overlay').style.display = 'none';
+        }
+      } catch (e) {
+        errorEl.textContent = e.response?.data?.message || '密碼錯誤，請再試一次';
+        input.value = '';
+        input.focus();
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '確認';
+      }
+    }
+
+    // 啟動
+    renderLockedRule();
+    init();
+  </script>
 </body>
+
 </html>
