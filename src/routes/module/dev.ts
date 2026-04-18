@@ -75,7 +75,7 @@ const attemptMap = new Map<string, AttemptRecord>();
 // 驗證測試頁密碼，比對 config.TEST_PASSWORD
 devRouter.post('/verify-test-password', (req, res) => {
   const forwarded = req.headers['x-forwarded-for'];
-  const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(',')[0].trim() || req.socket.remoteAddress || 'unknown';
+  const ip = (Array.isArray(forwarded) ? forwarded[0] ?? '' : forwarded ?? '').split(',')[0].trim() || req.socket.remoteAddress || 'unknown';
 
   const record = attemptMap.get(ip) ?? { count: 0, lockedUntil: null };
 
