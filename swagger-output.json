@@ -5712,6 +5712,377 @@
           }
         ]
       }
+    },
+    "/outfit-adjustment/quota": {
+      "get": {
+        "tags": [
+          "OutfitAdjustment"
+        ],
+        "summary": "取得今日剩餘微調次數",
+        "description": "回傳目前登入使用者今日剩餘的 AI 穿搭微調次數（每日上限 3 次，以 UTC+8 凌晨 00:00 重置），需要攜帶 Bearer Token",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "取得今日剩餘次數成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "maxLimit": {
+                          "type": "number",
+                          "example": 3
+                        },
+                        "used": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "remaining": {
+                          "type": "number",
+                          "example": 2
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未提供或無效的 Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生不可預期的錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/outfit-adjustment/stream": {
+      "post": {
+        "tags": [
+          "OutfitAdjustment"
+        ],
+        "summary": "送出 AI 穿搭微調需求（SSE 串流）",
+        "description": "接收使用者的微調需求，以 SSE 串流依序回傳處理狀態，AI 生成完成後回傳調整後圖片 URL。每日上限 3 次（以 UTC+8 為準），需要攜帶 Bearer Token。\\n\\n回傳格式為 text/event-stream，每個 event 為一行 `data: {...}` 的 JSON。",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SSE 串流（Content-Type: text/event-stream）。處理中會推送 step 1、step 2，成功時推送 completed event。若發生預期外錯誤則會推送 error event。",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "example": "data: {\"status\":\"completed\",\"data\":{\"text\":\"...\",\"originalImageUrl\":\"...\",\"adjustedImageUrl\":\"...\",\"selectedItems\":[]}}"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "缺少必要參數",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "缺少必要參數"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未提供或無效的 Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "今日調整次數已達上限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "今日調整次數已達上限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "有一筆微調正在進行中，請等待完成後再試",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 429
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "有一筆微調正在進行中，請等待完成後再試"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生不可預期的錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "prompt",
+                  "originalImageUrl",
+                  "selectedItems",
+                  "day"
+                ],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "example": "都在冷氣房，幫我加件薄外套"
+                  },
+                  "originalImageUrl": {
+                    "type": "string",
+                    "example": "https://res.cloudinary.com/test/image.jpg"
+                  },
+                  "day": {
+                    "type": "string",
+                    "enum": [
+                      "today",
+                      "tomorrow"
+                    ],
+                    "example": "today"
+                  },
+                  "selectedItems": {
+                    "type": "array",
+                    "description": "目前穿搭的衣物清單",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "cloudImgUrl",
+                        "category",
+                        "name",
+                        "brand"
+                      ],
+                      "properties": {
+                        "cloudImgUrl": {
+                          "type": "string",
+                          "example": "https://res.cloudinary.com/test/item.jpg"
+                        },
+                        "category": {
+                          "type": "string",
+                          "enum": [
+                            "top",
+                            "bottom",
+                            "outerwear",
+                            "shoes",
+                            "skirt",
+                            "dress"
+                          ],
+                          "example": "top"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "白色基本款 T-shirt"
+                        },
+                        "brand": {
+                          "type": "string",
+                          "example": "UNIQLO"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
