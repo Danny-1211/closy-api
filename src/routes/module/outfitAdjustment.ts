@@ -18,6 +18,9 @@ const MAX_DAILY_LIMIT = 3;
 // SSE 推送工具
 function sendSSE(res: express.Response, event: OutfitAdjustmentSSEEvent) {
   res.write(`data: ${JSON.stringify(event)}\n\n`);
+  if (typeof (res as any).flush === 'function') {
+    (res as any).flush();
+  }
 }
 
 // GET /outfit-adjustment/quota — 取得今日剩餘微調次數
@@ -267,6 +270,8 @@ outfitAdjustmentRouter.post('/stream', authMiddleWare, async (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.socket?.setNoDelay(true);
   res.flushHeaders();
 
   const abortController = new AbortController();
