@@ -22,7 +22,7 @@
           "Auth"
         ],
         "summary": "Google 登入驗證",
-        "description": "前端傳遞 Google 登入後的 id_token，後端驗證後回傳系統自訂的 JWT token 與使用者資訊。",
+        "description": "前端傳遞 Google 登入後的 id_token，後端驗證後將系統自訂的 JWT 以 HttpOnly Cookie（名稱 accessToken）形式回傳。前端所有後續 API 請求請以 credentials: \"include\" 發起，瀏覽器會自動夾帶 cookie。",
         "parameters": [
           {
             "name": "body",
@@ -42,7 +42,7 @@
         ],
         "responses": {
           "200": {
-            "description": "登入成功",
+            "description": "登入成功（JWT 已寫入 HttpOnly Cookie accessToken）",
             "content": {
               "application/json": {
                 "schema": {
@@ -104,19 +104,6 @@
                             "properties": {
                               "type": "object",
                               "properties": {
-                                "token": {
-                                  "type": "object",
-                                  "properties": {
-                                    "type": {
-                                      "type": "string",
-                                      "example": "string"
-                                    },
-                                    "example": {
-                                      "type": "string",
-                                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-                                    }
-                                  }
-                                },
                                 "tokenExpiresIn": {
                                   "type": "object",
                                   "properties": {
@@ -189,6 +176,89 @@
                                             "example": {
                                               "type": "string",
                                               "example": "https://lh3.googleusercontent.com/a/..."
+                                            }
+                                          }
+                                        },
+                                        "preferences": {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "type": "string",
+                                              "example": "object"
+                                            },
+                                            "properties": {
+                                              "type": "object",
+                                              "properties": {
+                                                "styles": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "array"
+                                                    },
+                                                    "items": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "string"
+                                                        }
+                                                      }
+                                                    },
+                                                    "example": {
+                                                      "type": "array",
+                                                      "example": [
+                                                        "casual",
+                                                        "vintage"
+                                                      ],
+                                                      "items": {
+                                                        "type": "string"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "colors": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "array"
+                                                    },
+                                                    "items": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "string"
+                                                        }
+                                                      }
+                                                    },
+                                                    "example": {
+                                                      "type": "array",
+                                                      "example": [
+                                                        "black",
+                                                        "white"
+                                                      ],
+                                                      "items": {
+                                                        "type": "string"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "occasions": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "string"
+                                                    },
+                                                    "example": {
+                                                      "type": "string",
+                                                      "example": "work"
+                                                    }
+                                                  }
+                                                }
+                                              }
                                             }
                                           }
                                         },
@@ -281,19 +351,6 @@
                             "properties": {
                               "type": "object",
                               "properties": {
-                                "token": {
-                                  "type": "object",
-                                  "properties": {
-                                    "type": {
-                                      "type": "string",
-                                      "example": "string"
-                                    },
-                                    "example": {
-                                      "type": "string",
-                                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-                                    }
-                                  }
-                                },
                                 "tokenExpiresIn": {
                                   "type": "object",
                                   "properties": {
@@ -366,6 +423,89 @@
                                             "example": {
                                               "type": "string",
                                               "example": "https://lh3.googleusercontent.com/a/..."
+                                            }
+                                          }
+                                        },
+                                        "preferences": {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "type": "string",
+                                              "example": "object"
+                                            },
+                                            "properties": {
+                                              "type": "object",
+                                              "properties": {
+                                                "styles": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "array"
+                                                    },
+                                                    "items": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "string"
+                                                        }
+                                                      }
+                                                    },
+                                                    "example": {
+                                                      "type": "array",
+                                                      "example": [
+                                                        "casual",
+                                                        "vintage"
+                                                      ],
+                                                      "items": {
+                                                        "type": "string"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "colors": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "array"
+                                                    },
+                                                    "items": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "string"
+                                                        }
+                                                      }
+                                                    },
+                                                    "example": {
+                                                      "type": "array",
+                                                      "example": [
+                                                        "black",
+                                                        "white"
+                                                      ],
+                                                      "items": {
+                                                        "type": "string"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "occasions": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "string"
+                                                    },
+                                                    "example": {
+                                                      "type": "string",
+                                                      "example": "work"
+                                                    }
+                                                  }
+                                                }
+                                              }
                                             }
                                           }
                                         },
@@ -414,6 +554,32 @@
                     "properties": {
                       "type": "object",
                       "properties": {
+                        "statusCode": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "integer"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 400
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "boolean"
+                            },
+                            "example": {
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        },
                         "message": {
                           "type": "object",
                           "properties": {
@@ -425,6 +591,20 @@
                               "type": "string",
                               "example": "未提供 Token 或格式錯誤"
                             }
+                          }
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "object"
+                            },
+                            "nullable": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "example": {}
                           }
                         }
                       }
@@ -446,6 +626,32 @@
                     "properties": {
                       "type": "object",
                       "properties": {
+                        "statusCode": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "integer"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 400
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "boolean"
+                            },
+                            "example": {
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        },
                         "message": {
                           "type": "object",
                           "properties": {
@@ -457,6 +663,20 @@
                               "type": "string",
                               "example": "未提供 Token 或格式錯誤"
                             }
+                          }
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "object"
+                            },
+                            "nullable": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "example": {}
                           }
                         }
                       }
@@ -617,6 +837,155 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "integer"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 500
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "boolean"
+                            },
+                            "example": {
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        },
+                        "message": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            },
+                            "example": {
+                              "type": "string",
+                              "example": "伺服器錯誤，請稍後再試"
+                            }
+                          }
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "object"
+                            },
+                            "nullable": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "example": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "integer"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 500
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "boolean"
+                            },
+                            "example": {
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        },
+                        "message": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            },
+                            "example": {
+                              "type": "string",
+                              "example": "伺服器錯誤，請稍後再試"
+                            }
+                          }
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "object"
+                            },
+                            "nullable": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "example": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -627,6 +996,315 @@
                 "properties": {
                   "id_token": {
                     "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "登出",
+        "description": "清除 HttpOnly Cookie 中的 accessToken。此 API 為冪等：無論是否帶有合法 token 皆回 200。",
+        "responses": {
+          "200": {
+            "description": "登出成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "integer"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 200
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "boolean"
+                            },
+                            "example": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        },
+                        "message": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            },
+                            "example": {
+                              "type": "string",
+                              "example": "登出成功"
+                            }
+                          }
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "object"
+                            },
+                            "nullable": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "example": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "integer"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 200
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "boolean"
+                            },
+                            "example": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        },
+                        "message": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            },
+                            "example": {
+                              "type": "string",
+                              "example": "登出成功"
+                            }
+                          }
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "object"
+                            },
+                            "nullable": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "example": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "integer"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 500
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "boolean"
+                            },
+                            "example": {
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        },
+                        "message": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            },
+                            "example": {
+                              "type": "string",
+                              "example": "伺服器發生錯誤"
+                            }
+                          }
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "object"
+                            },
+                            "nullable": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "example": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "integer"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 500
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "boolean"
+                            },
+                            "example": {
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        },
+                        "message": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            },
+                            "example": {
+                              "type": "string",
+                              "example": "伺服器發生錯誤"
+                            }
+                          }
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "object"
+                            },
+                            "nullable": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "example": {}
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
                   }
                 }
               }
