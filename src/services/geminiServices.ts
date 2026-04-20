@@ -1,8 +1,9 @@
 import { GoogleGenAI } from '@google/genai';
 import { config } from '../config/env';
-import { OUTFIT_SYSTEM_INSTRUCTION, VIRTUAL_OUTFIT_BASE_DIRECTIVES } from '../constants/gemini';
-import { OutfitContext, GeminiOutfitResponse, VirtualOutfitItem } from '../types/gemini';
+import { OUTFIT_ADJUSTMENT_SYSTEM_INSTRUCTION, OUTFIT_SYSTEM_INSTRUCTION, VIRTUAL_OUTFIT_BASE_DIRECTIVES } from '../constants/gemini';
+import { OutfitAdjustmentContext, OutfitContext, GeminiOutfitResponse, VirtualOutfitItem } from '../types/gemini';
 import { preprocessMannequinImage, postProcessGeneratedImage } from '../utils/outfitImage';
+import { abortable } from '../utils/abortable';
 
 const aiInstance = new GoogleGenAI({ apiKey: config.GEMINI_API_KEY });
 
@@ -79,6 +80,22 @@ export async function generateOutfitRecommendation(context: OutfitContext): Prom
   return parsed;
 }
 
+// 微調 prompt：沿用 buildOutfitPrompt 主體，附加目前穿搭與調整需求
+function buildAdjustmentPrompt(context: OutfitAdjustmentContext): string {
+  const basePrompt = buildOutfitPrompt(context);
+  const currentList = context.currentSelectedItems
+    .map((item, i) => `${i + 1}. 類別: ${item.category} | 名稱: ${item.name} | 品牌: ${item.brand || '無'} | URL: ${item.cloudImgUrl}`)
+    .join('\n');
+
+  return `${basePrompt}
+
+## 目前已選穿搭
+${currentList}
+
+## 本次調整需求
+${context.adjustmentPrompt}`;
+}
+
 function buildVirtualOutfitPrompt(clothesItems: VirtualOutfitItem[]): string {
   const hasDress = clothesItems.some(item => item.category === 'dress');
   const hasTop = clothesItems.some(item => item.category === 'top');
@@ -150,35 +167,79 @@ function buildVirtualOutfitPrompt(clothesItems: VirtualOutfitItem[]): string {
   ].join('\n');
 }
 
+// 呼叫 Gemini 文字模型，依調整需求從衣櫃挑出新的 selectedItems
+// signal 為選填，未傳入時行為與舊版一致
+export async function adjustOutfitSelection(
+  context: OutfitAdjustmentContext,
+  signal?: AbortSignal
+): Promise<GeminiOutfitResponse> {
+  const prompt = buildAdjustmentPrompt(context);
+
+  const response = await abortable(
+    aiInstance.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: prompt,
+      config: {
+        systemInstruction: OUTFIT_ADJUSTMENT_SYSTEM_INSTRUCTION,
+        responseMimeType: 'application/json',
+      },
+    }),
+    signal
+  );
+
+  const text = response.text;
+  if (!text) {
+    throw { statusCode: 500, message: 'AI 未回傳結果，請稍後再試' };
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw { statusCode: 500, message: 'AI 微調結果格式錯誤' };
+  }
+
+  if (!isValidGeminiResponse(parsed)) {
+    throw { statusCode: 500, message: 'AI 微調結果格式錯誤' };
+  }
+
+  return parsed;
+}
+
+// signal 為選填，未傳入時行為與舊版一致（home.ts 推薦流程不傳 signal）
 export async function generateVirtualOutfitImage(
   modelBuffer: Buffer,
-  clothesItems: VirtualOutfitItem[]
+  clothesItems: VirtualOutfitItem[],
+  signal?: AbortSignal
 ): Promise<Buffer> {
   const strictPrompt = buildVirtualOutfitPrompt(clothesItems);
   const processedModelBuffer = await preprocessMannequinImage(modelBuffer);
 
-  const response = await aiInstance.models.generateContent({
-    model: 'gemini-2.5-flash-image',
-    contents: [
-      {
-        role: 'user',
-        parts: [
-          { text: strictPrompt },
-          { inlineData: { mimeType: 'image/png', data: processedModelBuffer.toString('base64') } },
-          ...clothesItems.map(item => ({
-            inlineData: { mimeType: 'image/jpeg', data: item.buffer.toString('base64') },
-          })),
-        ],
+  const response = await abortable(
+    aiInstance.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: strictPrompt },
+            { inlineData: { mimeType: 'image/png', data: processedModelBuffer.toString('base64') } },
+            ...clothesItems.map(item => ({
+              inlineData: { mimeType: 'image/jpeg', data: item.buffer.toString('base64') },
+            })),
+          ],
+        },
+      ],
+      config: {
+        responseModalities: ['IMAGE'],
+        imageConfig: {
+          aspectRatio: '9:16',
+          imageSize: '1K',
+        },
       },
-    ],
-    config: {
-      responseModalities: ['IMAGE'],
-      imageConfig: {
-        aspectRatio: '9:16',
-        imageSize: '1K',
-      },
-    },
-  });
+    }),
+    signal
+  );
   const parts = response.candidates?.[0]?.content?.parts ?? [];
   const imagePart = parts.find(p => p.inlineData?.data);
 

@@ -11,7 +11,7 @@ export const config: EnvConfig = {
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
   JWT_SECRET: process.env.JWT_SECRET || 'default_fallback_secret',
-  JWT_EXPIRES_IN: (process.env.JWT_EXPIRES_IN || '1h') as SignOptions['expiresIn'],
+  JWT_EXPIRES_IN: (process.env.JWT_EXPIRES_IN || '14d') as SignOptions['expiresIn'],
   PICTURE_TOKEN: process.env.PICTURE_TOKEN || '',
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || '',

@@ -6,6 +6,7 @@ import { homeRouter } from './module/home';
 import { clothesRouter } from './module/clothes'
 import { outfitRouter } from './module/outfit'
 import { devRouter } from './module/dev';
+import { outfitAdjustmentRouter } from './module/outfitAdjustment';
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.use('/clothes', clothesRouter);
 router.use('/home', homeRouter);
 router.use('/outfit', outfitRouter);
 router.use('/dev', devRouter);
+router.use('/outfit-adjustment', outfitAdjustmentRouter);
 
 
 export { router };

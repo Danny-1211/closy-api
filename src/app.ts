@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { config } from './config/env';
 import { connectDB } from './config/db';
 import { router } from './routes/routerAdmin';
@@ -12,6 +13,7 @@ const port = process.env.PORT || config.PORT;
 app.use(cors(corsOptions));
 app.use('/api-docs', swaggerServe, swaggerSetup);
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(router);
 
