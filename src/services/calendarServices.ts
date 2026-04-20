@@ -31,3 +31,14 @@ export const addCalendarEvent = async (userId: string, scheduleDate: string, cal
   return newCalendarEvent;
 };
 
+// 刪除行事曆行程
+export const deleteCalendarEvent = async (userId: string, calendarId: string) => {
+
+  const deleteCalendarEvent = await Calendar.findOneAndDelete({
+    _id: calendarId,
+    userId: userId
+  }, {
+    returnDocument: 'after',
+  });
+  return deleteCalendarEvent;
+};
