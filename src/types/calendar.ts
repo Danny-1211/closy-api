@@ -7,7 +7,7 @@ type CalendarItem = {
   userId: string;
   calendarEventOccasion: string;
   scheduleDate: string;
-  outfit: ThisOutfit
+  outfit?: ThisOutfit
 }
 
 

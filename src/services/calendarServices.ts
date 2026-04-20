@@ -10,18 +10,19 @@ export const getCalendarList = async (userId: string) => {
 };
 
 // 新增行事曆行程
-export const addCalendarEvent = async (userId: string, scheduleDate: string, calendarEventOccasion: string, outfit: CalendarType.ThisOutfit) => {
+export const addCalendarEvent = async (userId: string, scheduleDate: string, calendarEventOccasion: string, outfit?: CalendarType.ThisOutfit) => {
+  // 僅在有傳入 outfit 時才寫入該欄位，避免覆蓋為 undefined
+  const setFields: Record<string, unknown> = {
+    calendarEventOccasion: calendarEventOccasion
+  };
+  if (outfit !== undefined) setFields.outfit = outfit;
+
   const newCalendarEvent = await Calendar.findOneAndUpdate(
     {
       userId: userId,
       scheduleDate: scheduleDate
     },
-    {
-      $set: {
-        calendarEventOccasion: calendarEventOccasion,
-        outfit: outfit
-      }
-    },
+    { $set: setFields },
     {
       returnDocument: 'after',
       upsert: true,
