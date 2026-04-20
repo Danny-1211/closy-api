@@ -2,6 +2,7 @@
 import { COLORS_SET, STYLES_SET, OCCASIONS_SET, genderOptions } from '../constants/user';
 import { CLOTHES_COLORS_SET, CLOTHES_OCCASIONS_SET, CLOTHES_SEASONS_SET, CLOTHES_CATEGORIES_SET } from '../constants/clothes';
 import { OccasionType } from '../types/outfit';
+import { getOutfitById } from '../services/outfitServices';
 
 // ── User 偏好設定驗證 ──────────────────────────────────────────
 
@@ -127,4 +128,60 @@ export function validateClothesItem(body: {
 export function validateOutfitOccasion(occasion: unknown): occasion is OccasionType {
   if (typeof occasion !== 'string') return false;
   return !!CLOTHES_OCCASIONS_SET.find(occasionSet => occasionSet.occasionId === occasion);
+}
+
+// ── 行事曆（Calendar）驗證 ────────────────────────────────────────
+
+// 檢查日期格式是否符合 YYYY/MM/DD
+function validateScheduleDate(date: unknown): boolean {
+  if (typeof date !== 'string') return false;
+  const dateRegex = /^\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/;
+  if (!dateRegex.test(date)) return false;
+  return !isNaN(new Date(date).getTime());
+}
+
+// 檢查行程類別是否符合 CLOTHES_OCCASIONS_SET
+function validateCalendarOccasion(occasion: unknown): occasion is OccasionType {
+  if (typeof occasion !== 'string') return false;
+  return !!CLOTHES_OCCASIONS_SET.find(occasionSet => occasionSet.occasionId === occasion);
+}
+
+// 檢查穿搭是否存在
+async function validateOutfitExists(userId: string, outfit: unknown): Promise<boolean> {
+  if (typeof outfit !== 'object' || outfit === null) return false;
+  const outfitId = (outfit as Record<string, unknown>)._id;
+  if (typeof outfitId !== 'string' || !outfitId) return false;
+  try {
+    const found = await getOutfitById(userId, outfitId);
+    return !!found;
+  } catch {
+    return false;
+  }
+}
+
+// PATCH /calendar/:id 的統一驗證器
+// 回傳 null 表示全部合法，回傳錯誤物件交由外層 errorHandler 處理
+export async function validateCalendarPatchBody(
+  userId: string,
+  calendarId: string,
+  body: Record<string, unknown>
+) {
+  const { outfit, scheduleDate, calendarEventOccasion } = body;
+
+  if (!calendarId || typeof calendarId !== 'string') {
+    return { statusCode: 400, message: '請提供行程 id' };
+  }
+  if (!outfit && !scheduleDate && !calendarEventOccasion) {
+    return { statusCode: 400, message: '請提供至少一個更新欄位' };
+  }
+  if (scheduleDate && !validateScheduleDate(scheduleDate)) {
+    return { statusCode: 400, message: '日期格式錯誤' };
+  }
+  if (calendarEventOccasion && !validateCalendarOccasion(calendarEventOccasion)) {
+    return { statusCode: 400, message: '場合格式錯誤' };
+  }
+  if (outfit && !(await validateOutfitExists(userId, outfit))) {
+    return { statusCode: 404, message: '找不到該穿搭' };
+  }
+  return null;
 }

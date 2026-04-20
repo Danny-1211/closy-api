@@ -12,6 +12,7 @@ type OutfitItem = {
   selectedItems: selectedItems[];
   createdAt: Date;
   updatedAt: Date;
+  createdDateSimply: string;
 };
 
 type OccasionSummaryItem = {
