@@ -53,7 +53,8 @@ outfitRouter.get('/', authMiddleWare, async (req, res) => {
                            }
                          },
                          createdAt: { type: 'string', example: '2024-06-01T12:00:00.000Z' },
-                         updatedAt: { type: 'string', example: '2024-06-01T12:00:00.000Z' }
+                         updatedAt: { type: 'string', example: '2024-06-01T12:00:00.000Z' },
+                         createdDateSimply: { type: 'string', example: '2024/06/01' }
                        }
                      }
                    }
@@ -75,7 +76,7 @@ outfitRouter.get('/', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '請提供正確的場合' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }
@@ -92,7 +93,7 @@ outfitRouter.get('/', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 401 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }
@@ -109,7 +110,7 @@ outfitRouter.get('/', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 500 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '內部伺服器錯誤或其他錯誤訊息' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }
@@ -201,7 +202,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '請提供完整的穿搭資訊' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }
@@ -218,7 +219,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 401 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }
@@ -235,7 +236,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 500 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '內部伺服器錯誤或其他錯誤訊息' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }
@@ -312,7 +313,7 @@ outfitRouter.delete('/:id', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '請提供單品 id / 刪除失敗' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }
@@ -329,7 +330,7 @@ outfitRouter.delete('/:id', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 401 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }
@@ -346,7 +347,7 @@ outfitRouter.delete('/:id', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 500 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '內部伺服器錯誤或其他錯誤訊息' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }
@@ -403,7 +404,7 @@ outfitRouter.get('/summary', authMiddleWare, async (req, res) => {
                          count: { type: 'integer', example: 5 },
                          recentDates: { 
                            type: 'array', 
-                           items: { type: 'string', example: '2024/6/1' } 
+                           items: { type: 'string', example: '2024/06/01' } 
                          }
                        }
                      }
@@ -426,7 +427,7 @@ outfitRouter.get('/summary', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 401 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }
@@ -443,7 +444,7 @@ outfitRouter.get('/summary', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 500 },
                status: { type: 'boolean', example: false },
                message: { type: 'string', example: '內部伺服器錯誤或其他錯誤訊息' },
-               data: { type: 'object', example: null }
+               data: { type: 'object', nullable: true, example: null }
              }
            }
          }

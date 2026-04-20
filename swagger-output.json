@@ -5816,6 +5816,10 @@
                               "updatedAt": {
                                 "type": "string",
                                 "example": "2024-06-01T12:00:00.000Z"
+                              },
+                              "createdDateSimply": {
+                                "type": "string",
+                                "example": "2024/06/01"
                               }
                             }
                           }
@@ -5848,6 +5852,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -5876,6 +5881,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -5904,6 +5910,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -5983,6 +5990,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6011,6 +6019,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6039,6 +6048,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6187,6 +6197,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6215,6 +6226,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6243,6 +6255,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6314,7 +6327,7 @@
                                 "type": "array",
                                 "items": {
                                   "type": "string",
-                                  "example": "2024/6/1"
+                                  "example": "2024/06/01"
                                 }
                               }
                             }
@@ -6348,6 +6361,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6376,6 +6390,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6760,6 +6775,464 @@
             }
           }
         }
+      }
+    },
+    "/calendar/": {
+      "post": {
+        "tags": [
+          "Calendar"
+        ],
+        "summary": "新增行程",
+        "description": "新增使用者的行程與穿搭紀錄",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "行程新增成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "行程新增成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "缺少必要欄位",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "缺少必要欄位"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權 (Token 無效或過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請先登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "新增失敗",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "新增失敗"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "系統錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "scheduleDate",
+                  "calendarEventOccasion",
+                  "outfit"
+                ],
+                "properties": {
+                  "scheduleDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "行程日期時間",
+                    "example": "2024-11-20T10:00:00.000Z"
+                  },
+                  "calendarEventOccasion": {
+                    "type": "string",
+                    "description": "行程場合",
+                    "example": "工作"
+                  },
+                  "outfit": {
+                    "type": "object",
+                    "description": "穿搭資訊",
+                    "properties": {
+                      "userId": {
+                        "type": "string",
+                        "description": "使用者 ID",
+                        "example": "67329dcb2a38d7aa9bc71415"
+                      },
+                      "outfitImgUrl": {
+                        "type": "string",
+                        "description": "穿搭圖片網址",
+                        "example": "https://example.com/outfit.jpg"
+                      },
+                      "occasion": {
+                        "type": "string",
+                        "description": "穿搭場合",
+                        "example": "工作"
+                      },
+                      "selectedItems": {
+                        "type": "array",
+                        "description": "選擇的服飾單品",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "cloudImgUrl": {
+                              "type": "string",
+                              "description": "單品圖片網址",
+                              "example": "https://example.com/top.jpg"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "單品名稱",
+                              "example": "白色T恤"
+                            },
+                            "brand": {
+                              "type": "string",
+                              "description": "單品品牌",
+                              "example": "Uniqlo"
+                            },
+                            "category": {
+                              "type": "string",
+                              "description": "單品分類",
+                              "example": "top"
+                            }
+                          }
+                        }
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "穿搭建立時間",
+                        "example": "2024-11-20T10:00:00.000Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Calendar"
+        ],
+        "summary": "取得行事曆列表",
+        "description": "取得使用者的所有行程與穿搭紀錄，包含過去與未來的行程，依照日期排序",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得行事曆列表成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "取得行事曆列表成功"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "67329dcb2a38d7aa9bc71415"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "67329dcb2a38d7aa9bc71415"
+                          },
+                          "scheduleDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2024-11-20T10:00:00.000Z"
+                          },
+                          "calendarEventOccasion": {
+                            "type": "string",
+                            "example": "工作"
+                          },
+                          "outfit": {
+                            "type": "object",
+                            "properties": {
+                              "userId": {
+                                "type": "string",
+                                "example": "67329dcb2a38d7aa9bc71415"
+                              },
+                              "outfitImgUrl": {
+                                "type": "string",
+                                "example": "https://example.com/outfit.jpg"
+                              },
+                              "occasion": {
+                                "type": "string",
+                                "example": "工作"
+                              },
+                              "selectedItems": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "cloudImgUrl": {
+                                      "type": "string",
+                                      "example": "https://example.com/top.jpg"
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "example": "白色T恤"
+                                    },
+                                    "brand": {
+                                      "type": "string",
+                                      "example": "Uniqlo"
+                                    },
+                                    "category": {
+                                      "type": "string",
+                                      "example": "top"
+                                    }
+                                  }
+                                }
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-11-20T10:00:00.000Z"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權 (Token 無效或過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請先登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "取得列表失敗",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "取得列表失敗"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "系統錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   },

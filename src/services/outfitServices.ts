@@ -1,6 +1,7 @@
 import { Outfit } from "../models/outfit";
 import { OutfitItem, OccasionSummaryItem } from "../types/outfit";
 import { CLOTHES_OCCASIONS_SET } from "../constants/clothes";
+import { formatDateSimply } from "../utils/datetime";
 
 // 取得我的穿搭列表
 export const getOutfits = async (userId: string, occasion: string) => {
@@ -12,7 +13,7 @@ export const getOutfits = async (userId: string, occasion: string) => {
 }
 
 // 收藏穿搭
-export const addOutfit = async (outfitItem: Omit<OutfitItem, '_id' | 'createdAt' | 'updatedAt'>) => {
+export const addOutfit = async (outfitItem: Omit<OutfitItem, '_id' | 'createdAt' | 'updatedAt' | 'createdDateSimply'>) => {
   const outfit = new Outfit(outfitItem);
   return await outfit.save();
 }
@@ -40,11 +41,10 @@ export const getOccasionSummary = async (userId: string) => {
       const recentItems = await Outfit.find({
         userId,
         occasion: singleOccasion.occasionId
-      }).sort({ createdAt: -1 }).limit(2).select('createdAt');
+      }).sort({ createdAt: -1 }).limit(2).select('createdDateSimply createdAt');
 
       const recentDates = recentItems.map((item: OutfitItem) => {
-        const date = new Date(item.createdAt);
-        return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+        return item.createdDateSimply || formatDateSimply(item.createdAt);
       });
 
       return {
