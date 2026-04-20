@@ -2,7 +2,7 @@
 import { COLORS_SET, STYLES_SET, OCCASIONS_SET, genderOptions } from '../constants/user';
 import { CLOTHES_COLORS_SET, CLOTHES_OCCASIONS_SET, CLOTHES_SEASONS_SET, CLOTHES_CATEGORIES_SET } from '../constants/clothes';
 import { OccasionType } from '../types/outfit';
-import { getOutfitById } from '../services/outfitServices';
+
 
 // ── User 偏好設定驗證 ──────────────────────────────────────────
 
@@ -146,32 +146,19 @@ function validateCalendarOccasion(occasion: unknown): occasion is OccasionType {
   return !!CLOTHES_OCCASIONS_SET.find(occasionSet => occasionSet.occasionId === occasion);
 }
 
-// 檢查穿搭是否存在
-async function validateOutfitExists(userId: string, outfit: unknown): Promise<boolean> {
-  if (typeof outfit !== 'object' || outfit === null) return false;
-  const outfitId = (outfit as Record<string, unknown>)._id;
-  if (typeof outfitId !== 'string' || !outfitId) return false;
-  try {
-    const found = await getOutfitById(userId, outfitId);
-    return !!found;
-  } catch {
-    return false;
-  }
-}
-
-// PATCH /calendar/:id 的統一驗證器
+// PATCH /calendar/:id 的統一驗證器（只做格式檢查，不打資料庫）
+// 穿搭存在性由呼叫端以 getOutfitById 取回時同時驗證，避免重複查詢
 // 回傳 null 表示全部合法，回傳錯誤物件交由外層 errorHandler 處理
-export async function validateCalendarPatchBody(
-  userId: string,
+export function validateCalendarPatchBody(
   calendarId: string,
   body: Record<string, unknown>
 ) {
-  const { outfit, scheduleDate, calendarEventOccasion } = body;
+  const { outfitId, scheduleDate, calendarEventOccasion } = body;
 
   if (!calendarId || typeof calendarId !== 'string') {
     return { statusCode: 400, message: '請提供行程 id' };
   }
-  if (!outfit && !scheduleDate && !calendarEventOccasion) {
+  if (!outfitId && !scheduleDate && !calendarEventOccasion) {
     return { statusCode: 400, message: '請提供至少一個更新欄位' };
   }
   if (scheduleDate && !validateScheduleDate(scheduleDate)) {
@@ -180,8 +167,8 @@ export async function validateCalendarPatchBody(
   if (calendarEventOccasion && !validateCalendarOccasion(calendarEventOccasion)) {
     return { statusCode: 400, message: '場合格式錯誤' };
   }
-  if (outfit && !(await validateOutfitExists(userId, outfit))) {
-    return { statusCode: 404, message: '找不到該穿搭' };
+  if (outfitId !== undefined && typeof outfitId !== 'string') {
+    return { statusCode: 400, message: 'outfitId 格式錯誤' };
   }
   return null;
 }

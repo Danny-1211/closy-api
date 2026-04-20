@@ -6888,7 +6888,7 @@
             }
           },
           "404": {
-            "description": "新增失敗",
+            "description": "新增失敗 / 找不到該穿搭",
             "content": {
               "application/json": {
                 "schema": {
@@ -6904,7 +6904,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "新增失敗"
+                      "example": "新增失敗 / 找不到該穿搭"
                     },
                     "data": {
                       "type": "object",
@@ -6959,8 +6959,7 @@
                 "type": "object",
                 "required": [
                   "scheduleDate",
-                  "calendarEventOccasion",
-                  "outfit"
+                  "calendarEventOccasion"
                 ],
                 "properties": {
                   "scheduleDate": {
@@ -6973,71 +6972,10 @@
                     "description": "行程場合",
                     "example": "businessCasual"
                   },
-                  "outfit": {
-                    "type": "object",
-                    "description": "穿搭資訊",
-                    "properties": {
-                      "_id": {
-                        "type": "string",
-                        "description": "穿搭 ID",
-                        "example": "69e5e1d35368f7b91d76a8aa"
-                      },
-                      "userId": {
-                        "type": "string",
-                        "description": "使用者 ID",
-                        "example": "69c78a9f77ac6314790d6c16"
-                      },
-                      "outfitImgUrl": {
-                        "type": "string",
-                        "description": "穿搭圖片網址",
-                        "example": "https://res.cloudinary.com/damapwahs/image/upload/v1776672966/closy/users/outfits/69c78a9f77ac6314790d6c16/i2skmm6sjbqlwyjysgex.png"
-                      },
-                      "occasion": {
-                        "type": "string",
-                        "description": "穿搭場合",
-                        "example": "businessCasual"
-                      },
-                      "selectedItems": {
-                        "type": "array",
-                        "description": "選擇的服飾單品",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "cloudImgUrl": {
-                              "type": "string",
-                              "description": "單品圖片網址",
-                              "example": "https://res.cloudinary.com/damapwahs/image/upload/v1776498082/closy/system/nlrfghk70weenchkpbw2.png"
-                            },
-                            "name": {
-                              "type": "string",
-                              "description": "單品名稱",
-                              "example": "襯衫98566"
-                            },
-                            "brand": {
-                              "type": "string",
-                              "description": "單品品牌",
-                              "example": ""
-                            },
-                            "category": {
-                              "type": "string",
-                              "description": "單品分類",
-                              "example": "top"
-                            }
-                          }
-                        }
-                      },
-                      "createdDateSimply": {
-                        "type": "string",
-                        "description": "簡易日期格式",
-                        "example": "2026/04/20"
-                      },
-                      "createdAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "description": "穿搭建立時間",
-                        "example": "2026-04-20T08:20:35.793Z"
-                      }
-                    }
+                  "outfitId": {
+                    "type": "string",
+                    "description": "穿搭 ID（選填，帶入時後端會自動撈取該筆穿搭資料）",
+                    "example": "69e5e1d35368f7b91d76a8aa"
                   }
                 }
               }
@@ -7625,71 +7563,10 @@
                     "description": "行程場合",
                     "example": "businessCasual"
                   },
-                  "outfit": {
-                    "type": "object",
-                    "description": "穿搭資訊",
-                    "properties": {
-                      "_id": {
-                        "type": "string",
-                        "description": "穿搭 ID",
-                        "example": "69e5e1d35368f7b91d76a8aa"
-                      },
-                      "userId": {
-                        "type": "string",
-                        "description": "使用者 ID",
-                        "example": "69c78a9f77ac6314790d6c16"
-                      },
-                      "outfitImgUrl": {
-                        "type": "string",
-                        "description": "穿搭圖片網址",
-                        "example": "https://res.cloudinary.com/damapwahs/image/upload/v1776672966/closy/users/outfits/69c78a9f77ac6314790d6c16/i2skmm6sjbqlwyjysgex.png"
-                      },
-                      "occasion": {
-                        "type": "string",
-                        "description": "穿搭場合",
-                        "example": "businessCasual"
-                      },
-                      "selectedItems": {
-                        "type": "array",
-                        "description": "選擇的服飾單品",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "cloudImgUrl": {
-                              "type": "string",
-                              "description": "單品圖片網址",
-                              "example": "https://res.cloudinary.com/damapwahs/image/upload/v1776498082/closy/system/nlrfghk70weenchkpbw2.png"
-                            },
-                            "name": {
-                              "type": "string",
-                              "description": "單品名稱",
-                              "example": "襯衫98566"
-                            },
-                            "brand": {
-                              "type": "string",
-                              "description": "單品品牌",
-                              "example": ""
-                            },
-                            "category": {
-                              "type": "string",
-                              "description": "單品分類",
-                              "example": "top"
-                            }
-                          }
-                        }
-                      },
-                      "createdDateSimply": {
-                        "type": "string",
-                        "description": "簡易日期格式",
-                        "example": "2026/04/20"
-                      },
-                      "createdAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "description": "穿搭建立時間",
-                        "example": "2026-04-20T08:20:35.793Z"
-                      }
-                    }
+                  "outfitId": {
+                    "type": "string",
+                    "description": "穿搭 ID（選填，帶入時後端會自動撈取該筆穿搭資料）",
+                    "example": "69e5e1d35368f7b91d76a8aa"
                   }
                 }
               }

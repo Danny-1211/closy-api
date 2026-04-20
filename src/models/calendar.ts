@@ -28,7 +28,7 @@ const calendarSchema = new Schema<CalendarType.CalendarItem>(
     userId: { type: String, required: true, index: true },
     calendarEventOccasion: { type: String, required: true },
     scheduleDate: { type: String, required: true },
-    outfit: { type: outfitSubSchema, required: true }
+    outfit: { type: outfitSubSchema, required: false }
   }, { timestamps: true }
 );
 

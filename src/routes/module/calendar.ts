@@ -3,6 +3,25 @@ import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { errorHandler } from '../../utils/errorMessage';
 import { addCalendarEvent, getCalendarList, deleteCalendarEvent, updateCalendarEvent } from '../../services/calendarServices';
 import { validateCalendarPatchBody } from '../../utils/validateAttribute';
+import { getOutfitById } from '../../services/outfitServices';
+import * as CalendarType from '../../types/calendar';
+
+// 將 Outfit 文件整形為 Calendar embed 用的 ThisOutfit 結構
+const toThisOutfit = (outfitDoc: {
+  userId: string;
+  outfitImgUrl: string;
+  occasion: CalendarType.ThisOutfit['occasion'];
+  selectedItems: CalendarType.ThisOutfit['selectedItems'];
+  createdAt: Date;
+  createdDateSimply: string;
+}): CalendarType.ThisOutfit => ({
+  userId: outfitDoc.userId,
+  outfitImgUrl: outfitDoc.outfitImgUrl,
+  occasion: outfitDoc.occasion,
+  selectedItems: outfitDoc.selectedItems,
+  createdAt: outfitDoc.createdAt,
+  createdDateSimply: outfitDoc.createdDateSimply
+});
 
 const calendarRouter = express.Router();
 
@@ -18,35 +37,11 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
          'application/json': {
            schema: {
              type: 'object',
-             required: ['scheduleDate', 'calendarEventOccasion', 'outfit'],
+             required: ['scheduleDate', 'calendarEventOccasion'],
              properties: {
                scheduleDate: { type: 'string', description: '行程日期', example: '2024/11/20' },
                calendarEventOccasion: { type: 'string', description: '行程場合', example: 'businessCasual' },
-               outfit: {
-                 type: 'object',
-                 description: '穿搭資訊',
-                 properties: {
-                   _id: { type: 'string', description: '穿搭 ID', example: '69e5e1d35368f7b91d76a8aa' },
-                   userId: { type: 'string', description: '使用者 ID', example: '69c78a9f77ac6314790d6c16' },
-                   outfitImgUrl: { type: 'string', description: '穿搭圖片網址', example: 'https://res.cloudinary.com/damapwahs/image/upload/v1776672966/closy/users/outfits/69c78a9f77ac6314790d6c16/i2skmm6sjbqlwyjysgex.png' },
-                   occasion: { type: 'string', description: '穿搭場合', example: 'businessCasual' },
-                   selectedItems: {
-                     type: 'array',
-                     description: '選擇的服飾單品',
-                     items: {
-                       type: 'object',
-                       properties: {
-                         cloudImgUrl: { type: 'string', description: '單品圖片網址', example: 'https://res.cloudinary.com/damapwahs/image/upload/v1776498082/closy/system/nlrfghk70weenchkpbw2.png' },
-                         name: { type: 'string', description: '單品名稱', example: '襯衫98566' },
-                         brand: { type: 'string', description: '單品品牌', example: '' },
-                         category: { type: 'string', description: '單品分類', example: 'top' }
-                       }
-                     }
-                   },
-                   createdDateSimply: { type: 'string', description: '簡易日期格式', example: '2026/04/20' },
-                   createdAt: { type: 'string', format: 'date-time', description: '穿搭建立時間', example: '2026-04-20T08:20:35.793Z' }
-                 }
-               }
+               outfitId: { type: 'string', description: '穿搭 ID（選填，帶入時後端會自動撈取該筆穿搭資料）', example: '69e5e1d35368f7b91d76a8aa' }
              }
            }
          }
@@ -105,7 +100,7 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
      }
 
      #swagger.responses[404] = {
-       description: '新增失敗',
+       description: '新增失敗 / 找不到該穿搭',
        content: {
          'application/json': {
            schema: {
@@ -113,7 +108,7 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 404 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string', example: '新增失敗' },
+               message: { type: 'string', example: '新增失敗 / 找不到該穿搭' },
                data: { type: 'object', nullable: true, example: null }
              }
            }
@@ -138,13 +133,28 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
        }
      }
   */
-  const { scheduleDate, calendarEventOccasion, outfit } = req.body;
-  if (!scheduleDate || !calendarEventOccasion || !outfit) {
+  const { scheduleDate, calendarEventOccasion, outfitId } = req.body;
+  // scheduleDate、calendarEventOccasion 為必填；outfitId 為選填
+  if (!scheduleDate || !calendarEventOccasion) {
     return errorHandler({ statusCode: 400, message: '缺少必要欄位' }, res);
+  }
+  if (outfitId !== undefined && typeof outfitId !== 'string') {
+    return errorHandler({ statusCode: 400, message: 'outfitId 格式錯誤' }, res);
   }
   try {
     const userId = req.user!.userId;
-    const newCalendarEvent = await addCalendarEvent(userId, scheduleDate, calendarEventOccasion, outfit);
+
+    // 有傳入 outfitId 時才向 Outfit collection 撈取資料並整形為 embed 結構
+    let outfitEmbed: CalendarType.ThisOutfit | undefined;
+    if (outfitId) {
+      const outfitDoc = await getOutfitById(userId, outfitId);
+      if (!outfitDoc) {
+        return errorHandler({ statusCode: 404, message: '找不到該穿搭' }, res);
+      }
+      outfitEmbed = toThisOutfit(outfitDoc);
+    }
+
+    const newCalendarEvent = await addCalendarEvent(userId, scheduleDate, calendarEventOccasion, outfitEmbed);
     if (!newCalendarEvent) {
       return errorHandler({ statusCode: 404, message: '新增失敗' }, res);
     }
@@ -424,31 +434,7 @@ calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
              properties: {
                scheduleDate: { type: 'string', description: '行程日期', example: '2024/11/20' },
                calendarEventOccasion: { type: 'string', description: '行程場合', example: 'businessCasual' },
-               outfit: {
-                 type: 'object',
-                 description: '穿搭資訊',
-                 properties: {
-                   _id: { type: 'string', description: '穿搭 ID', example: '69e5e1d35368f7b91d76a8aa' },
-                   userId: { type: 'string', description: '使用者 ID', example: '69c78a9f77ac6314790d6c16' },
-                   outfitImgUrl: { type: 'string', description: '穿搭圖片網址', example: 'https://res.cloudinary.com/damapwahs/image/upload/v1776672966/closy/users/outfits/69c78a9f77ac6314790d6c16/i2skmm6sjbqlwyjysgex.png' },
-                   occasion: { type: 'string', description: '穿搭場合', example: 'businessCasual' },
-                   selectedItems: {
-                     type: 'array',
-                     description: '選擇的服飾單品',
-                     items: {
-                       type: 'object',
-                       properties: {
-                         cloudImgUrl: { type: 'string', description: '單品圖片網址', example: 'https://res.cloudinary.com/damapwahs/image/upload/v1776498082/closy/system/nlrfghk70weenchkpbw2.png' },
-                         name: { type: 'string', description: '單品名稱', example: '襯衫98566' },
-                         brand: { type: 'string', description: '單品品牌', example: '' },
-                         category: { type: 'string', description: '單品分類', example: 'top' }
-                       }
-                     }
-                   },
-                   createdDateSimply: { type: 'string', description: '簡易日期格式', example: '2026/04/20' },
-                   createdAt: { type: 'string', format: 'date-time', description: '穿搭建立時間', example: '2026-04-20T08:20:35.793Z' }
-                 }
-               }
+               outfitId: { type: 'string', description: '穿搭 ID（選填，帶入時後端會自動撈取該筆穿搭資料）', example: '69e5e1d35368f7b91d76a8aa' }
              }
            }
          }
@@ -544,12 +530,29 @@ calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
     const userId = req.user!.userId;
     const calendarId = req.params.id as string;
 
-    const validationError = await validateCalendarPatchBody(userId, calendarId, req.body);
+    const validationError = validateCalendarPatchBody(calendarId, req.body);
     if (validationError) {
       return errorHandler(validationError, res);
     }
 
-    const updatedCalendar = await updateCalendarEvent(userId, calendarId, req.body);
+    // 將 outfitId 轉為 embed 用的 outfit 結構後再交給 service 更新
+    const { scheduleDate, calendarEventOccasion, outfitId } = req.body as {
+      scheduleDate?: string;
+      calendarEventOccasion?: string;
+      outfitId?: string;
+    };
+    const updates: Partial<{ scheduleDate: string; calendarEventOccasion: string; outfit: CalendarType.ThisOutfit }> = {};
+    if (scheduleDate !== undefined) updates.scheduleDate = scheduleDate;
+    if (calendarEventOccasion !== undefined) updates.calendarEventOccasion = calendarEventOccasion;
+    if (outfitId) {
+      const outfitDoc = await getOutfitById(userId, outfitId);
+      if (!outfitDoc) {
+        return errorHandler({ statusCode: 404, message: '找不到該穿搭' }, res);
+      }
+      updates.outfit = toThisOutfit(outfitDoc);
+    }
+
+    const updatedCalendar = await updateCalendarEvent(userId, calendarId, updates);
 
     if (!updatedCalendar) {
       return errorHandler({ statusCode: 404, message: '更新失敗' }, res);
