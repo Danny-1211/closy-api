@@ -1,7 +1,8 @@
 import express from 'express';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { errorHandler } from '../../utils/errorMessage';
-import { addCalendarEvent, getCalendarList, deleteCalendarEvent } from '../../services/calendarServices';
+import { addCalendarEvent, getCalendarList, deleteCalendarEvent, updateCalendarEvent } from '../../services/calendarServices';
+import { validateCalendarPatchBody } from '../../utils/validateAttribute';
 
 const calendarRouter = express.Router();
 
@@ -19,7 +20,7 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
              type: 'object',
              required: ['scheduleDate', 'calendarEventOccasion', 'outfit'],
              properties: {
-               scheduleDate: { type: 'string', format: 'date-time', description: '行程日期時間', example: '2024-11-20T10:00:00.000Z' },
+               scheduleDate: { type: 'string', description: '行程日期', example: '2024/11/20' },
                calendarEventOccasion: { type: 'string', description: '行程場合', example: 'businessCasual' },
                outfit: {
                  type: 'object',
@@ -87,7 +88,7 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
      }
 
      #swagger.responses[401] = {
-       description: '未授權 (Token 無效或過期)',
+       description: '身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)',
        content: {
          'application/json': {
            schema: {
@@ -95,7 +96,7 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 401 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string', example: '請先登入' },
+               message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入' },
                data: { type: 'object', nullable: true, example: null }
              }
            }
@@ -181,12 +182,11 @@ calendarRouter.get('/', authMiddleWare, async (req, res) => {
                    properties: {
                      _id: { type: 'string', example: '67329dcb2a38d7aa9bc71415' },
                      userId: { type: 'string', example: '67329dcb2a38d7aa9bc71415' },
-                     scheduleDate: { type: 'string', format: 'date-time', example: '2024-11-20T10:00:00.000Z' },
+                     scheduleDate: { type: 'string', example: '2024/11/20' },
                      calendarEventOccasion: { type: 'string', example: 'businessCasual' },
                      outfit: {
                        type: 'object',
                        properties: {
-                         _id: { type: 'string', example: '69e5e1d35368f7b91d76a8aa' },
                          userId: { type: 'string', example: '69c78a9f77ac6314790d6c16' },
                          outfitImgUrl: { type: 'string', example: 'https://res.cloudinary.com/damapwahs/image/upload/v1776672966/closy/users/outfits/69c78a9f77ac6314790d6c16/i2skmm6sjbqlwyjysgex.png' },
                          occasion: { type: 'string', example: 'businessCasual' },
@@ -216,7 +216,7 @@ calendarRouter.get('/', authMiddleWare, async (req, res) => {
      }
 
      #swagger.responses[401] = {
-       description: '未授權 (Token 無效或過期)',
+       description: '身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)',
        content: {
          'application/json': {
            schema: {
@@ -224,7 +224,7 @@ calendarRouter.get('/', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 401 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string', example: '請先登入' },
+               message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入' },
                data: { type: 'object', nullable: true, example: null }
              }
            }
@@ -331,7 +331,7 @@ calendarRouter.delete('/:id', authMiddleWare, async (req, res) => {
      }
 
      #swagger.responses[401] = {
-       description: '未授權 (Token 無效或過期)',
+       description: '身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)',
        content: {
          'application/json': {
            schema: {
@@ -339,7 +339,7 @@ calendarRouter.delete('/:id', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 401 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string', example: '請先登入' },
+               message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入' },
                data: { type: 'object', nullable: true, example: null }
              }
            }
@@ -401,5 +401,170 @@ calendarRouter.delete('/:id', authMiddleWare, async (req, res) => {
     return errorHandler(err as { statusCode: number; message: string }, res);
   }
 });
+
+calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
+  /* #swagger.tags = ['Calendar']
+     #swagger.summary = '更新行程'
+     #swagger.description = '依行程 ID 更新指定的行事曆行程紀錄，支援部分欄位更新 (至少提供一項)。'
+     #swagger.security = [{ "bearerAuth": [] }]
+
+     #swagger.parameters['id'] = {
+       in: 'path',
+       required: true,
+       description: '行程 ID',
+       '@schema': { type: 'string', example: '67329dcb2a38d7aa9bc71415' }
+     }
+
+     #swagger.requestBody = {
+       required: true,
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               scheduleDate: { type: 'string', description: '行程日期', example: '2024/11/20' },
+               calendarEventOccasion: { type: 'string', description: '行程場合', example: 'businessCasual' },
+               outfit: {
+                 type: 'object',
+                 description: '穿搭資訊',
+                 properties: {
+                   _id: { type: 'string', description: '穿搭 ID', example: '69e5e1d35368f7b91d76a8aa' },
+                   userId: { type: 'string', description: '使用者 ID', example: '69c78a9f77ac6314790d6c16' },
+                   outfitImgUrl: { type: 'string', description: '穿搭圖片網址', example: 'https://res.cloudinary.com/damapwahs/image/upload/v1776672966/closy/users/outfits/69c78a9f77ac6314790d6c16/i2skmm6sjbqlwyjysgex.png' },
+                   occasion: { type: 'string', description: '穿搭場合', example: 'businessCasual' },
+                   selectedItems: {
+                     type: 'array',
+                     description: '選擇的服飾單品',
+                     items: {
+                       type: 'object',
+                       properties: {
+                         cloudImgUrl: { type: 'string', description: '單品圖片網址', example: 'https://res.cloudinary.com/damapwahs/image/upload/v1776498082/closy/system/nlrfghk70weenchkpbw2.png' },
+                         name: { type: 'string', description: '單品名稱', example: '襯衫98566' },
+                         brand: { type: 'string', description: '單品品牌', example: '' },
+                         category: { type: 'string', description: '單品分類', example: 'top' }
+                       }
+                     }
+                   },
+                   createdDateSimply: { type: 'string', description: '簡易日期格式', example: '2026/04/20' },
+                   createdAt: { type: 'string', format: 'date-time', description: '穿搭建立時間', example: '2026-04-20T08:20:35.793Z' }
+                 }
+               }
+             }
+           }
+         }
+       }
+     }
+
+     #swagger.responses[200] = {
+       description: '更新成功',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 200 },
+               status: { type: 'boolean', example: true },
+               message: { type: 'string', example: '更新成功' },
+               data: { type: 'object', example: {} }
+             }
+           }
+         }
+       }
+     }
+
+     #swagger.responses[400] = {
+       description: '請求錯誤 (未提供行程 ID / 未提供更新欄位 / 格式錯誤)',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 400 },
+               status: { type: 'boolean', example: false },
+               message: { type: 'string', example: '請提供至少一個更新欄位 / 日期格式錯誤 / 場合格式錯誤 / 請提供行程 id' },
+               data: { type: 'object', nullable: true, example: null }
+             }
+           }
+         }
+       }
+     }
+
+     #swagger.responses[401] = {
+       description: '身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 401 },
+               status: { type: 'boolean', example: false },
+               message: { type: 'string', example: '未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入' },
+               data: { type: 'object', nullable: true, example: null }
+             }
+           }
+         }
+       }
+     }
+
+     #swagger.responses[404] = {
+       description: '更新失敗 (找不到該行程 / 找不到該穿搭)',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 404 },
+               status: { type: 'boolean', example: false },
+               message: { type: 'string', example: '更新失敗 / 找不到該穿搭' },
+               data: { type: 'object', nullable: true, example: null }
+             }
+           }
+         }
+       }
+     }
+
+     #swagger.responses[500] = {
+       description: '系統錯誤',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 500 },
+               status: { type: 'boolean', example: false },
+               message: { type: 'string', example: '伺服器發生錯誤' },
+               data: { type: 'object', nullable: true, example: null }
+             }
+           }
+         }
+       }
+     }
+  */
+  try {
+    const userId = req.user!.userId;
+    const calendarId = req.params.id as string;
+
+    const validationError = await validateCalendarPatchBody(userId, calendarId, req.body);
+    if (validationError) {
+      return errorHandler(validationError, res);
+    }
+
+    const updatedCalendar = await updateCalendarEvent(userId, calendarId, req.body);
+
+    if (!updatedCalendar) {
+      return errorHandler({ statusCode: 404, message: '更新失敗' }, res);
+    }
+
+    return res.status(200).json({
+      statusCode: 200,
+      status: true,
+      message: '更新成功',
+      data: {}
+    });
+
+  } catch (err) {
+    return errorHandler(err as { statusCode: number; message: string }, res);
+  }
+})
 
 export { calendarRouter }

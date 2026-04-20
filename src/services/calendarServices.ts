@@ -42,3 +42,22 @@ export const deleteCalendarEvent = async (userId: string, calendarId: string) =>
   });
   return deleteCalendarEvent;
 };
+
+// 更新行事曆行程（只更新有傳入的欄位）
+export const updateCalendarEvent = async (
+  userId: string,
+  calendarId: string,
+  updates: Partial<Pick<CalendarType.CalendarItem, 'calendarEventOccasion' | 'scheduleDate'> & { outfit: CalendarType.ThisOutfit }>
+) => {
+  const setFields: Record<string, unknown> = {};
+  if (updates.calendarEventOccasion !== undefined) setFields.calendarEventOccasion = updates.calendarEventOccasion;
+  if (updates.scheduleDate !== undefined) setFields.scheduleDate = updates.scheduleDate;
+  if (updates.outfit !== undefined) setFields.outfit = updates.outfit;
+
+  const updated = await Calendar.findOneAndUpdate(
+    { _id: calendarId, userId: userId },
+    { $set: setFields },
+    { returnDocument: 'after', runValidators: true }
+  );
+  return updated;
+};

@@ -59,3 +59,11 @@ export const getOccasionSummary = async (userId: string) => {
 }
 
 
+// DB 檢查是否有這個穿搭
+export const getOutfitById = async (userId: string, outfitId: string) => {
+  const outfit = await Outfit.findOne({
+    _id: outfitId,
+    userId: userId
+  });
+  return outfit;
+}

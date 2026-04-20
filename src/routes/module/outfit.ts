@@ -38,6 +38,7 @@ outfitRouter.get('/', authMiddleWare, async (req, res) => {
                        type: 'object',
                        properties: {
                          _id: { type: 'string', example: '664f1a2b3c4d5e6f7a8b9c0d' },
+                         userId: { type: 'string', example: '67329dcb2a38d7aa9bc71415' },
                          outfitImgUrl: { type: 'string', example: 'https://example.com/outfit.jpg' },
                          occasion: { type: 'string', example: 'campusCasual' },
                          selectedItems: {
@@ -52,8 +53,8 @@ outfitRouter.get('/', authMiddleWare, async (req, res) => {
                              }
                            }
                          },
-                         createdAt: { type: 'string', example: '2024-06-01T12:00:00.000Z' },
-                         updatedAt: { type: 'string', example: '2024-06-01T12:00:00.000Z' },
+                         createdAt: { type: 'string', format: 'date-time', example: '2024-06-01T12:00:00.000Z' },
+                         updatedAt: { type: 'string', format: 'date-time', example: '2024-06-01T12:00:00.000Z' },
                          createdDateSimply: { type: 'string', example: '2024/06/01' }
                        }
                      }
@@ -151,13 +152,14 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
          'application/json': {
            schema: {
              type: 'object',
-             required: ['cloudImgUrl', 'occasion', 'selectedItems'],
+             required: ['outfitImgUrl', 'occasion', 'selectedItems'],
              properties: {
                outfitImgUrl: { type: 'string', description: '穿搭圖片雲端 URL', example: 'https://example.com/outfit-url.jpg' },
                occasion: { type: 'string', description: '穿搭場合', example: 'campusCasual' },
                selectedItems: {
                  type: 'array',
                  description: '搭配的單品清單',
+                 minItems: 1,
                  items: {
                    type: 'object',
                    required: ['cloudImgUrl', 'name', 'category'],
@@ -201,7 +203,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string', example: '請提供完整的穿搭資訊' },
+               message: { type: 'string', example: '請提供完整的穿搭資訊 / 請提供正確的場合 / 新增失敗' },
                data: { type: 'object', nullable: true, example: null }
              }
            }
@@ -312,7 +314,7 @@ outfitRouter.delete('/:id', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string', example: '請提供單品 id / 刪除失敗' },
+               message: { type: 'string', example: '請提供穿搭 id / 刪除失敗' },
                data: { type: 'object', nullable: true, example: null }
              }
            }
@@ -356,7 +358,7 @@ outfitRouter.delete('/:id', authMiddleWare, async (req, res) => {
   */
   const outfitId = req.params.id;
   if (!outfitId || typeof outfitId !== 'string') {
-    return errorHandler({ statusCode: 400, message: '請提供單品 id' }, res);
+    return errorHandler({ statusCode: 400, message: '請提供穿搭 id' }, res);
   }
 
   try {
