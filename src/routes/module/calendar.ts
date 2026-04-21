@@ -541,10 +541,12 @@ calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
       calendarEventOccasion?: string;
       outfitId?: string;
     };
-    const updates: Partial<{ scheduleDate: string; calendarEventOccasion: string; outfit: CalendarType.ThisOutfit }> = {};
+    const updates: Partial<{ scheduleDate: string; calendarEventOccasion: string; outfit: CalendarType.ThisOutfit | null }> = {};
     if (scheduleDate !== undefined) updates.scheduleDate = scheduleDate;
     if (calendarEventOccasion !== undefined) updates.calendarEventOccasion = calendarEventOccasion;
-    if (outfitId) {
+    if (outfitId === '') {
+      updates.outfit = null;
+    } else if (outfitId) {
       const outfitDoc = await getOutfitById(userId, outfitId);
       if (!outfitDoc) {
         return errorHandler({ statusCode: 404, message: '找不到該穿搭' }, res);
