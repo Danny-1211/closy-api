@@ -3,6 +3,7 @@ import { COLORS_SET, STYLES_SET, OCCASIONS_SET, genderOptions } from '../constan
 import { CLOTHES_COLORS_SET, CLOTHES_OCCASIONS_SET, CLOTHES_SEASONS_SET, CLOTHES_CATEGORIES_SET } from '../constants/clothes';
 import { OccasionType } from '../types/outfit';
 
+
 // ── User 偏好設定驗證 ──────────────────────────────────────────
 
 // 檢查性別是否符合格式以及規則
@@ -127,4 +128,47 @@ export function validateClothesItem(body: {
 export function validateOutfitOccasion(occasion: unknown): occasion is OccasionType {
   if (typeof occasion !== 'string') return false;
   return !!CLOTHES_OCCASIONS_SET.find(occasionSet => occasionSet.occasionId === occasion);
+}
+
+// ── 行事曆（Calendar）驗證 ────────────────────────────────────────
+
+// 檢查日期格式是否符合 YYYY/MM/DD
+function validateScheduleDate(date: unknown): boolean {
+  if (typeof date !== 'string') return false;
+  const dateRegex = /^\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/;
+  if (!dateRegex.test(date)) return false;
+  return !isNaN(new Date(date).getTime());
+}
+
+// 檢查行程類別是否符合 CLOTHES_OCCASIONS_SET
+function validateCalendarOccasion(occasion: unknown): occasion is OccasionType {
+  if (typeof occasion !== 'string') return false;
+  return !!CLOTHES_OCCASIONS_SET.find(occasionSet => occasionSet.occasionId === occasion);
+}
+
+// PATCH /calendar/:id 的統一驗證器（只做格式檢查，不打資料庫）
+// 穿搭存在性由呼叫端以 getOutfitById 取回時同時驗證，避免重複查詢
+// 回傳 null 表示全部合法，回傳錯誤物件交由外層 errorHandler 處理
+export function validateCalendarPatchBody(
+  calendarId: string,
+  body: Record<string, unknown>
+) {
+  const { outfitId, scheduleDate, calendarEventOccasion } = body;
+
+  if (!calendarId || typeof calendarId !== 'string') {
+    return { statusCode: 400, message: '請提供行程 id' };
+  }
+  if (outfitId === undefined && !scheduleDate && !calendarEventOccasion) {
+    return { statusCode: 400, message: '請提供至少一個更新欄位' };
+  }
+  if (scheduleDate && !validateScheduleDate(scheduleDate)) {
+    return { statusCode: 400, message: '日期格式錯誤' };
+  }
+  if (calendarEventOccasion && !validateCalendarOccasion(calendarEventOccasion)) {
+    return { statusCode: 400, message: '場合格式錯誤' };
+  }
+  if (outfitId !== undefined && typeof outfitId !== 'string') {
+    return { statusCode: 400, message: 'outfitId 格式錯誤' };
+  }
+  return null;
 }

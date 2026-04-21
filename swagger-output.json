@@ -2191,6 +2191,26 @@
                               "example": 25.037
                             }
                           }
+                        },
+                        "hasTodayCalendarEvent": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "今日是否有行事曆行程（供前端介面渲染）"
+                        },
+                        "hasTomorrowCalendarEvent": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "明日是否有行事曆行程（供前端介面渲染）"
+                        },
+                        "todayCalendarEventOccasion": {
+                          "type": "string",
+                          "example": "",
+                          "description": "今日行程的場合 id，沒有則為空字串"
+                        },
+                        "tomorrowCalendarEventOccasion": {
+                          "type": "string",
+                          "example": "",
+                          "description": "明日行程的場合 id，沒有則為空字串"
                         }
                       }
                     }
@@ -4697,7 +4717,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /   無效的憑證或憑證已過期，請重新登入"
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /  無效的憑證或憑證已過期，請重新登入"
                     },
                     "data": {
                       "type": "object",
@@ -5239,7 +5259,7 @@
           "Home"
         ],
         "summary": "取得穿搭建議與天氣資訊",
-        "description": "根據使用者的性別、場合、風格與顏色偏好，產生指定日期的穿搭建議與天氣資訊，需要攜帶 Bearer Token",
+        "description": "根據使用者的性別、場合、風格與顏色偏好，產生指定日期的穿搭建議與天氣資訊，需要攜帶 Bearer Token。若使用者在行事曆已為目標日期（today/tomorrow）設定行程與穿搭，將直接沿用該筆穿搭（方案 B），不再呼叫 AI。",
         "parameters": [
           {
             "name": "authorization",
@@ -5323,7 +5343,7 @@
                             },
                             "reasoning": {
                               "type": "string",
-                              "example": "這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。"
+                              "example": "你已為今天的行程挑選這套穿搭。 22°C 多雲，這套衣服非常適合今日的 商務休閒 場合。"
                             }
                           }
                         },
@@ -5486,13 +5506,24 @@
           "Home"
         ],
         "summary": "生成虛擬穿搭圖片",
-        "description": "根據使用者選擇的衣物，使用 AI 合成虛擬穿搭圖片，需要攜帶 Bearer Token",
+        "description": "根據使用者選擇的衣物，使用 AI 合成虛擬穿搭圖片，需要攜帶 Bearer Token。`day` 參數對應 GET /home 的日期（today / tomorrow，預設 today），確保兩支 API 查詢同一天的行事曆。若目標日期的行事曆已有 outfit.outfitImgUrl，將直接沿用該圖片（方案 B），不驗證 request body、不呼叫 Cloudinary 與 Gemini。",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "day",
+            "in": "query",
+            "required": false,
+            "description": "查詢日期，today（今日）或 tomorrow（明日），預設為 today，需與 GET /home 的 day 參數保持一致",
+            "schema": {
+              "type": "string",
+              "example": "today",
+              "default": "today"
             }
           }
         ],
@@ -5777,6 +5808,10 @@
                                 "type": "string",
                                 "example": "664f1a2b3c4d5e6f7a8b9c0d"
                               },
+                              "userId": {
+                                "type": "string",
+                                "example": "67329dcb2a38d7aa9bc71415"
+                              },
                               "outfitImgUrl": {
                                 "type": "string",
                                 "example": "https://example.com/outfit.jpg"
@@ -5811,11 +5846,17 @@
                               },
                               "createdAt": {
                                 "type": "string",
+                                "format": "date-time",
                                 "example": "2024-06-01T12:00:00.000Z"
                               },
                               "updatedAt": {
                                 "type": "string",
+                                "format": "date-time",
                                 "example": "2024-06-01T12:00:00.000Z"
+                              },
+                              "createdDateSimply": {
+                                "type": "string",
+                                "example": "2024/06/01"
                               }
                             }
                           }
@@ -5848,6 +5889,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -5876,6 +5918,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -5904,6 +5947,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -5979,10 +6023,11 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "請提供完整的穿搭資訊"
+                      "example": "請提供完整的穿搭資訊 / 請提供正確的場合 / 新增失敗"
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6011,6 +6056,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6039,6 +6085,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6059,7 +6106,7 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "cloudImgUrl",
+                  "outfitImgUrl",
                   "occasion",
                   "selectedItems"
                 ],
@@ -6077,6 +6124,7 @@
                   "selectedItems": {
                     "type": "array",
                     "description": "搭配的單品清單",
+                    "minItems": 1,
                     "items": {
                       "type": "object",
                       "required": [
@@ -6183,10 +6231,11 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "請提供單品 id / 刪除失敗"
+                      "example": "請提供穿搭 id / 刪除失敗"
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6215,6 +6264,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6243,6 +6293,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6314,7 +6365,7 @@
                                 "type": "array",
                                 "items": {
                                   "type": "string",
-                                  "example": "2024/6/1"
+                                  "example": "2024/06/01"
                                 }
                               }
                             }
@@ -6348,6 +6399,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6376,6 +6428,7 @@
                     },
                     "data": {
                       "type": "object",
+                      "nullable": true,
                       "example": null
                     }
                   }
@@ -6754,6 +6807,797 @@
                         }
                       }
                     }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calendar/": {
+      "post": {
+        "tags": [
+          "Calendar"
+        ],
+        "summary": "新增行程",
+        "description": "新增使用者的行程與穿搭紀錄",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "行程新增成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "行程新增成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "缺少必要欄位",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "缺少必要欄位"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "新增失敗 / 找不到該穿搭",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "新增失敗 / 找不到該穿搭"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "系統錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "scheduleDate",
+                  "calendarEventOccasion"
+                ],
+                "properties": {
+                  "scheduleDate": {
+                    "type": "string",
+                    "description": "行程日期",
+                    "example": "2024/11/20"
+                  },
+                  "calendarEventOccasion": {
+                    "type": "string",
+                    "description": "行程場合",
+                    "example": "businessCasual"
+                  },
+                  "outfitId": {
+                    "type": "string",
+                    "description": "穿搭 ID（選填，帶入時後端會自動撈取該筆穿搭資料）",
+                    "example": "69e5e1d35368f7b91d76a8aa"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Calendar"
+        ],
+        "summary": "取得行事曆列表",
+        "description": "取得使用者的所有行程與穿搭紀錄，包含過去與未來的行程，依照日期排序",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得行事曆列表成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "取得行事曆列表成功"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "67329dcb2a38d7aa9bc71415"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "67329dcb2a38d7aa9bc71415"
+                          },
+                          "scheduleDate": {
+                            "type": "string",
+                            "example": "2024/11/20"
+                          },
+                          "calendarEventOccasion": {
+                            "type": "string",
+                            "example": "businessCasual"
+                          },
+                          "outfit": {
+                            "type": "object",
+                            "properties": {
+                              "userId": {
+                                "type": "string",
+                                "example": "69c78a9f77ac6314790d6c16"
+                              },
+                              "outfitImgUrl": {
+                                "type": "string",
+                                "example": "https://res.cloudinary.com/damapwahs/image/upload/v1776672966/closy/users/outfits/69c78a9f77ac6314790d6c16/i2skmm6sjbqlwyjysgex.png"
+                              },
+                              "occasion": {
+                                "type": "string",
+                                "example": "businessCasual"
+                              },
+                              "selectedItems": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "cloudImgUrl": {
+                                      "type": "string",
+                                      "example": "https://res.cloudinary.com/damapwahs/image/upload/v1776498082/closy/system/nlrfghk70weenchkpbw2.png"
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "example": "襯衫98566"
+                                    },
+                                    "brand": {
+                                      "type": "string",
+                                      "example": ""
+                                    },
+                                    "category": {
+                                      "type": "string",
+                                      "example": "top"
+                                    }
+                                  }
+                                }
+                              },
+                              "createdDateSimply": {
+                                "type": "string",
+                                "example": "2026/04/20"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2026-04-20T08:20:35.793Z"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "取得列表失敗",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "取得列表失敗"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "系統錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/calendar/{id}": {
+      "delete": {
+        "tags": [
+          "Calendar"
+        ],
+        "summary": "刪除行程",
+        "description": "依行程 ID 刪除指定的行事曆行程紀錄。",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "69e5e1d35368f7b91d76a8aa"
+            },
+            "description": "行程 ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "刪除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "刪除成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "請求錯誤 (未提供行程 ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請提供行程 id"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "刪除失敗 (找不到該行程)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "刪除失敗"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "系統錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Calendar"
+        ],
+        "summary": "更新行程",
+        "description": "依行程 ID 更新指定的行事曆行程紀錄，支援部分欄位更新 (至少提供一項)。",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "67329dcb2a38d7aa9bc71415"
+            },
+            "description": "行程 ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "更新成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "請求錯誤 (未提供行程 ID / 未提供更新欄位 / 格式錯誤)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "請提供至少一個更新欄位 / 日期格式錯誤 / 場合格式錯誤 / 請提供行程 id"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "身分驗證失敗 (可能原因：未提供 Token、Token 格式錯誤、Token 已過期)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "更新失敗 (找不到該行程 / 找不到該穿搭)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "更新失敗 / 找不到該穿搭"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "系統錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "伺服器發生錯誤"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "scheduleDate": {
+                    "type": "string",
+                    "description": "行程日期",
+                    "example": "2024/11/20"
+                  },
+                  "calendarEventOccasion": {
+                    "type": "string",
+                    "description": "行程場合",
+                    "example": "businessCasual"
+                  },
+                  "outfitId": {
+                    "type": "string",
+                    "description": "穿搭 ID（選填，帶入時後端會自動撈取該筆穿搭資料）",
+                    "example": "69e5e1d35368f7b91d76a8aa"
                   }
                 }
               }
