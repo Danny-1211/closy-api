@@ -2191,6 +2191,26 @@
                               "example": 25.037
                             }
                           }
+                        },
+                        "hasTodayCalendarEvent": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "今日是否有行事曆行程（供前端介面渲染）"
+                        },
+                        "hasTomorrowCalendarEvent": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "明日是否有行事曆行程（供前端介面渲染）"
+                        },
+                        "todayCalendarEventOccasion": {
+                          "type": "string",
+                          "example": "",
+                          "description": "今日行程的場合 id，沒有則為空字串"
+                        },
+                        "tomorrowCalendarEventOccasion": {
+                          "type": "string",
+                          "example": "",
+                          "description": "明日行程的場合 id，沒有則為空字串"
                         }
                       }
                     }
@@ -5239,7 +5259,7 @@
           "Home"
         ],
         "summary": "取得穿搭建議與天氣資訊",
-        "description": "根據使用者的性別、場合、風格與顏色偏好，產生指定日期的穿搭建議與天氣資訊，需要攜帶 Bearer Token",
+        "description": "根據使用者的性別、場合、風格與顏色偏好，產生指定日期的穿搭建議與天氣資訊，需要攜帶 Bearer Token。若使用者在行事曆已為目標日期（today/tomorrow）設定行程與穿搭，將直接沿用該筆穿搭（方案 B），不再呼叫 AI。",
         "parameters": [
           {
             "name": "authorization",
@@ -5323,7 +5343,7 @@
                             },
                             "reasoning": {
                               "type": "string",
-                              "example": "這套穿搭適合社交聚會，簡約的風格搭配大地色系，給人溫暖且不失禮貌的感覺。"
+                              "example": "你已為今天的行程挑選這套穿搭。 22°C 多雲，這套衣服非常適合今日的 商務休閒 場合。"
                             }
                           }
                         },
@@ -5486,13 +5506,24 @@
           "Home"
         ],
         "summary": "生成虛擬穿搭圖片",
-        "description": "根據使用者選擇的衣物，使用 AI 合成虛擬穿搭圖片，需要攜帶 Bearer Token",
+        "description": "根據使用者選擇的衣物，使用 AI 合成虛擬穿搭圖片，需要攜帶 Bearer Token。`day` 參數對應 GET /home 的日期（today / tomorrow，預設 today），確保兩支 API 查詢同一天的行事曆。若目標日期的行事曆已有 outfit.outfitImgUrl，將直接沿用該圖片（方案 B），不驗證 request body、不呼叫 Cloudinary 與 Gemini。",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "day",
+            "in": "query",
+            "required": false,
+            "description": "查詢日期，today（今日）或 tomorrow（明日），預設為 today，需與 GET /home 的 day 參數保持一致",
+            "schema": {
+              "type": "string",
+              "example": "today",
+              "default": "today"
             }
           }
         ],

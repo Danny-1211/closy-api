@@ -655,7 +655,11 @@ userRouter.get('/information', authMiddleWare, async (req, res) => {
                     longitude: { type: 'number', example: 121.560 },
                     latitude: { type: 'number', example: 25.037 }
                   }
-                }
+                },
+                hasTodayCalendarEvent: { type: 'boolean', example: false, description: '今日是否有行事曆行程（供前端介面渲染）' },
+                hasTomorrowCalendarEvent: { type: 'boolean', example: false, description: '明日是否有行事曆行程（供前端介面渲染）' },
+                todayCalendarEventOccasion: { type: 'string', example: '', description: '今日行程的場合 id，沒有則為空字串' },
+                tomorrowCalendarEventOccasion: { type: 'string', example: '', description: '明日行程的場合 id，沒有則為空字串' }
               }
             }
           }
@@ -725,6 +729,10 @@ userRouter.get('/information', authMiddleWare, async (req, res) => {
         gender: userInformation.gender,
         preferences: userInformation.preferences,
         location: userInformation.location,
+        hasTodayCalendarEvent: userInformation.hasTodayCalendarEvent,
+        hasTomorrowCalendarEvent: userInformation.hasTomorrowCalendarEvent,
+        todayCalendarEventOccasion: userInformation.todayCalendarEventOccasion,
+        tomorrowCalendarEventOccasion: userInformation.tomorrowCalendarEventOccasion,
       },
     });
   } catch (error) {

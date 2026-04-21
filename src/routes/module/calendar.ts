@@ -5,6 +5,7 @@ import { addCalendarEvent, getCalendarList, deleteCalendarEvent, updateCalendarE
 import { validateCalendarPatchBody } from '../../utils/validateAttribute';
 import { getOutfitById } from '../../services/outfitServices';
 import * as CalendarType from '../../types/calendar';
+import { refreshUserCalendarSnapshot } from '../../utils/home';
 
 // 將 Outfit 文件整形為 Calendar embed 用的 ThisOutfit 結構
 const toThisOutfit = (outfitDoc: {
@@ -158,6 +159,8 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
     if (!newCalendarEvent) {
       return errorHandler({ statusCode: 404, message: '新增失敗' }, res);
     }
+    // 同步使用者文件上的行事曆快照欄位
+    await refreshUserCalendarSnapshot(userId);
     return res.status(200).json({
       statusCode: 200,
       status: true,
@@ -401,6 +404,8 @@ calendarRouter.delete('/:id', authMiddleWare, async (req, res) => {
     if (!deletedCalendar) {
       return errorHandler({ statusCode: 404, message: '刪除失敗' }, res);
     }
+    // 同步使用者文件上的行事曆快照欄位
+    await refreshUserCalendarSnapshot(userId);
     return res.status(200).json({
       statusCode: 200,
       status: true,
@@ -556,6 +561,11 @@ calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
 
     if (!updatedCalendar) {
       return errorHandler({ statusCode: 404, message: '更新失敗' }, res);
+    }
+
+    // 若 scheduleDate 或 calendarEventOccasion 有變動，可能影響今日／明日快照；統一刷新最保險
+    if (updates.scheduleDate !== undefined || updates.calendarEventOccasion !== undefined) {
+      await refreshUserCalendarSnapshot(userId);
     }
 
     return res.status(200).json({

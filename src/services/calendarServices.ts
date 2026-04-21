@@ -1,5 +1,31 @@
 import { Calendar } from "../models/calendar";
 import * as CalendarType from '../types/calendar';
+import { getTargetDateSimply } from '../utils/datetime';
+
+// 以使用者與日期（YYYY/MM/DD）查詢單筆行程（呼叫端自行傳入已格式化好的日期）
+export const getCalendarEventByDate = async (userId: string, scheduleDate: string) => {
+  const event = await Calendar.findOne({
+    userId: userId,
+    scheduleDate: scheduleDate,
+  });
+  return event;
+};
+
+// 根據今日與明日的行程資料，組出使用者文件需要的 4 個快照欄位
+export const computeUserCalendarSnapshot = async (userId: string) => {
+  const todayDate = getTargetDateSimply('today');
+  const tomorrowDate = getTargetDateSimply('tomorrow');
+  const [todayEvent, tomorrowEvent] = await Promise.all([
+    getCalendarEventByDate(userId, todayDate),
+    getCalendarEventByDate(userId, tomorrowDate),
+  ]);
+  return {
+    hasTodayCalendarEvent: !!todayEvent,
+    hasTomorrowCalendarEvent: !!tomorrowEvent,
+    todayCalendarEventOccasion: todayEvent?.calendarEventOccasion ?? '',
+    tomorrowCalendarEventOccasion: tomorrowEvent?.calendarEventOccasion ?? '',
+  };
+};
 
 // 取得行事曆行程列表
 export const getCalendarList = async (userId: string) => {
