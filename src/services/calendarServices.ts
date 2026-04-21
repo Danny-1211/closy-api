@@ -74,16 +74,25 @@ export const deleteCalendarEvent = async (userId: string, calendarId: string) =>
 export const updateCalendarEvent = async (
   userId: string,
   calendarId: string,
-  updates: Partial<Pick<CalendarType.CalendarItem, 'calendarEventOccasion' | 'scheduleDate'> & { outfit: CalendarType.ThisOutfit }>
+  updates: Partial<Pick<CalendarType.CalendarItem, 'calendarEventOccasion' | 'scheduleDate'> & { outfit: CalendarType.ThisOutfit | null }>
 ) => {
   const setFields: Record<string, unknown> = {};
+  const unsetFields: Record<string, string> = {};
   if (updates.calendarEventOccasion !== undefined) setFields.calendarEventOccasion = updates.calendarEventOccasion;
   if (updates.scheduleDate !== undefined) setFields.scheduleDate = updates.scheduleDate;
-  if (updates.outfit !== undefined) setFields.outfit = updates.outfit;
+  if (updates.outfit === null) {
+    unsetFields.outfit = '';
+  } else if (updates.outfit !== undefined) {
+    setFields.outfit = updates.outfit;
+  }
+
+  const mongoUpdate: Record<string, unknown> = {};
+  if (Object.keys(setFields).length > 0) mongoUpdate.$set = setFields;
+  if (Object.keys(unsetFields).length > 0) mongoUpdate.$unset = unsetFields;
 
   const updated = await Calendar.findOneAndUpdate(
     { _id: calendarId, userId: userId },
-    { $set: setFields },
+    mongoUpdate,
     { returnDocument: 'after', runValidators: true }
   );
   return updated;

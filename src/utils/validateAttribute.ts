@@ -158,7 +158,7 @@ export function validateCalendarPatchBody(
   if (!calendarId || typeof calendarId !== 'string') {
     return { statusCode: 400, message: '請提供行程 id' };
   }
-  if (!outfitId && !scheduleDate && !calendarEventOccasion) {
+  if (outfitId === undefined && !scheduleDate && !calendarEventOccasion) {
     return { statusCode: 400, message: '請提供至少一個更新欄位' };
   }
   if (scheduleDate && !validateScheduleDate(scheduleDate)) {
