@@ -5254,12 +5254,12 @@
       }
     },
     "/home/": {
-      "get": {
+      "post": {
         "tags": [
           "Home"
         ],
         "summary": "取得穿搭建議與天氣資訊",
-        "description": "根據使用者的性別、場合、風格與顏色偏好，產生指定日期的穿搭建議與天氣資訊，需要攜帶 Bearer Token。若使用者在行事曆已為目標日期（today/tomorrow）設定行程與穿搭，將直接沿用該筆穿搭（方案 B），不再呼叫 AI。",
+        "description": "根據使用者的性別、場合、風格與顏色偏好，產生指定日期的穿搭建議與天氣資訊，需要攜帶 Bearer Token。前端需在 request body 帶入 occasion。若使用者在行事曆已為目標日期（today/tomorrow）設定行程與穿搭，將直接沿用該筆穿搭（方案 B），不再呼叫 AI。",
         "parameters": [
           {
             "name": "authorization",
@@ -5497,7 +5497,33 @@
           {
             "bearerAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "occasion"
+                ],
+                "properties": {
+                  "occasion": {
+                    "type": "string",
+                    "description": "場合（必填）",
+                    "enum": [
+                      "socialGathering",
+                      "campusCasual",
+                      "businessCasual",
+                      "professional"
+                    ],
+                    "example": "socialGathering"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/home/outfit": {

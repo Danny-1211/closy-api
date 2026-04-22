@@ -19,10 +19,10 @@ type MongooseSingleItem = ClothesType.singleItem & { toObject(): any };
 
 const homeRouter = express.Router();
 
-homeRouter.get('/', authMiddleWare, async (req, res) => {
+homeRouter.post('/', authMiddleWare, async (req, res) => {
   /* #swagger.tags = ['Home']
      #swagger.summary = '取得穿搭建議與天氣資訊'
-     #swagger.description = '根據使用者的性別、場合、風格與顏色偏好，產生指定日期的穿搭建議與天氣資訊，需要攜帶 Bearer Token。若使用者在行事曆已為目標日期（today/tomorrow）設定行程與穿搭，將直接沿用該筆穿搭（方案 B），不再呼叫 AI。'
+     #swagger.description = '根據使用者的性別、場合、風格與顏色偏好，產生指定日期的穿搭建議與天氣資訊，需要攜帶 Bearer Token。前端需在 request body 帶入 occasion。若使用者在行事曆已為目標日期（today/tomorrow）設定行程與穿搭，將直接沿用該筆穿搭（方案 B），不再呼叫 AI。'
      #swagger.security = [{ "bearerAuth": [] }]
 
      #swagger.parameters['day'] = {
@@ -31,6 +31,21 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
        required: false,
        description: '查詢日期，today（今日）或 tomorrow（明日），預設為 today',
        '@schema': { type: 'string', example: 'today', default: 'today' }
+     }
+
+     #swagger.requestBody = {
+       required: true,
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             required: ['occasion'],
+             properties: {
+               occasion: { type: 'string', description: '場合（必填）', enum: ['socialGathering', 'campusCasual', 'businessCasual', 'professional'], example: 'socialGathering' }
+             }
+           }
+         }
+       }
      }
 
      #swagger.responses[200] = {
@@ -160,6 +175,11 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
     return errorHandler({ statusCode: 400, message: 'day 參數只接受 today 或 tomorrow' }, res)
   }
 
+  const userOccasion = req.body.occasion;
+  if (!validateOutfitOccasion(userOccasion)) {
+    return errorHandler({ statusCode: 400, message: '請提供正確的場合' }, res);
+  }
+
   try {
     const userId = req.user!.userId;
     // 進場先刷新行事曆快照，解決跨午夜過期問題
@@ -183,7 +203,7 @@ homeRouter.get('/', authMiddleWare, async (req, res) => {
       const clothesList = await getUserClothes(userId);
       const context: OutfitContext = {
         gender: user.gender,
-        occasion: user.preferences.occasions,
+        occasion: userOccasion,
         styles: user.preferences.styles,
         colors: user.preferences.colors,
         items: clothesList.map((item: any) => (item as MongooseSingleItem).toObject()),
