@@ -38,7 +38,7 @@ closy-api/
 - **Node.js**: `v22.20.0`
 - **pnpm**: `10.32.1`
 
-### ⚙️ 安裝與啟動 (Setup & Dev)
+### ⚙️ 啟動 (Setup & Dev)
 ```
 # 1. 安裝專案依賴套件
 pnpm install
