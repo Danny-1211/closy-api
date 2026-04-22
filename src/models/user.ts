@@ -32,6 +32,14 @@ const userSchema = new Schema<UserType.User>(
       default: () => ({ styles: [], colors: [], occasions: '' }),
     },
     location: { type: locationSchema, default: () => ({ latitude: null, longitude: null }) },
+    // 今日是否有行程（供前端介面渲染）
+    hasTodayCalendarEvent: { type: Boolean, default: false },
+    // 明日是否有行程（供前端介面渲染）
+    hasTomorrowCalendarEvent: { type: Boolean, default: false },
+    // 今日行程的場合 id，沒有則為空字串
+    todayCalendarEventOccasion: { type: String, default: '' },
+    // 明日行程的場合 id，沒有則為空字串
+    tomorrowCalendarEventOccasion: { type: String, default: '' },
   },
   { timestamps: true, collection: 'users' },
 );
