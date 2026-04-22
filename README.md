@@ -1,13 +1,15 @@
-👕 Closy API | 智慧衣櫃與穿搭推薦系統
+# 👕 Closy API | 智慧衣櫃與穿搭推薦系統
 
-使用 Node.js、Express 、 Gemini 與 TypeScript 打造的智慧衣櫃 API 服務。系統提供使用者管理個人衣物、依據天氣狀況與個人偏好產生穿搭建議，並提供行事曆規劃與整合，為前端應用提供完整的後端支援。
+使用 Node.js、Express、Gemini 與 TypeScript 打造的智慧衣櫃 API 服務。系統提供使用者管理個人衣物、依據天氣狀況與個人偏好產生穿搭建議，並提供行事曆規劃與整合，為前端應用提供完整的後端支援。
 
-🧩 專案介紹 | Overview
+## 🧩 專案介紹 | Overview
+
 本專案為一個智慧衣櫃管理（Closy）的後端 API 應用。
 使用者可以上傳與管理衣物圖片（整合 Cloudinary），系統會根據當前天氣（串接 OpenWeather API）與 Gemini AI 進行智慧運算，產生適合的穿搭組合。
 
-📂 專案架構 | Project Structure
-Plaintext
+## 📂 專案架構 | Project Structure
+
+```text
 closy-api/
 ├── public/              # 靜態資源
 ├── src/                 # 原始碼目錄
@@ -26,17 +28,31 @@ closy-api/
 ├── pnpm-lock.yaml       # pnpm 套件鎖定檔
 ├── swagger-output.json  # Swagger 自動產生的 API 文件
 └── tsconfig.json        # TypeScript 設定檔
-
+```
 🚀 啟動專案 | Quick Start
+
 📦 安裝環境 (Requirement)
+
 請確認電腦已安裝以下版本（建議使用 LTS 版本）：
 
-Node.js: v22.20.0
+- **Node.js**: v22.20.0
 
-pnpm: 10.32.1
+- **pnpm**: 10.32.1
 
 ⚙️ 安裝與啟動 (Setup & Dev)
-Bash
+
+
+## 🚀 啟動專案 | Quick Start
+
+### 📦 安裝環境 (Requirement)
+
+請確認電腦已安裝以下版本：
+
+- **Node.js**: `v22.20.0`
+- **pnpm**: `10.32.1`
+
+### ⚙️ 安裝與啟動 (Setup & Dev)
+```
 # 1. 安裝專案依賴套件
 pnpm install
 
@@ -46,3 +62,4 @@ cp .env.example .env
 
 # 3. 啟動開發伺服器
 npm run dev
+```
