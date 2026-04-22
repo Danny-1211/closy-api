@@ -29,19 +29,6 @@ closy-api/
 ├── swagger-output.json  # Swagger 自動產生的 API 文件
 └── tsconfig.json        # TypeScript 設定檔
 ```
-🚀 啟動專案 | Quick Start
-
-📦 安裝環境 (Requirement)
-
-請確認電腦已安裝以下版本（建議使用 LTS 版本）：
-
-- **Node.js**: v22.20.0
-
-- **pnpm**: 10.32.1
-
-⚙️ 安裝與啟動 (Setup & Dev)
-
-
 ## 🚀 啟動專案 | Quick Start
 
 ### 📦 安裝環境 (Requirement)
