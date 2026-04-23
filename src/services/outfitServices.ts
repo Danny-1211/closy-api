@@ -1,7 +1,7 @@
 import { Outfit } from "../models/outfit";
 import { OutfitItem, OccasionSummaryItem } from "../types/outfit";
 import { CLOTHES_OCCASIONS_SET } from "../constants/clothes";
-import { formatDateSimply } from "../utils/datetime";
+import { formatDateSimply, getTaipeiDateString } from "../utils/datetime";
 
 // 取得我的穿搭列表
 export const getOutfits = async (userId: string, occasion: string) => {
@@ -69,24 +69,14 @@ export const getOutfitById = async (userId: string, outfitId: string) => {
 
 // DB 檢查今天是否有產過穿搭
 export const checkOutfitGeneratedToday = async (userId: string) => {
-  const now = new Date();
-  const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
-  const outfit = await Outfit.findOne({
-    userId,
-    createdAt: { $gte: startOfDay, $lt: endOfDay }
-  });
+  const todayString = getTaipeiDateString(0);
+  const outfit = await Outfit.findOne({ userId, outfitDate: todayString });
   return !!outfit;
 }
 
 // DB 檢查明天是否有產過穿搭
 export const checkOutfitGeneratedTomorrow = async (userId: string) => {
-  const now = new Date();
-  const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
-  const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 2));
-  const outfit = await Outfit.findOne({
-    userId,
-    createdAt: { $gte: startOfDay, $lt: endOfDay }
-  });
+  const tomorrowString = getTaipeiDateString(1);
+  const outfit = await Outfit.findOne({ userId, outfitDate: tomorrowString });
   return !!outfit;
 }

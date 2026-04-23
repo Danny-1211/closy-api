@@ -21,6 +21,17 @@ export const getTargetDateSimply = (day: 'today' | 'tomorrow'): string => {
   return `${yyyy}/${mm}/${dd}`;
 };
 
+// 以台北時區（UTC+8）回傳 YYYY-MM-DD 格式日期字串（偏移 offsetDays 天）
+export const getTaipeiDateString = (offsetDays: number = 0): string => {
+  const base = getTaipeiDayStart();
+  base.setUTCDate(base.getUTCDate() + offsetDays);
+  const taipei = new Date(base.getTime() + 8 * 60 * 60 * 1000);
+  const y = taipei.getUTCFullYear();
+  const m = String(taipei.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(taipei.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
+
 // 回傳指定日期在 UTC+8 當天 00:00:00 的 UTC Date（用於每日額度查詢）
 export function getTaipeiDayStart(date: Date = new Date()): Date {
   const UTC8_OFFSET_MS = 8 * 60 * 60 * 1000;
