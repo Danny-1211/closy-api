@@ -5,7 +5,7 @@
 ## 🧩 專案介紹 | Overview
 
 本專案為一個智慧衣櫃管理（Closy）的後端 API 應用。
-使用者可以上傳與管理衣物圖片（整合 Cloudinary），系統會根據當前天氣（串接 OpenWeather API）與 Gemini AI 進行智慧運算，產生適合的穿搭組合。
+使用者可以上傳與管理衣物圖片（整合 Cloudinary），系統會根據當前天氣 與 Gemini AI 進行智慧運算，產生適合的穿搭組合。
 
 ## 📂 專案架構 | Project Structure
 
