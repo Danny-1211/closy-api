@@ -247,7 +247,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
   */
   const { outfitImgUrl, occasion, selectedItems, outfitDate } = req.body;
 
-  if (!outfitImgUrl || !occasion || !Array.isArray(selectedItems) || selectedItems.length === 0) {
+  if (!outfitImgUrl || !occasion || !Array.isArray(selectedItems) || selectedItems.length === 0 || !outfitDate) {
     return errorHandler({ statusCode: 400, message: '請提供完整的穿搭資訊' }, res);
   }
 

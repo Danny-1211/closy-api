@@ -13,7 +13,7 @@ export const getOutfits = async (userId: string, occasion: string) => {
 }
 
 // 收藏穿搭
-export const addOutfit = async (outfitItem: Omit<OutfitItem, '_id' | 'createdAt' | 'updatedAt' | 'createdDateSimply | outfitDate'>) => {
+export const addOutfit = async (outfitItem: Omit<OutfitItem, '_id' | 'createdAt' | 'updatedAt' | 'createdDateSimply' | 'outfitDate'>) => {
   const outfit = new Outfit(outfitItem);
   return await outfit.save();
 }
