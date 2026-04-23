@@ -722,8 +722,10 @@ userRouter.get('/information', authMiddleWare, async (req, res) => {
     if (!userInformation) {
       return errorHandler({ statusCode: 404, message: '找不到使用者' }, res);
     }
-    const outfitGeneratedToday = await checkOutfitGeneratedToday(userId);
-    const outfitGeneratedTomorrow = await checkOutfitGeneratedTomorrow(userId);
+    const [outfitGeneratedToday, outfitGeneratedTomorrow] = await Promise.all([
+      checkOutfitGeneratedToday(userId),
+      checkOutfitGeneratedTomorrow(userId),
+    ]);
     return res.status(200).json({
       statusCode: 200,
       status: true,
