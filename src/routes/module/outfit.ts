@@ -245,7 +245,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
        }
      }
   */
-  const { outfitImgUrl, occasion, selectedItems } = req.body;
+  const { outfitImgUrl, occasion, selectedItems, outfitDate } = req.body;
 
   if (!outfitImgUrl || !occasion || !Array.isArray(selectedItems) || selectedItems.length === 0) {
     return errorHandler({ statusCode: 400, message: '請提供完整的穿搭資訊' }, res);
@@ -257,7 +257,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
 
   try {
     const userId = req.user!.userId;
-    const outfitItem = { userId, outfitImgUrl, occasion, selectedItems }
+    const outfitItem = { userId, outfitImgUrl, occasion, selectedItems, outfitDate }
     const newOutfit = await addOutfit(outfitItem);
 
     if (!newOutfit) {
