@@ -2211,6 +2211,16 @@
                           "type": "string",
                           "example": "",
                           "description": "明日行程的場合 id，沒有則為空字串"
+                        },
+                        "hasOutfitGeneratedToday": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "今日是否已經生成過穿搭"
+                        },
+                        "hasOutfitGeneratedTomorrow": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "明日是否已經生成過穿搭"
                         }
                       }
                     }
@@ -4717,7 +4727,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /  無效的憑證或憑證已過期，請重新登入"
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /   無效的憑證或憑證已過期，請重新登入"
                     },
                     "data": {
                       "type": "object",

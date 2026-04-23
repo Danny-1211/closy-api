@@ -10,6 +10,7 @@ type OutfitItem = {
   outfitImgUrl: string;
   occasion: OccasionType;
   selectedItems: selectedItems[];
+  outfitDate: string;
   createdAt: Date;
   updatedAt: Date;
   createdDateSimply: string;

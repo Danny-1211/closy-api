@@ -4,6 +4,7 @@ import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { updateUserGender, updateUserColor, updateUserStyle, updateUserOccasion, updateUserLocation, getUserInformation } from '../../services/userServices';
 import { validateColors, validateStyles, validateOccasions, validateGender, validateLocation, validateUserAuthorization, roundCoordinate } from '../../utils/validateAttribute';
 import { defaultLocation } from '../../constants/user';
+import { checkOutfitGeneratedToday, checkOutfitGeneratedTomorrow } from '../../services/outfitServices';
 
 const userRouter = express.Router();
 
@@ -659,7 +660,9 @@ userRouter.get('/information', authMiddleWare, async (req, res) => {
                 hasTodayCalendarEvent: { type: 'boolean', example: false, description: '今日是否有行事曆行程（供前端介面渲染）' },
                 hasTomorrowCalendarEvent: { type: 'boolean', example: false, description: '明日是否有行事曆行程（供前端介面渲染）' },
                 todayCalendarEventOccasion: { type: 'string', example: '', description: '今日行程的場合 id，沒有則為空字串' },
-                tomorrowCalendarEventOccasion: { type: 'string', example: '', description: '明日行程的場合 id，沒有則為空字串' }
+                tomorrowCalendarEventOccasion: { type: 'string', example: '', description: '明日行程的場合 id，沒有則為空字串' },
+                hasOutfitGeneratedToday: { type: 'boolean', example: false, description: '今日是否已經生成過穿搭' },
+                hasOutfitGeneratedTomorrow: { type: 'boolean', example: false, description: '明日是否已經生成過穿搭' }
               }
             }
           }
@@ -719,6 +722,8 @@ userRouter.get('/information', authMiddleWare, async (req, res) => {
     if (!userInformation) {
       return errorHandler({ statusCode: 404, message: '找不到使用者' }, res);
     }
+    const outfitGeneratedToday = await checkOutfitGeneratedToday(userId);
+    const outfitGeneratedTomorrow = await checkOutfitGeneratedTomorrow(userId);
     return res.status(200).json({
       statusCode: 200,
       status: true,
@@ -733,6 +738,8 @@ userRouter.get('/information', authMiddleWare, async (req, res) => {
         hasTomorrowCalendarEvent: userInformation.hasTomorrowCalendarEvent,
         todayCalendarEventOccasion: userInformation.todayCalendarEventOccasion,
         tomorrowCalendarEventOccasion: userInformation.tomorrowCalendarEventOccasion,
+        hasOutfitGeneratedToday: outfitGeneratedToday,
+        hasOutfitGeneratedTomorrow: outfitGeneratedTomorrow,
       },
     });
   } catch (error) {
