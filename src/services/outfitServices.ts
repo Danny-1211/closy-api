@@ -58,7 +58,6 @@ export const getOccasionSummary = async (userId: string) => {
   return summaryList;
 }
 
-
 // DB 檢查是否有這個穿搭
 export const getOutfitById = async (userId: string, outfitId: string) => {
   const outfit = await Outfit.findOne({
@@ -66,4 +65,28 @@ export const getOutfitById = async (userId: string, outfitId: string) => {
     userId: userId
   });
   return outfit;
+}
+
+// DB 檢查今天是否有產過穿搭
+export const checkOutfitGeneratedToday = async (userId: string) => {
+  const now = new Date();
+  const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+  const outfit = await Outfit.findOne({
+    userId,
+    createdAt: { $gte: startOfDay, $lt: endOfDay }
+  });
+  return !!outfit;
+}
+
+// DB 檢查明天是否有產過穿搭
+export const checkOutfitGeneratedTomorrow = async (userId: string) => {
+  const now = new Date();
+  const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+  const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 2));
+  const outfit = await Outfit.findOne({
+    userId,
+    createdAt: { $gte: startOfDay, $lt: endOfDay }
+  });
+  return !!outfit;
 }

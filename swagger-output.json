@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
+      "url": "http://localhost:5173",
       "description": "本地開發伺服器"
     },
     {
