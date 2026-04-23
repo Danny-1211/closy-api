@@ -152,10 +152,11 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
          'application/json': {
            schema: {
              type: 'object',
-             required: ['outfitImgUrl', 'occasion', 'selectedItems'],
+             required: ['outfitImgUrl', 'occasion', 'selectedItems', 'outfitDate'],
              properties: {
                outfitImgUrl: { type: 'string', description: '穿搭圖片雲端 URL', example: 'https://example.com/outfit-url.jpg' },
                occasion: { type: 'string', description: '穿搭場合', example: 'campusCasual' },
+               outfitDate: { type: 'string', description: '穿搭日期', example: '2024/06/01' },
                selectedItems: {
                  type: 'array',
                  description: '搭配的單品清單',

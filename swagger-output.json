@@ -6144,7 +6144,8 @@
                 "required": [
                   "outfitImgUrl",
                   "occasion",
-                  "selectedItems"
+                  "selectedItems",
+                  "outfitDate"
                 ],
                 "properties": {
                   "outfitImgUrl": {
@@ -6156,6 +6157,11 @@
                     "type": "string",
                     "description": "穿搭場合",
                     "example": "campusCasual"
+                  },
+                  "outfitDate": {
+                    "type": "string",
+                    "description": "穿搭日期",
+                    "example": "2024/06/01"
                   },
                   "selectedItems": {
                     "type": "array",
