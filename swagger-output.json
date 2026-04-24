@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
+      "url": "http://localhost:5173",
       "description": "本地開發伺服器"
     },
     {
@@ -4727,7 +4727,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /   無效的憑證或憑證已過期，請重新登入"
+                      "example": "未提供 Token 或格式錯誤 / 無效的 Token 格式 /  無效的憑證或憑證已過期，請重新登入"
                     },
                     "data": {
                       "type": "object",
@@ -6903,7 +6903,7 @@
             }
           },
           "400": {
-            "description": "缺少必要欄位",
+            "description": "缺少必要欄位 / outfitId 格式錯誤",
             "content": {
               "application/json": {
                 "schema": {
@@ -6919,7 +6919,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "缺少必要欄位"
+                      "example": "缺少必要欄位 / outfitId 格式錯誤"
                     },
                     "data": {
                       "type": "object",
@@ -7115,6 +7115,10 @@
                           "outfit": {
                             "type": "object",
                             "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "69e5e1d35368f7b91d76a8aa"
+                              },
                               "userId": {
                                 "type": "string",
                                 "example": "69c78a9f77ac6314790d6c16"
