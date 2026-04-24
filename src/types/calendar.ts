@@ -1,6 +1,6 @@
 import { OutfitItem } from './outfit';
 
-type ThisOutfit = Pick<OutfitItem, 'userId' | 'outfitImgUrl' | 'occasion' | 'selectedItems' | 'createdAt' | 'createdDateSimply'>;
+type ThisOutfit = Pick<OutfitItem, 'userId' | 'outfitImgUrl' | 'occasion' | 'selectedItems' | 'createdAt' | 'createdDateSimply' | '_id'>;
 
 // 單筆行程
 type CalendarItem = {

@@ -6,6 +6,7 @@ type OccasionType = typeof CLOTHES_OCCASIONS_SET[number]['occasionId'];
 type selectedItems = Pick<singleItem, 'cloudImgUrl' | 'name' | 'brand' | 'category'>;
 
 type OutfitItem = {
+  _id: string;
   userId: string;
   outfitImgUrl: string;
   occasion: OccasionType;
