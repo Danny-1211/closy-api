@@ -7,8 +7,7 @@ const corsOptions: CorsOptions = {
       'http://localhost:5173',
       'https://qa-closy-nine.vercel.app',
       'https://closy-api.onrender.com',
-      'https://closy-nine.vercel.app',
-      'https://demo-closy-nine.vercel.app'
+      'https://closy-nine.vercel.app'
     ];
 
     // 允許沒有 origin 的請求（例如 Swagger UI、Postman、curl）
