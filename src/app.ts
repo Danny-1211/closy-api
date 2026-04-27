@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(router);
-app.use(express.static('public'));
+
 
 const startServer = async (): Promise<void> => {
   try {
