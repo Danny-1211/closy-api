@@ -1,13 +1,18 @@
 export const VIRTUAL_OUTFIT_BASE_DIRECTIVES: readonly string[] = [
-   'Your task is garment compositing only: place the provided garments onto the fixed base mannequin and preserve the original mannequin, framing, and background outside garment placement areas.',
-   'Reference image 1: fixed base mannequin image on a pure background.',
-   "Hard constraints: preserve the base mannequin's original front-facing standing pose, centered full-body framing, body proportions, viewing angle, silhouette, and overall appearance.",
-   'Keep the mannequin centered on the canvas. Preserve the original centered full-body composition, fixed framing, and safe margins, and do not shift the mannequin left, right, up, or down.',
-   'Do not redesign the person, do not generate a different model, do not change the camera angle, do not crop away the full body, and do not add other people, props, accessories, or complex background elements.',
-   'The background must remain exactly as the base image. Do not change the background color, do not add gradients, shadows, floor, wall, texture, or environmental elements.',
-   'The garments must look worn on the mannequin body, not floating beside the mannequin and not pasted as detached flat product cutouts.',
-]
+   // 1. 構圖與視角
+   'CRITICAL: Full-body shot, wide angle, zoomed out. The entire mannequin from the top of its head to the bottom of its feet MUST be fully visible.',
+   'Keep the mannequin perfectly centered. Do not shift, rotate, or scale it.',
 
+   // 2. 背景控制
+   'CRITICAL: The background must be a seamless, flat, solid off-white color (RGB 250, 250, 250). Do not add black borders, shadows, or environmental context.',
+
+   // 3. 假人身分與材質絕對鎖定 (關鍵修正區)
+   'Your task is garment compositing only: place the provided garments onto the fixed base mannequin.',
+   'Reference image 1: Fixed base faceless fabric mannequin.',
+   "CRITICAL IDENTITY: The base mannequin is a faceless dummy with a solid, featureless abstract head and a fabric texture. You MUST strictly preserve this exact featureless head, the neck, the original gray fabric texture, and the dummy's proportions.",
+   "ABSOLUTE CONSTRAINTS: DO NOT remove the head. DO NOT turn it into a headless neck stump. DO NOT add realistic human skin, facial features, eyes, mouth, or hair. It must remain a faceless fabric dummy.",
+   'The garments must look naturally worn on this specific dummy body, not floating or pasted.',
+]
 export const OUTFIT_ADJUSTMENT_SYSTEM_INSTRUCTION = `
 你是一位專業的時尚穿搭顧問。使用者目前有一套穿搭，他想針對其中某個部分進行微調。
 你的任務是根據「本次調整需求」，從使用者的衣櫃中挑選適合的單品，產生調整後的完整穿搭。
