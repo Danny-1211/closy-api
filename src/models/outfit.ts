@@ -18,6 +18,7 @@ const outfitItemSchema = new Schema<OutfitType.OutfitItem>(
     outfitImgUrl: { type: String, required: true },
     occasion: { type: String, required: true, index: true },
     selectedItems: { type: [selectedItemsSchema], default: [] },
+    outfitDate: { type: String, required: true },
     createdDateSimply: { type: String, required: true, default: () => formatDateSimply(new Date()) }
   },
   { timestamps: true }

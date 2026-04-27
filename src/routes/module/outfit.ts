@@ -152,10 +152,11 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
          'application/json': {
            schema: {
              type: 'object',
-             required: ['outfitImgUrl', 'occasion', 'selectedItems'],
+             required: ['outfitImgUrl', 'occasion', 'selectedItems', 'outfitDate'],
              properties: {
                outfitImgUrl: { type: 'string', description: '穿搭圖片雲端 URL', example: 'https://example.com/outfit-url.jpg' },
                occasion: { type: 'string', description: '穿搭場合', example: 'campusCasual' },
+               outfitDate: { type: 'string', description: '穿搭日期', example: '2024/06/01' },
                selectedItems: {
                  type: 'array',
                  description: '搭配的單品清單',
@@ -245,9 +246,9 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
        }
      }
   */
-  const { outfitImgUrl, occasion, selectedItems } = req.body;
+  const { outfitImgUrl, occasion, selectedItems, outfitDate } = req.body;
 
-  if (!outfitImgUrl || !occasion || !Array.isArray(selectedItems) || selectedItems.length === 0) {
+  if (!outfitImgUrl || !occasion || !Array.isArray(selectedItems) || selectedItems.length === 0 || !outfitDate) {
     return errorHandler({ statusCode: 400, message: '請提供完整的穿搭資訊' }, res);
   }
 
@@ -257,7 +258,7 @@ outfitRouter.post('/', authMiddleWare, async (req, res) => {
 
   try {
     const userId = req.user!.userId;
-    const outfitItem = { userId, outfitImgUrl, occasion, selectedItems }
+    const outfitItem = { userId, outfitImgUrl, occasion, selectedItems, outfitDate }
     const newOutfit = await addOutfit(outfitItem);
 
     if (!newOutfit) {

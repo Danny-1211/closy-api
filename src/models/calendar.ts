@@ -14,6 +14,7 @@ const selectedItemSchema = new Schema<selectedItems>(
 
 const outfitSubSchema = new Schema<CalendarType.ThisOutfit>(
   {
+    _id: { type: String, required: true },
     userId: { type: String, required: true },
     outfitImgUrl: { type: String, required: true },
     occasion: { type: String, required: true },
