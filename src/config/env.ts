@@ -17,4 +17,10 @@ export const config: EnvConfig = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || '',
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || '',
   GOOGLE_GEOCODING_API_KEY: process.env.GOOGLE_GEOCODING_API_KEY || '',
+  CORS_MAIN: process.env.CORS_MAIN || '',
+  CORS_DEV: process.env.CORS_DEV || '',
+  CORS_QA: process.env.CORS_QA || '',
+  CORS_DEMO: process.env.CORS_DEMO || '',
+  CORS_LOCALHOST1: process.env.CORS_LOCALHOST1 || '',
+  CORS_LOCALHOST2: process.env.CORS_LOCALHOST2 || '',
 };
