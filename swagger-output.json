@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
+      "url": "http://localhost:5173",
       "description": "本地開發伺服器"
     },
     {
@@ -2102,7 +2102,7 @@
           "User"
         ],
         "summary": "取得使用者資訊",
-        "description": "取得目前登入使用者的個人資訊，包含姓名、大頭貼、性別、偏好設定與定位等，需要攜帶 Bearer Token",
+        "description": "取得目前登入使用者的個人資訊，包含姓名、大頭貼、性別、偏好設定、定位與行程穿搭狀態等，需要攜帶 Bearer Token",
         "parameters": [
           {
             "name": "authorization",
@@ -2148,7 +2148,7 @@
                         "gender": {
                           "type": "string",
                           "example": "male",
-                          "description": "性別 (例如: male / female)"
+                          "description": "性別（male / female）"
                         },
                         "preferences": {
                           "type": "object",
@@ -2195,12 +2195,22 @@
                         "hasTodayCalendarEvent": {
                           "type": "boolean",
                           "example": false,
-                          "description": "今日是否有行事曆行程（供前端介面渲染）"
+                          "description": "今日有行事曆行程且已設定穿搭"
+                        },
+                        "hasTodayCalendarEventWithoutOutfit": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "今日有行事曆行程但尚未設定穿搭"
                         },
                         "hasTomorrowCalendarEvent": {
                           "type": "boolean",
                           "example": false,
-                          "description": "明日是否有行事曆行程（供前端介面渲染）"
+                          "description": "明日有行事曆行程且已設定穿搭"
+                        },
+                        "hasTomorrowCalendarEventWithoutOutfit": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "明日有行事曆行程但尚未設定穿搭"
                         },
                         "todayCalendarEventOccasion": {
                           "type": "string",
@@ -2211,6 +2221,16 @@
                           "type": "string",
                           "example": "",
                           "description": "明日行程的場合 id，沒有則為空字串"
+                        },
+                        "hasOutfitGeneratedToday": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "今日是否已經生成過穿搭"
+                        },
+                        "hasOutfitGeneratedTomorrow": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "明日是否已經生成過穿搭"
                         }
                       }
                     }
@@ -2220,7 +2240,7 @@
             }
           },
           "401": {
-            "description": "未授權，Token 無效或未提供",
+            "description": "未提供 Token 或格式錯誤 / 無效的 Token 格式 / 無效的憑證或憑證已過期，請重新登入",
             "content": {
               "application/json": {
                 "schema": {
@@ -2236,7 +2256,11 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "未授權，請重新登入"
+                      "example": "無效的憑證或憑證已過期，請重新登入"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
                     }
                   }
                 }
@@ -2261,6 +2285,10 @@
                     "message": {
                       "type": "string",
                       "example": "找不到使用者"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
                     }
                   }
                 }
@@ -2268,7 +2296,7 @@
             }
           },
           "500": {
-            "description": "伺服器錯誤，取得資訊失敗",
+            "description": "伺服器錯誤，資料讀取失敗",
             "content": {
               "application/json": {
                 "schema": {
@@ -2285,13 +2313,22 @@
                     "message": {
                       "type": "string",
                       "example": "伺服器發生錯誤，資料讀取失敗，請稍後再試"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
                     }
                   }
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/process/remove-bg": {
@@ -6134,7 +6171,8 @@
                 "required": [
                   "outfitImgUrl",
                   "occasion",
-                  "selectedItems"
+                  "selectedItems",
+                  "outfitDate"
                 ],
                 "properties": {
                   "outfitImgUrl": {
@@ -6146,6 +6184,11 @@
                     "type": "string",
                     "description": "穿搭場合",
                     "example": "campusCasual"
+                  },
+                  "outfitDate": {
+                    "type": "string",
+                    "description": "穿搭日期",
+                    "example": "2024/06/01"
                   },
                   "selectedItems": {
                     "type": "array",
@@ -6887,7 +6930,7 @@
             }
           },
           "400": {
-            "description": "缺少必要欄位",
+            "description": "缺少必要欄位 / outfitId 格式錯誤",
             "content": {
               "application/json": {
                 "schema": {
@@ -6903,7 +6946,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "缺少必要欄位"
+                      "example": "缺少必要欄位 / outfitId 格式錯誤"
                     },
                     "data": {
                       "type": "object",
@@ -7099,6 +7142,10 @@
                           "outfit": {
                             "type": "object",
                             "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "69e5e1d35368f7b91d76a8aa"
+                              },
                               "userId": {
                                 "type": "string",
                                 "example": "69c78a9f77ac6314790d6c16"

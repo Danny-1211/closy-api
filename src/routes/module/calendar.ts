@@ -9,6 +9,7 @@ import { refreshUserCalendarSnapshot } from '../../utils/home';
 
 // 將 Outfit 文件整形為 Calendar embed 用的 ThisOutfit 結構
 const toThisOutfit = (outfitDoc: {
+  _id: string;
   userId: string;
   outfitImgUrl: string;
   occasion: CalendarType.ThisOutfit['occasion'];
@@ -16,6 +17,7 @@ const toThisOutfit = (outfitDoc: {
   createdAt: Date;
   createdDateSimply: string;
 }): CalendarType.ThisOutfit => ({
+  _id: outfitDoc._id,
   userId: outfitDoc.userId,
   outfitImgUrl: outfitDoc.outfitImgUrl,
   occasion: outfitDoc.occasion,
@@ -67,7 +69,7 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
      }
 
      #swagger.responses[400] = {
-       description: '缺少必要欄位',
+       description: '缺少必要欄位 / outfitId 格式錯誤',
        content: {
          'application/json': {
            schema: {
@@ -75,7 +77,7 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string', example: '缺少必要欄位' },
+               message: { type: 'string', example: '缺少必要欄位 / outfitId 格式錯誤' },
                data: { type: 'object', nullable: true, example: null }
              }
            }
@@ -200,6 +202,7 @@ calendarRouter.get('/', authMiddleWare, async (req, res) => {
                      outfit: {
                        type: 'object',
                        properties: {
+                         _id: { type: 'string', example: '69e5e1d35368f7b91d76a8aa' },
                          userId: { type: 'string', example: '69c78a9f77ac6314790d6c16' },
                          outfitImgUrl: { type: 'string', example: 'https://res.cloudinary.com/damapwahs/image/upload/v1776672966/closy/users/outfits/69c78a9f77ac6314790d6c16/i2skmm6sjbqlwyjysgex.png' },
                          occasion: { type: 'string', example: 'businessCasual' },

@@ -17,6 +17,7 @@ app.use(cookieParser());
 
 app.use(router);
 
+
 const startServer = async (): Promise<void> => {
   try {
     await connectDB();

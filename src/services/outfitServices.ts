@@ -1,7 +1,7 @@
 import { Outfit } from "../models/outfit";
 import { OutfitItem, OccasionSummaryItem } from "../types/outfit";
 import { CLOTHES_OCCASIONS_SET } from "../constants/clothes";
-import { formatDateSimply } from "../utils/datetime";
+import { formatDateSimply, getTaipeiDateString } from "../utils/datetime";
 
 // 取得我的穿搭列表
 export const getOutfits = async (userId: string, occasion: string) => {
@@ -58,7 +58,6 @@ export const getOccasionSummary = async (userId: string) => {
   return summaryList;
 }
 
-
 // DB 檢查是否有這個穿搭
 export const getOutfitById = async (userId: string, outfitId: string) => {
   const outfit = await Outfit.findOne({
@@ -66,4 +65,18 @@ export const getOutfitById = async (userId: string, outfitId: string) => {
     userId: userId
   });
   return outfit;
+}
+
+// DB 檢查今天是否有產過穿搭
+export const checkOutfitGeneratedToday = async (userId: string) => {
+  const todayString = getTaipeiDateString(0);
+  const outfit = await Outfit.findOne({ userId, outfitDate: todayString });
+  return !!outfit;
+}
+
+// DB 檢查明天是否有產過穿搭
+export const checkOutfitGeneratedTomorrow = async (userId: string) => {
+  const tomorrowString = getTaipeiDateString(1);
+  const outfit = await Outfit.findOne({ userId, outfitDate: tomorrowString });
+  return !!outfit;
 }

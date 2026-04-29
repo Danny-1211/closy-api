@@ -15,4 +15,10 @@ export type EnvConfig = {
   CLOUDINARY_API_KEY: string;
   CLOUDINARY_API_SECRET: string;
   GOOGLE_GEOCODING_API_KEY: string;
+  CORS_MAIN: string;
+  CORS_DEV: string;
+  CORS_QA: string;
+  CORS_DEMO: string;
+  CORS_LOCALHOST1: string;
+  CORS_LOCALHOST2: string;
 };

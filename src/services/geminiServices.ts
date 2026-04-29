@@ -108,53 +108,45 @@ function buildVirtualOutfitPrompt(clothesItems: VirtualOutfitItem[]): string {
 
   for (const item of clothesItems) {
     if (item.category === 'dress') {
-      referenceLines.push(`Reference image ${refCount}: One-piece garment / dress (primary reference). Preserve the exact garment identity, silhouette, color, material, and length.`);
+      referenceLines.push(`Reference image ${refCount}: One-piece dress. Apply seamlessly to the torso and legs.`);
     } else if (item.category === 'top') {
-      referenceLines.push(`Reference image ${refCount}: Upper body garment (top). Preserve the exact top design, hem silhouette, and original material.`);
+      referenceLines.push(`Reference image ${refCount}: Upper body top. Apply seamlessly to the torso.`);
     } else if (item.category === 'bottom') {
-      referenceLines.push(`Reference image ${refCount}: Lower body garment (pants/bottom). Preserve the exact silhouette and fit.`);
+      referenceLines.push(`Reference image ${refCount}: Lower body pants/bottom. Apply seamlessly to the waist and legs.`);
     } else if (item.category === 'skirt') {
-      referenceLines.push(`Reference image ${refCount}: Lower body garment (skirt). Preserve the exact silhouette, length, and material.`);
+      referenceLines.push(`Reference image ${refCount}: Lower body skirt. Apply seamlessly to the waist and legs.`);
     } else if (item.category === 'outerwear') {
-      referenceLines.push(`Reference image ${refCount}: Outerwear garment. It must remain clearly visible as a separate outer layer without replacing the inner garments.`);
+      referenceLines.push(`Reference image ${refCount}: Outerwear. Must be worn as an outer layer.`);
     } else if (item.category === 'shoes') {
-      referenceLines.push(`Reference image ${refCount}: Footwear (shoes). Place on the mannequin's feet and preserve the exact shoe design, silhouette, and color.`);
+      referenceLines.push(`Reference image ${refCount}: Footwear. Place exactly on the dummy's feet.`);
     }
     refCount++;
   }
 
   if (hasDress) {
     modeLines = [
-      'The outfit is a dress-based/one-piece look.',
-      'The dress must remain a single main garment worn on the mannequin body.',
-      'Do not turn the dress into separates and do not invent extra layers.',
-      'Dress shoulders must align closely with the mannequin shoulders.',
-      'The upper bodice must appear worn on the mannequin, not pasted beside it, and the dress should fit naturally to the torso and legs.',
+      'Outfit mode: One-piece dress look.',
+      'The dress is the single main garment. Dress shoulders must align precisely with the dummy shoulders.',
+      'Do not invent extra layers or separate the dress into two pieces.',
     ];
   } else if (hasTop && hasLowerBody) {
     modeLines = [
-      'The outfit is a separates look (top and bottom).',
-      'The top and the bottom must remain two separate garments.',
-      'Do not merge the top and lower piece into one dress, jumpsuit, or one-piece garment.',
-      'Do not fully tuck the top into the lower garment and do not blend the two garments into a dress-like silhouette.',
-      'The waist connection between the top and the lower garment must look natural, aligned, and worn together, without a floating gap.',
-      'Allow only a very slight natural overlap at the center front waist if needed.',
+      'Outfit mode: Separates (Top + Bottom).',
+      'The top and bottom are two distinct garments. Do not merge them into a jumpsuit or dress.',
+      'The waist connection must look natural. Allow only a slight natural overlap at the center front waist; do not create floating gaps.',
     ];
     lowerBodyLines.push(
-      'The bottom garment must fit naturally to the mannequin waist, hips, and leg position.',
-      'Do not enlarge the lower body, do not widen the hips or legs, and keep the lower garment fitted to the original mannequin proportions.',
+      'Keep the lower garment fitted to the original dummy proportions. Do not arbitrarily widen the hips or legs.',
     );
   } else if (hasTop && !hasLowerBody) {
     modeLines = [
-      'The outfit is a top-only look. The mannequin should only wear the provided upper body garment.',
-      'Do not invent or generate pants, skirts, or any lower body garments.',
-      'The lower body of the mannequin must remain bare (white and featureless).',
+      'Outfit mode: Top-only. The dummy wears ONLY the upper body garment.',
+      'Do not generate pants, skirts, or shoes. The lower body must remain bare (matching the featureless off-white background).',
     ];
   } else if (!hasTop && hasLowerBody) {
     modeLines = [
-      'The outfit is a bottom-only look. The mannequin should only wear the provided lower body garment.',
-      'Do not invent or generate shirts, t-shirts, or any upper body garments.',
-      'The upper body of the mannequin must remain bare (white and featureless).',
+      'Outfit mode: Bottom-only. The dummy wears ONLY the lower body garment.',
+      'Do not generate shirts or tops. The upper body must remain bare.',
     ];
   }
 
@@ -164,6 +156,10 @@ function buildVirtualOutfitPrompt(clothesItems: VirtualOutfitItem[]): string {
     ...lowerBodyLines,
     '--- GARMENT REFERENCES ---',
     ...referenceLines,
+    '--- FINAL SAFETY RECHECK ---',
+    '- Is the abstract featureless head still there? IT MUST BE PRESERVED.',
+    '- Is it free of human faces or hair? IT MUST REMAIN FACELESS.',
+    '- Are the feet and head uncropped? IT MUST NOT BE CROPPED.',
   ].join('\n');
 }
 

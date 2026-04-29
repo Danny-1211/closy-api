@@ -1,13 +1,14 @@
 import { CorsOptions } from 'cors';
-
+import { config } from './env';
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'https://qa-closy-nine.vercel.app',
-      'https://closy-api.onrender.com',
-      'https://closy-nine.vercel.app'
+      config.CORS_LOCALHOST1,
+      config.CORS_LOCALHOST2,
+      config.CORS_QA,
+      config.CORS_DEV,
+      config.CORS_MAIN,
+      config.CORS_DEMO
     ];
 
     // 允許沒有 origin 的請求（例如 Swagger UI、Postman、curl）
