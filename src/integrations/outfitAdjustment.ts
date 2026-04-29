@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { adjustOutfitSelection, generateVirtualOutfitImage } from '../services/geminiServices';
+import { adjustOutfitSelection, generateVirtualOutfitImage } from './gemini';
 import { getUserClothes } from '../services/clothesServices';
 import { getUserInformation } from '../services/userServices';
 import { getWeather } from './openWeather';

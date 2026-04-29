@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { errorHandler } from '../../utils/errorMessage';
-import { generateOutfitRecommendation, generateVirtualOutfitImage } from '../../services/geminiServices';
+import { generateOutfitRecommendation, generateVirtualOutfitImage } from '../../integrations/gemini';
 import { getUserClothes } from '../../services/clothesServices';
 import { getUserInformation } from '../../services/userServices';
 import { DayWeather, OutfitContext, VirtualOutfitItem } from '../../types/gemini';

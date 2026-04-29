@@ -163,7 +163,6 @@ function buildVirtualOutfitPrompt(clothesItems: VirtualOutfitItem[]): string {
   ].join('\n');
 }
 
-// 呼叫 Gemini 文字模型，依調整需求從衣櫃挑出新的 selectedItems
 // signal 為選填，未傳入時行為與舊版一致
 export async function adjustOutfitSelection(
   context: OutfitAdjustmentContext,
