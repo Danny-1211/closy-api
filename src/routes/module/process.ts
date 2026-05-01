@@ -81,20 +81,6 @@ processRouter.post('/remove-bg', authMiddleWare, uploadSingleImage, async (req, 
       }
     }
 
-    #swagger.responses[409] = {
-      description: '圖片重複 (該使用者已上傳過相同的衣物圖片)',
-      schema: {
-        type: "object",
-        properties: {
-          statusCode: { type: "integer", example: 409 },
-          status: { type: "boolean", example: false },
-          message: { type: "string", example: "您已上傳過相同的衣物圖片" },
-          data: { type: "object", example: null },
-          ok: { type: "boolean", example: false }
-        }
-      }
-    }
-
     #swagger.responses[500] = {
       description: '伺服器錯誤',
       schema: {

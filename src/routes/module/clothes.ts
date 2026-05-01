@@ -1,7 +1,7 @@
 import express from 'express';
 import { authMiddleWare } from '../../middlewares/tokenCheckMiddle';
 import { errorHandler } from '../../utils/errorMessage';
-import { addSingleItem, deleteSingleItem, getUserClothes, getUserSpecificClothes, updateSingleItem } from '../../services/clothesServices';
+import { addSingleItem, checkDuplicateByHash, deleteSingleItem, getUserClothes, getUserSpecificClothes, updateSingleItem } from '../../services/clothesServices';
 import * as ClothesType from '../../types/clothes';
 import { validateClothesItem, validateClothesPartialItem } from '../../utils/validateAttribute';
 
@@ -335,6 +335,23 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
        }
      }
 
+     #swagger.responses[409] = {
+       description: '圖片重複 (該使用者已上傳過相同的衣物圖片)',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 409 },
+               status: { type: 'boolean', example: false },
+               message: { type: 'string', example: '您已上傳過相同的衣物圖片' },
+               data: { type: 'object', example: null }
+             }
+           }
+         }
+       }
+     }
+
      #swagger.responses[500] = {
        description: '伺服器錯誤',
        content: {
@@ -359,6 +376,14 @@ clothesRouter.post('/', authMiddleWare, async (req, res) => {
 
   try {
     const userId = req.user!.userId;
+
+    if (imageHash) {
+      const isDuplicate = await checkDuplicateByHash(userId, imageHash);
+      if (isDuplicate) {
+        return errorHandler({ statusCode: 409, message: '您已上傳過相同的衣物圖片' }, res);
+      }
+    }
+
     const singleItem: ClothesType.singleItem = { category, cloudImgUrl, imageHash: imageHash || '', name, color, occasions, seasons, brand };
     const newItem = await addSingleItem(userId, singleItem);
     return res.status(200).json({
