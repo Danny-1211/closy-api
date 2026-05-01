@@ -1,5 +1,6 @@
 import { Clothes } from '../models/clothes';
 import * as ClothesType from '../types/clothes';
+import { deleteFromCloudinary, extractPublicIdFromUrl } from '../integrations/cloudinary';
 
 // 檢查該使用者是否已有相同 imageHash 的衣物
 export const checkDuplicateByHash = async (userId: string, imageHash: string) => {
@@ -40,8 +41,11 @@ export const addSingleItem = async (userId: string, singleItem: ClothesType.sing
   return clothes.list[clothes.list.length - 1];
 }
 
-// 刪除這位使用者衣櫃的某件單品
+// 刪除這位使用者衣櫃的某件單品，並連帶清除 Cloudinary 上的圖片
 export const deleteSingleItem = async (userId: string, singleItemId: string) => {
+  const existing = await getUserSpecificClothes(userId, singleItemId);
+  const cloudImgUrl = existing?.list?.[0]?.cloudImgUrl;
+
   const singleItem = await Clothes.findOneAndUpdate(
     { userId: userId, 'list._id': singleItemId },
     { $pull: { list: { _id: singleItemId } } },
@@ -49,6 +53,17 @@ export const deleteSingleItem = async (userId: string, singleItemId: string) => 
       returnDocument: 'after',
     }
   );
+
+  // 非同步刪除 Cloudinary 圖片
+  if (cloudImgUrl) {
+    const publicId = extractPublicIdFromUrl(cloudImgUrl);
+    if (publicId) {
+      deleteFromCloudinary(publicId).catch(err =>
+        console.error('Cloudinary 圖片刪除失敗:', err)
+      );
+    }
+  }
+
   return singleItem;
 }
 

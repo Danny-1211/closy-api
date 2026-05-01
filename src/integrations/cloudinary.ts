@@ -34,4 +34,15 @@ async function downloadImgFromCloudinary(imageUrl: string): Promise<Buffer> {
   }
 }
 
-export { uploadToCloudinary, downloadImgFromCloudinary };
+// 從 Cloudinary URL 解析出 public_id（含資料夾路徑，不含副檔名）
+function extractPublicIdFromUrl(url: string): string | null {
+  const match = url.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z]+$/);
+  return match?.[1] ?? null;
+}
+
+// 依 public_id 刪除 Cloudinary 上的圖片
+async function deleteFromCloudinary(publicId: string): Promise<void> {
+  await cloudinary.uploader.destroy(publicId);
+}
+
+export { uploadToCloudinary, downloadImgFromCloudinary, extractPublicIdFromUrl, deleteFromCloudinary };
