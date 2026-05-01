@@ -2,6 +2,7 @@ import { Outfit } from "../models/outfit";
 import { OutfitItem, OccasionSummaryItem } from "../types/outfit";
 import { CLOTHES_OCCASIONS_SET } from "../constants/clothes";
 import { formatDateSimply, getTaipeiDateString } from "../utils/datetime";
+import { deleteFromCloudinary, extractPublicIdFromUrl } from "../integrations/cloudinary";
 
 // 取得我的穿搭列表
 export const getOutfits = async (userId: string, occasion: string) => {
@@ -18,14 +19,24 @@ export const addOutfit = async (outfitItem: Omit<OutfitItem, '_id' | 'createdAt'
   return await outfit.save();
 }
 
-// 刪除穿搭
+// 刪除穿搭，並連帶清除 Cloudinary 上的穿搭合成圖
 export const deleteOutfit = async (userId: string, outfitId: string) => {
   const singleOutfitItem = await Outfit.findOneAndDelete({
     _id: outfitId,
     userId: userId
-  }, {
-    returnDocument: 'after',
   });
+
+  // 非同步刪除 Cloudinary 穿搭圖，失敗只記 log 不影響 API 回應
+  const outfitImgUrl = singleOutfitItem?.outfitImgUrl;
+  if (outfitImgUrl) {
+    const publicId = extractPublicIdFromUrl(outfitImgUrl);
+    if (publicId) {
+      deleteFromCloudinary(publicId).catch(err =>
+        console.error('Cloudinary 穿搭圖刪除失敗:', err)
+      );
+    }
+  }
+
   return singleOutfitItem;
 }
 
