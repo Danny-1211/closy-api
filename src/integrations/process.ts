@@ -2,7 +2,6 @@ import axios from 'axios';
 import crypto from 'crypto';
 import { config } from '../config/env';
 import { uploadToCloudinary } from './cloudinary';
-import { checkDuplicateByHash } from '../services/clothesServices';
 
 // 將傳進來的圖片去背，並上傳至 Cloudinary
 async function removeBg(image: Buffer, userId: string) {
@@ -21,12 +20,7 @@ async function removeBg(image: Buffer, userId: string) {
   const imageBuffer = Buffer.from(response.data);
   const imageHash = crypto.createHash('md5').update(imageBuffer).digest('hex');
 
-  const isDuplicate = await checkDuplicateByHash(userId, imageHash);
-  if (isDuplicate) {
-    throw { statusCode: 409, message: '您已上傳過相同的衣物圖片' };
-  }
-
-  const imageUrl = await uploadToCloudinary(imageBuffer, 'closy/system');
+  const imageUrl = await uploadToCloudinary(imageBuffer, `closy/system/${userId}`);
   return { imageUrl, imageHash };
 }
 
