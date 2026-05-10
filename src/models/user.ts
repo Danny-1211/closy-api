@@ -40,6 +40,11 @@ const userSchema = new Schema<UserType.User>(
     todayCalendarEventOccasion: { type: String, default: '' },
     // 明日行程的場合 id，沒有則為空字串
     tomorrowCalendarEventOccasion: { type: String, default: '' },
+    // Google Calendar OAuth tokens
+    googleCalendarRefreshToken: { type: String, default: '' },
+    googleCalendarAccessToken: { type: String, default: '' },
+    googleCalendarTokenExpiresAt: { type: Date, default: null },
+    isGoogleCalendarConnected: { type: Boolean, default: false },
   },
   { timestamps: true, collection: 'users' },
 );

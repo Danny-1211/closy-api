@@ -56,6 +56,43 @@ export const updateUserLocation = async (userId: string, longitude: number, lati
   return user;
 }
 
+export const updateUserGoogleCalendarTokens = async (
+  userId: string,
+  tokens: {
+    googleCalendarRefreshToken: string;
+    googleCalendarAccessToken: string;
+    googleCalendarTokenExpiresAt: Date;
+  }
+) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        ...tokens,
+        isGoogleCalendarConnected: true,
+      },
+    },
+    { returnDocument: 'after' },
+  );
+  return user;
+};
+
+export const clearUserGoogleCalendarTokens = async (userId: string) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        googleCalendarRefreshToken: '',
+        googleCalendarAccessToken: '',
+        googleCalendarTokenExpiresAt: null,
+        isGoogleCalendarConnected: false,
+      },
+    },
+    { returnDocument: 'after' },
+  );
+  return user;
+};
+
 // 將使用者的行事曆快照欄位整組寫回（純 DB 操作）
 export const updateUserCalendarSnapshot = async (
   userId: string,

@@ -23,4 +23,5 @@ export const config: EnvConfig = {
   CORS_DEMO: process.env.CORS_DEMO || '',
   CORS_LOCALHOST1: process.env.CORS_LOCALHOST1 || '',
   CORS_LOCALHOST2: process.env.CORS_LOCALHOST2 || '',
+  GOOGLE_CALENDAR_REDIRECT_URI: process.env.GOOGLE_CALENDAR_REDIRECT_URI || '',
 };

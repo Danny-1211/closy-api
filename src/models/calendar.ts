@@ -9,7 +9,7 @@ const selectedItemSchema = new Schema<selectedItems>(
     brand: { type: String, default: '' },
     category: { type: String, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const outfitSubSchema = new Schema<CalendarType.ThisOutfit>(
@@ -20,8 +20,19 @@ const outfitSubSchema = new Schema<CalendarType.ThisOutfit>(
     occasion: { type: String, required: true },
     selectedItems: { type: [selectedItemSchema], default: [] },
     createdAt: { type: Date, required: true },
-    createdDateSimply: { type: String, required: true }
-  }, { _id: false }
+    createdDateSimply: { type: String, required: true },
+  },
+  { _id: false },
+);
+
+const googleEventSchema = new Schema<CalendarType.GoogleEvent>(
+  {
+    googleEventId: { type: String, required: true },
+    title: { type: String, required: true },
+    startTime: { type: String, default: '' },
+    endTime: { type: String, default: '' },
+  },
+  { _id: false },
 );
 
 const calendarSchema = new Schema<CalendarType.CalendarItem>(
@@ -29,8 +40,11 @@ const calendarSchema = new Schema<CalendarType.CalendarItem>(
     userId: { type: String, required: true, index: true },
     calendarEventOccasion: { type: String, required: true },
     scheduleDate: { type: String, required: true },
-    outfit: { type: outfitSubSchema, required: false }
-  }, { timestamps: true }
+    outfit: { type: outfitSubSchema, required: false },
+    source: { type: String, enum: ['local', 'google'], default: 'local', required: true },
+    googleEvents: { type: [googleEventSchema], default: [] },
+  },
+  { timestamps: true },
 );
 
 calendarSchema.index({ userId: 1, scheduleDate: 1 }, { unique: true });

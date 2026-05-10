@@ -21,4 +21,5 @@ export type EnvConfig = {
   CORS_DEMO: string;
   CORS_LOCALHOST1: string;
   CORS_LOCALHOST2: string;
+  GOOGLE_CALENDAR_REDIRECT_URI: string;
 };
