@@ -1,5 +1,6 @@
+import { AnyBulkWriteOperation } from 'mongoose';
 import { Calendar } from '../models/calendar';
-import { GoogleEvent } from '../types/calendar';
+import { CalendarItem, GoogleEvent } from '../types/calendar';
 
 // 將 integrations 層整理好的 Google 事件（按日期分組）同步到 Calendar collection
 export const syncGoogleCalendarEvents = async (
@@ -10,7 +11,7 @@ export const syncGoogleCalendarEvents = async (
 
   // 對每個有 Google 事件的日期進行 upsert（批次處理）
   if (incomingDates.length > 0) {
-    const bulkOps = [];
+    const bulkOps: AnyBulkWriteOperation<CalendarItem>[] = [];
 
     for (const [scheduleDate, googleEvents] of eventsByDate) {
       // Google 優先：若本地事項存在則覆蓋 occasion/outfit
