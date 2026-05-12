@@ -35,11 +35,18 @@ export const getCalendarList = async (userId: string) => {
   return calendarList;
 };
 
-// 新增行事曆行程
+// 新增行事曆行程（本地）
 export const addCalendarEvent = async (userId: string, scheduleDate: string, calendarEventOccasion: string, outfit?: CalendarType.ThisOutfit) => {
+  // 若當天已有 google 事項，拒絕新增
+  const existing = await Calendar.findOne({ userId, scheduleDate });
+  if (existing && existing.source === 'google') {
+    throw Object.assign(new Error('當天已有 Google 行事曆事項，無法新增本地行程'), { statusCode: 409 });
+  }
+
   // 僅在有傳入 outfit 時才寫入該欄位，避免覆蓋為 undefined
   const setFields: Record<string, unknown> = {
-    calendarEventOccasion: calendarEventOccasion
+    calendarEventOccasion,
+    source: 'local',
   };
   if (outfit !== undefined) setFields.outfit = outfit;
 
@@ -58,12 +65,12 @@ export const addCalendarEvent = async (userId: string, scheduleDate: string, cal
   return newCalendarEvent;
 };
 
-// 刪除行事曆行程
+// 刪除行事曆行程（只能刪除本地事項）
 export const deleteCalendarEvent = async (userId: string, calendarId: string) => {
-
   const deleteCalendarEvent = await Calendar.findOneAndDelete({
     _id: calendarId,
-    userId: userId
+    userId: userId,
+    source: 'local',
   }, {
     returnDocument: 'after',
   });

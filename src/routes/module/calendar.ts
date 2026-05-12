@@ -6,6 +6,10 @@ import { validateCalendarPatchBody } from '../../utils/validateAttribute';
 import { getOutfitById } from '../../services/outfitServices';
 import * as CalendarType from '../../types/calendar';
 import { refreshUserCalendarSnapshot } from '../../utils/home';
+import { getUserInformation, updateUserGoogleCalendarTokens } from '../../services/userServices';
+import { fetchGoogleCalendarEvents, refreshAccessTokenIfNeeded } from '../../integrations/googleCalendar';
+import { syncGoogleCalendarEvents } from '../../services/googleCalendarServices';
+import { Calendar } from '../../models/calendar';
 
 // 將 Outfit 文件整形為 Calendar embed 用的 ThisOutfit 結構
 const toThisOutfit = (outfitDoc: {
@@ -31,7 +35,7 @@ const calendarRouter = express.Router();
 calendarRouter.post('/', authMiddleWare, async (req, res) => {
   /* #swagger.tags = ['Calendar']
      #swagger.summary = '新增行程'
-     #swagger.description = '新增使用者的行程與穿搭紀錄'
+     #swagger.description = '新增使用者的行程與穿搭紀錄。若當天已有 Google 行事曆事項，則無法新增本地行程。'
      #swagger.security = [{ "bearerAuth": [] }]
 
      #swagger.requestBody = {
@@ -119,6 +123,23 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
        }
      }
 
+     #swagger.responses[409] = {
+       description: '當天已有 Google 行事曆事項，無法新增本地行程',
+       content: {
+         'application/json': {
+           schema: {
+             type: 'object',
+             properties: {
+               statusCode: { type: 'integer', example: 409 },
+               status: { type: 'boolean', example: false },
+               message: { type: 'string', example: '當天已有 Google 行事曆事項，無法新增本地行程' },
+               data: { type: 'object', nullable: true, example: null }
+             }
+           }
+         }
+       }
+     }
+
      #swagger.responses[500] = {
        description: '系統錯誤',
        content: {
@@ -137,7 +158,6 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
      }
   */
   const { scheduleDate, calendarEventOccasion, outfitId } = req.body;
-  // scheduleDate、calendarEventOccasion 為必填；outfitId 為選填
   if (!scheduleDate || !calendarEventOccasion) {
     return errorHandler({ statusCode: 400, message: '缺少必要欄位' }, res);
   }
@@ -147,7 +167,6 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
   try {
     const userId = req.user!.userId;
 
-    // 有傳入 outfitId 時才向 Outfit collection 撈取資料並整形為 embed 結構
     let outfitEmbed: CalendarType.ThisOutfit | undefined;
     if (outfitId) {
       const outfitDoc = await getOutfitById(userId, outfitId);
@@ -161,7 +180,6 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
     if (!newCalendarEvent) {
       return errorHandler({ statusCode: 404, message: '新增失敗' }, res);
     }
-    // 同步使用者文件上的行事曆快照欄位
     await refreshUserCalendarSnapshot(userId);
     return res.status(200).json({
       statusCode: 200,
@@ -177,7 +195,7 @@ calendarRouter.post('/', authMiddleWare, async (req, res) => {
 calendarRouter.get('/', authMiddleWare, async (req, res) => {
   /* #swagger.tags = ['Calendar']
      #swagger.summary = '取得行事曆列表'
-     #swagger.description = '取得使用者的所有行程與穿搭紀錄，包含過去與未來的行程，依照日期排序'
+     #swagger.description = '取得使用者的所有行程與穿搭紀錄。若使用者已連結 Google Calendar，會自動同步最新事件後再回傳。回傳資料包含 source 欄位（local / google）供前端判斷顯示方式；google 來源的事項含有 googleEvents 子事件陣列。'
      #swagger.security = [{ "bearerAuth": [] }]
 
      #swagger.responses[200] = {
@@ -190,7 +208,7 @@ calendarRouter.get('/', authMiddleWare, async (req, res) => {
                statusCode: { type: 'integer', example: 200 },
                status: { type: 'boolean', example: true },
                message: { type: 'string', example: '取得行事曆列表成功' },
-               data: { 
+               data: {
                  type: 'array',
                  items: {
                    type: 'object',
@@ -199,27 +217,31 @@ calendarRouter.get('/', authMiddleWare, async (req, res) => {
                      userId: { type: 'string', example: '67329dcb2a38d7aa9bc71415' },
                      scheduleDate: { type: 'string', example: '2024/11/20' },
                      calendarEventOccasion: { type: 'string', example: 'businessCasual' },
+                     source: { type: 'string', enum: ['local', 'google'], example: 'local' },
+                     googleEvents: {
+                       type: 'array',
+                       description: '僅 source 為 google 時有值',
+                       items: {
+                         type: 'object',
+                         properties: {
+                           googleEventId: { type: 'string', example: 'abc123xyz' },
+                           title: { type: 'string', example: '跟朋友吃飯' },
+                           startTime: { type: 'string', example: '10:00' },
+                           endTime: { type: 'string', example: '12:00' }
+                         }
+                       }
+                     },
                      outfit: {
                        type: 'object',
+                       nullable: true,
                        properties: {
                          _id: { type: 'string', example: '69e5e1d35368f7b91d76a8aa' },
                          userId: { type: 'string', example: '69c78a9f77ac6314790d6c16' },
-                         outfitImgUrl: { type: 'string', example: 'https://res.cloudinary.com/damapwahs/image/upload/v1776672966/closy/users/outfits/69c78a9f77ac6314790d6c16/i2skmm6sjbqlwyjysgex.png' },
+                         outfitImgUrl: { type: 'string', example: 'https://res.cloudinary.com/...' },
                          occasion: { type: 'string', example: 'businessCasual' },
-                         selectedItems: {
-                           type: 'array',
-                           items: {
-                             type: 'object',
-                             properties: {
-                               cloudImgUrl: { type: 'string', example: 'https://res.cloudinary.com/damapwahs/image/upload/v1776498082/closy/system/nlrfghk70weenchkpbw2.png' },
-                               name: { type: 'string', example: '襯衫98566' },
-                               brand: { type: 'string', example: '' },
-                               category: { type: 'string', example: 'top' }
-                             }
-                           }
-                         },
+                         selectedItems: { type: 'array', items: { type: 'object' } },
                          createdDateSimply: { type: 'string', example: '2026/04/20' },
-                         createdAt: { type: 'string', format: 'date-time', example: '2026-04-20T08:20:35.793Z' }
+                         createdAt: { type: 'string', format: 'date-time' }
                        }
                      }
                    }
@@ -284,6 +306,26 @@ calendarRouter.get('/', authMiddleWare, async (req, res) => {
   */
   try {
     const userId = req.user!.userId;
+
+    // 若使用者已連結 Google Calendar，先同步最新事件
+    const user = await getUserInformation(userId);
+    if (user?.isGoogleCalendarConnected && user.googleCalendarAccessToken) {
+      const tokenResult = await refreshAccessTokenIfNeeded(
+        user.googleCalendarAccessToken,
+        user.googleCalendarRefreshToken ?? '',
+        user.googleCalendarTokenExpiresAt ?? null,
+      );
+      if (tokenResult.refreshed) {
+        await updateUserGoogleCalendarTokens(userId, {
+          googleCalendarAccessToken: tokenResult.accessToken,
+          googleCalendarRefreshToken: tokenResult.refreshToken,
+          googleCalendarTokenExpiresAt: tokenResult.expiresAt,
+        });
+      }
+      const eventsByDate = await fetchGoogleCalendarEvents(tokenResult.accessToken);
+      await syncGoogleCalendarEvents(userId, eventsByDate);
+    }
+
     const calendarList = await getCalendarList(userId);
     if (!calendarList) {
       return errorHandler({ statusCode: 404, message: '取得列表失敗' }, res);
@@ -302,7 +344,7 @@ calendarRouter.get('/', authMiddleWare, async (req, res) => {
 calendarRouter.delete('/:id', authMiddleWare, async (req, res) => {
   /* #swagger.tags = ['Calendar']
      #swagger.summary = '刪除行程'
-     #swagger.description = '依行程 ID 刪除指定的行事曆行程紀錄。'
+     #swagger.description = '依行程 ID 刪除指定的行事曆行程紀錄。僅限本地行程（source: local），Google 行事曆事項無法刪除。'
      #swagger.security = [{ "bearerAuth": [] }]
 
      #swagger.parameters['id'] = {
@@ -330,7 +372,7 @@ calendarRouter.delete('/:id', authMiddleWare, async (req, res) => {
      }
 
      #swagger.responses[400] = {
-       description: '請求錯誤 (未提供行程 ID)',
+       description: '請求錯誤 (未提供行程 ID / 不可刪除 Google 行事曆事項)',
        content: {
          'application/json': {
            schema: {
@@ -338,7 +380,7 @@ calendarRouter.delete('/:id', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string', example: '請提供行程 id' },
+               message: { type: 'string', example: '請提供行程 id / 無法刪除 Google 行事曆事項' },
                data: { type: 'object', nullable: true, example: null }
              }
            }
@@ -403,11 +445,17 @@ calendarRouter.delete('/:id', authMiddleWare, async (req, res) => {
     if (!calendarId || typeof calendarId !== 'string') {
       return errorHandler({ statusCode: 400, message: '請提供行程 id' }, res);
     }
+
+    // 先檢查 source，Google 事項不可刪除
+    const target = await Calendar.findOne({ _id: calendarId, userId });
+    if (target && target.source === 'google') {
+      return errorHandler({ statusCode: 400, message: '無法刪除 Google 行事曆事項' }, res);
+    }
+
     const deletedCalendar = await deleteCalendarEvent(userId, calendarId);
     if (!deletedCalendar) {
       return errorHandler({ statusCode: 404, message: '刪除失敗' }, res);
     }
-    // 同步使用者文件上的行事曆快照欄位
     await refreshUserCalendarSnapshot(userId);
     return res.status(200).json({
       statusCode: 200,
@@ -423,7 +471,7 @@ calendarRouter.delete('/:id', authMiddleWare, async (req, res) => {
 calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
   /* #swagger.tags = ['Calendar']
      #swagger.summary = '更新行程'
-     #swagger.description = '依行程 ID 更新指定的行事曆行程紀錄，支援部分欄位更新 (至少提供一項)。'
+     #swagger.description = '依行程 ID 更新指定的行事曆行程紀錄，支援部分欄位更新（至少提供一項）。Google 行事曆事項（source: google）僅允許更新 calendarEventOccasion 和 outfitId，不可更新 scheduleDate。'
      #swagger.security = [{ "bearerAuth": [] }]
 
      #swagger.parameters['id'] = {
@@ -440,7 +488,7 @@ calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
            schema: {
              type: 'object',
              properties: {
-               scheduleDate: { type: 'string', description: '行程日期', example: '2024/11/20' },
+               scheduleDate: { type: 'string', description: '行程日期（僅本地行程可更新）', example: '2024/11/20' },
                calendarEventOccasion: { type: 'string', description: '行程場合', example: 'businessCasual' },
                outfitId: { type: 'string', description: '穿搭 ID（選填，帶入時後端會自動撈取該筆穿搭資料）', example: '69e5e1d35368f7b91d76a8aa' }
              }
@@ -467,7 +515,7 @@ calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
      }
 
      #swagger.responses[400] = {
-       description: '請求錯誤 (未提供行程 ID / 未提供更新欄位 / 格式錯誤)',
+       description: '請求錯誤 (未提供行程 ID / 未提供更新欄位 / 格式錯誤 / Google 事項不可更新日期)',
        content: {
          'application/json': {
            schema: {
@@ -475,7 +523,7 @@ calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
              properties: {
                statusCode: { type: 'integer', example: 400 },
                status: { type: 'boolean', example: false },
-               message: { type: 'string', example: '請提供至少一個更新欄位 / 日期格式錯誤 / 場合格式錯誤 / 請提供行程 id' },
+               message: { type: 'string', example: '請提供至少一個更新欄位 / 日期格式錯誤 / 場合格式錯誤 / 請提供行程 id / Google 行事曆事項不可更新日期' },
                data: { type: 'object', nullable: true, example: null }
              }
            }
@@ -543,7 +591,12 @@ calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
       return errorHandler(validationError, res);
     }
 
-    // 將 outfitId 轉為 embed 用的 outfit 結構後再交給 service 更新
+    // 若為 Google 事項，不允許更新 scheduleDate
+    const target = await Calendar.findOne({ _id: calendarId, userId });
+    if (target?.source === 'google' && req.body.scheduleDate !== undefined) {
+      return errorHandler({ statusCode: 400, message: 'Google 行事曆事項不可更新日期' }, res);
+    }
+
     const { scheduleDate, calendarEventOccasion, outfitId } = req.body as {
       scheduleDate?: string;
       calendarEventOccasion?: string;
@@ -568,7 +621,6 @@ calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
       return errorHandler({ statusCode: 404, message: '更新失敗' }, res);
     }
 
-    // 若 scheduleDate 或 calendarEventOccasion 有變動，可能影響今日／明日快照；統一刷新最保險
     if (updates.scheduleDate !== undefined || updates.calendarEventOccasion !== undefined) {
       await refreshUserCalendarSnapshot(userId);
     }
@@ -583,6 +635,6 @@ calendarRouter.patch('/:id', authMiddleWare, async (req, res) => {
   } catch (err) {
     return errorHandler(err as { statusCode: number; message: string }, res);
   }
-})
+});
 
-export { calendarRouter }
+export { calendarRouter };

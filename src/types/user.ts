@@ -25,6 +25,11 @@ type User = {
   todayCalendarEventOccasion: string;
   // 明日行程的場合 id，沒有則為空字串
   tomorrowCalendarEventOccasion: string;
+  // Google Calendar OAuth tokens
+  googleCalendarRefreshToken?: string;
+  googleCalendarAccessToken?: string;
+  googleCalendarTokenExpiresAt?: Date;
+  isGoogleCalendarConnected: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 };
