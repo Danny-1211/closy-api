@@ -8,40 +8,36 @@ export const syncGoogleCalendarEvents = async (
 ): Promise<void> => {
   const incomingDates = Array.from(eventsByDate.keys());
 
-  // 對每個有 Google 事件的日期進行 upsert
-  for (const [scheduleDate, googleEvents] of eventsByDate) {
-    const existing = await Calendar.findOne({ userId, scheduleDate });
+  // 對每個有 Google 事件的日期進行 upsert（批次處理）
+  if (incomingDates.length > 0) {
+    const bulkOps = [];
 
-    if (existing && existing.source === 'local') {
-      // Google 優先：覆蓋本地事項
-      await Calendar.findOneAndUpdate(
-        { userId, scheduleDate },
-        {
-          $set: {
-            source: 'google',
-            googleEvents,
-            calendarEventOccasion: '',
-            outfit: undefined,
+    for (const [scheduleDate, googleEvents] of eventsByDate) {
+      // Google 優先：若本地事項存在則覆蓋 occasion/outfit
+      bulkOps.push({
+        updateOne: {
+          filter: { userId, scheduleDate, source: 'local' },
+          update: {
+            $set: { source: 'google', googleEvents, calendarEventOccasion: '' },
+            $unset: { outfit: '' },
           },
-          $unset: { outfit: '' },
         },
-      );
-    } else if (existing && existing.source === 'google') {
-      // 保留使用者設定的 occasion 和 outfit，只更新 googleEvents
-      await Calendar.findOneAndUpdate(
-        { userId, scheduleDate },
-        { $set: { googleEvents } },
-      );
-    } else {
-      // 新增 Google 事項
-      await Calendar.create({
-        userId,
-        scheduleDate,
-        source: 'google',
-        calendarEventOccasion: '',
-        googleEvents,
+      });
+
+      // 更新既有 google 事項，或新增；保留使用者設定的 occasion/outfit
+      bulkOps.push({
+        updateOne: {
+          filter: { userId, scheduleDate, source: { $ne: 'local' } },
+          update: {
+            $set: { googleEvents },
+            $setOnInsert: { source: 'google', calendarEventOccasion: '' },
+          },
+          upsert: true,
+        },
       });
     }
+
+    await Calendar.bulkWrite(bulkOps);
   }
 
   // 移除已不在 Google 回傳清單中的 google 事項
