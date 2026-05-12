@@ -2,14 +2,31 @@
 
 使用 Node.js、Express、Gemini 與 TypeScript 打造的智慧衣櫃 API 服務。系統提供使用者管理個人衣物、依據天氣狀況與個人偏好產生穿搭建議，並提供行事曆規劃與整合，為前端應用提供完整的後端支援。
 
+![Node.js](https://img.shields.io/badge/Node.js-v22.20.0-339933?logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose_9.x-47A248?logo=mongodb&logoColor=white)
+![Gemini](https://img.shields.io/badge/Google_Gemini-AI-8E75B2?logo=google&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-2.x-3448C5?logo=cloudinary&logoColor=white)
+![Google Calendar](https://img.shields.io/badge/Google_Calendar-API-4285F4?logo=googlecalendar&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-jsonwebtoken_9.x-000000?logo=jsonwebtoken&logoColor=white)
+![Multer](https://img.shields.io/badge/Multer-2.x-FF6600?logoColor=white)
+![Sharp](https://img.shields.io/badge/Sharp-0.34.x-99CC00?logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-UI_5.x-85EA2D?logo=swagger&logoColor=black)
+![pnpm](https://img.shields.io/badge/pnpm-10.32.1-F69220?logo=pnpm&logoColor=white)
+
+---
+
 ## 🧩 專案介紹 | Overview
 
 本專案為一個智慧衣櫃管理（Closy）的後端 API 應用。
 使用者可以上傳與管理衣物圖片（整合 Cloudinary），系統會根據當前天氣與 Gemini AI 進行智慧運算，產生適合的穿搭組合。
 
+---
+
 ## 📂 專案架構 | Project Structure
 
-```text
+```
 closy-api/
 ├── public/              # 靜態資源
 ├── src/                 # 原始碼目錄
@@ -29,17 +46,21 @@ closy-api/
 ├── swagger-output.json  # Swagger 自動產生的 API 文件
 └── tsconfig.json        # TypeScript 設定檔
 ```
+
+---
+
 ## 🚀 啟動專案 | Quick Start
 
 ### 📦 安裝環境 (Requirement)
 
 請確認電腦已安裝以下版本：
 
-- **Node.js**: `v22.20.0`
-- **pnpm**: `10.32.1`
+- **Node.js**: v22.20.0
+- **pnpm**: 10.32.1
 
 ### ⚙️ 啟動 (Setup & Dev)
-```
+
+```bash
 # 1. 安裝專案依賴套件
 pnpm install
 
