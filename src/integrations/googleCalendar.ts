@@ -30,13 +30,12 @@ type RawGoogleEvent = {
 
 // 將 dateTime 字串轉換為台北時區的 YYYY/MM/DD
 const toTaipeiDate = (dateTimeStr: string): string => {
-  const date = new Date(dateTimeStr);
-  const taipeiMs = date.getTime() + 8 * 60 * 60 * 1000;
-  const taipeiDate = new Date(taipeiMs);
-  const yyyy = taipeiDate.getUTCFullYear();
-  const mm = String(taipeiDate.getUTCMonth() + 1).padStart(2, '0');
-  const dd = String(taipeiDate.getUTCDate()).padStart(2, '0');
-  return `${yyyy}/${mm}/${dd}`;
+  return new Date(dateTimeStr).toLocaleDateString('zh-TW', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
 };
 
 // 從 dateTime 字串提取 HH:mm
