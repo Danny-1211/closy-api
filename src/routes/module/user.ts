@@ -14,6 +14,7 @@ userRouter.patch('/gender', authMiddleWare, async (req, res) => {
   #swagger.tags = ['User']
   #swagger.summary = '更新使用者性別'
   #swagger.description = '更新目前登入使用者的性別資訊，需要攜帶 Bearer Token'
+  #swagger.security = [{ "bearerAuth": [] }]
   #swagger.requestBody = {
     required: true,
     content: {
@@ -78,6 +79,21 @@ userRouter.patch('/gender', authMiddleWare, async (req, res) => {
       }
     }
   }
+  #swagger.responses[404] = {
+    description: '找不到使用者',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 404 },
+            status: { type: 'boolean', example: false },
+            message: { type: 'string', example: '找不到使用者' }
+          }
+        }
+      }
+    }
+  }
   #swagger.responses[500] = {
     description: '伺服器錯誤，資料更新失敗',
     content: {
@@ -123,6 +139,7 @@ userRouter.patch('/preferences/colors', authMiddleWare, async (req, res) => {
   #swagger.tags = ['User']
   #swagger.summary = '更新使用者偏好色系'
   #swagger.description = '更新目前登入使用者的偏好色系，需要攜帶 Bearer Token'
+  #swagger.security = [{ "bearerAuth": [] }]
   #swagger.requestBody = {
     required: true,
     content: {
@@ -190,6 +207,21 @@ userRouter.patch('/preferences/colors', authMiddleWare, async (req, res) => {
       }
     }
   }
+  #swagger.responses[404] = {
+    description: '找不到使用者',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'integer', example: 404 },
+            status: { type: 'boolean', example: false },
+            message: { type: 'string', example: '找不到使用者' }
+          }
+        }
+      }
+    }
+  }
   #swagger.responses[500] = {
     description: '伺服器錯誤，資料更新失敗',
     content: {
@@ -235,6 +267,7 @@ userRouter.patch('/preferences/styles', authMiddleWare, async (req, res) => {
  #swagger.tags = ['User']
  #swagger.summary = '更新使用者偏好風格'
  #swagger.description = '更新目前登入使用者的偏好風格，需要攜帶 Bearer Token'
+ #swagger.security = [{ "bearerAuth": [] }]
  #swagger.requestBody = {
    required: true,
    content: {
@@ -273,22 +306,7 @@ userRouter.patch('/preferences/styles', authMiddleWare, async (req, res) => {
    }
  }
  #swagger.responses[400] = {
-   description: '並沒有這個風格',
-   content: {
-     'application/json': {
-       schema: {
-         type: 'object',
-         properties: {
-           statusCode: { type: 'integer', example: 400 },
-           status: { type: 'boolean', example: false },
-           message: { type: 'string', example: '請提供正確的風格參數' }
-         }
-       }
-     }
-   }
- }
- #swagger.responses[400] = {
-   description: '請提供風格',
+   description: '並沒有這個風格 / 請提供風格',
    content: {
      'application/json': {
        schema: {
@@ -312,6 +330,21 @@ userRouter.patch('/preferences/styles', authMiddleWare, async (req, res) => {
            statusCode: { type: 'integer', example: 401 },
            status: { type: 'boolean', example: false },
            message: { type: 'string', example: '未授權，請重新登入' }
+         }
+       }
+     }
+   }
+ }
+ #swagger.responses[404] = {
+   description: '找不到使用者',
+   content: {
+     'application/json': {
+       schema: {
+         type: 'object',
+         properties: {
+           statusCode: { type: 'integer', example: 404 },
+           status: { type: 'boolean', example: false },
+           message: { type: 'string', example: '找不到使用者' }
          }
        }
      }
@@ -362,6 +395,7 @@ userRouter.patch('/preferences/occasions', authMiddleWare, async (req, res) => {
   #swagger.tags = ['User']
   #swagger.summary = '切換場合'
   #swagger.description = '更新目前登入使用者的偏好場合，需要攜帶 Bearer Token'
+  #swagger.security = [{ "bearerAuth": [] }]
   #swagger.requestBody = {
     required: true,
     content: {
@@ -486,6 +520,7 @@ userRouter.post('/location', authMiddleWare, async (req, res) => {
   #swagger.tags = ['User']
   #swagger.summary = '更新使用者定位'
   #swagger.description = '更新目前登入使用者的經緯度定位，需要攜帶 Bearer Token。備註：如果使用者沒有授權，請將參數 {longitude, latitude} 都各自帶入 null 給後端。'
+  #swagger.security = [{ "bearerAuth": [] }]
   #swagger.requestBody = {
     required: true,
     content: {
@@ -666,7 +701,8 @@ userRouter.get('/information', authMiddleWare, async (req, res) => {
                   todayCalendarEventOccasion: { type: 'string', example: '', description: '今日行程的場合 id，沒有則為空字串' },
                   tomorrowCalendarEventOccasion: { type: 'string', example: '', description: '明日行程的場合 id，沒有則為空字串' },
                   hasOutfitGeneratedToday: { type: 'boolean', example: false, description: '今日是否已經生成過穿搭' },
-                  hasOutfitGeneratedTomorrow: { type: 'boolean', example: false, description: '明日是否已經生成過穿搭' }
+                  hasOutfitGeneratedTomorrow: { type: 'boolean', example: false, description: '明日是否已經生成過穿搭' },
+                  isGoogleCalendarConnected: { type: 'boolean', example: false, description: 'Google Calendar 是否已連結' }
                 }
               }
             }
@@ -754,6 +790,7 @@ userRouter.get('/information', authMiddleWare, async (req, res) => {
         tomorrowCalendarEventOccasion: userInformation.tomorrowCalendarEventOccasion,
         hasOutfitGeneratedToday: outfitGeneratedToday,
         hasOutfitGeneratedTomorrow: outfitGeneratedTomorrow,
+        isGoogleCalendarConnected: userInformation.isGoogleCalendarConnected,
       },
     });
   } catch (error) {

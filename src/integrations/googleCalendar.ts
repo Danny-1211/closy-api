@@ -4,6 +4,7 @@ import { config } from '../config/env';
 import { GoogleEvent } from '../types/calendar';
 import { getTaipeiDayStart } from '../utils/datetime';
 
+
 export const createOAuth2Client = () => {
   return new OAuth2Client(
     config.GOOGLE_CLIENT_ID,
@@ -22,6 +23,7 @@ export const exchangeCodeForTokens = async (code: string) => {
 type RawGoogleEvent = {
   id: string;
   summary?: string;
+  eventType?: string;
   start?: { dateTime?: string; date?: string };
   end?: { dateTime?: string; date?: string };
 };
@@ -47,10 +49,38 @@ const toHHmm = (dateTimeStr: string): string => {
   return `${hh}:${min}`;
 };
 
+// 若 access token 已過期（含 5 分鐘緩衝），使用 refresh token 換取新 token 並回傳
+export const refreshAccessTokenIfNeeded = async (
+  accessToken: string,
+  refreshToken: string,
+  expiresAt: Date | null | undefined,
+): Promise<{ accessToken: string; refreshToken: string; expiresAt: Date; refreshed: boolean }> => {
+  const BUFFER_MS = 5 * 60 * 1000;
+  const needsRefresh = !expiresAt || Date.now() >= expiresAt.getTime() - BUFFER_MS;
+
+  if (!needsRefresh) {
+    return { accessToken, refreshToken, expiresAt: expiresAt!, refreshed: false };
+  }
+
+  const client = createOAuth2Client();
+  client.setCredentials({ refresh_token: refreshToken });
+  const { credentials } = await client.refreshAccessToken();
+
+  return {
+    accessToken: credentials.access_token!,
+    refreshToken: credentials.refresh_token ?? refreshToken,
+    expiresAt: credentials.expiry_date ? new Date(credentials.expiry_date) : new Date(Date.now() + 60 * 60 * 1000),
+    refreshed: true,
+  };
+};
+
 // 使用 axios 呼叫 Google Calendar REST API，回傳按日期分組的事件 Map
 export const fetchGoogleCalendarEvents = async (
   accessToken: string,
 ): Promise<Map<string, GoogleEvent[]>> => {
+  const todayStart = getTaipeiDayStart();
+  const timeMin = todayStart.toISOString();
+  const timeMax = new Date(todayStart.getFullYear(), 11, 31, 23, 59, 59).toISOString();
   const response = await axios.get<{ items?: RawGoogleEvent[] }>(
     'https://www.googleapis.com/calendar/v3/calendars/primary/events',
     {
@@ -59,6 +89,8 @@ export const fetchGoogleCalendarEvents = async (
         singleEvents: true,
         orderBy: 'startTime',
         maxResults: 2500,
+        timeMin,
+        timeMax,
       },
     },
   );

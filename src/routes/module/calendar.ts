@@ -6,8 +6,8 @@ import { validateCalendarPatchBody } from '../../utils/validateAttribute';
 import { getOutfitById } from '../../services/outfitServices';
 import * as CalendarType from '../../types/calendar';
 import { refreshUserCalendarSnapshot } from '../../utils/home';
-import { getUserInformation } from '../../services/userServices';
-import { fetchGoogleCalendarEvents } from '../../integrations/googleCalendar';
+import { getUserInformation, updateUserGoogleCalendarTokens } from '../../services/userServices';
+import { fetchGoogleCalendarEvents, refreshAccessTokenIfNeeded } from '../../integrations/googleCalendar';
 import { syncGoogleCalendarEvents } from '../../services/googleCalendarServices';
 import { Calendar } from '../../models/calendar';
 
@@ -310,12 +310,20 @@ calendarRouter.get('/', authMiddleWare, async (req, res) => {
     // 若使用者已連結 Google Calendar，先同步最新事件
     const user = await getUserInformation(userId);
     if (user?.isGoogleCalendarConnected && user.googleCalendarAccessToken) {
-      try {
-        const eventsByDate = await fetchGoogleCalendarEvents(user.googleCalendarAccessToken);
-        await syncGoogleCalendarEvents(userId, eventsByDate);
-      } catch {
-        // 同步失敗不中斷主流程，繼續回傳已存的資料
+      const tokenResult = await refreshAccessTokenIfNeeded(
+        user.googleCalendarAccessToken,
+        user.googleCalendarRefreshToken ?? '',
+        user.googleCalendarTokenExpiresAt ?? null,
+      );
+      if (tokenResult.refreshed) {
+        await updateUserGoogleCalendarTokens(userId, {
+          googleCalendarAccessToken: tokenResult.accessToken,
+          googleCalendarRefreshToken: tokenResult.refreshToken,
+          googleCalendarTokenExpiresAt: tokenResult.expiresAt,
+        });
       }
+      const eventsByDate = await fetchGoogleCalendarEvents(tokenResult.accessToken);
+      await syncGoogleCalendarEvents(userId, eventsByDate);
     }
 
     const calendarList = await getCalendarList(userId);

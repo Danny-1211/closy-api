@@ -38,7 +38,7 @@ const googleEventSchema = new Schema<CalendarType.GoogleEvent>(
 const calendarSchema = new Schema<CalendarType.CalendarItem>(
   {
     userId: { type: String, required: true, index: true },
-    calendarEventOccasion: { type: String, required: true },
+    calendarEventOccasion: { type: String, default: '' },
     scheduleDate: { type: String, required: true },
     outfit: { type: outfitSubSchema, required: false },
     source: { type: String, enum: ['local', 'google'], default: 'local', required: true },
