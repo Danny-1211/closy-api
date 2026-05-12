@@ -80,7 +80,7 @@ export const fetchGoogleCalendarEvents = async (
 ): Promise<Map<string, GoogleEvent[]>> => {
   const todayStart = getTaipeiDayStart();
   const timeMin = todayStart.toISOString();
-  const timeMax = new Date(todayStart.getFullYear(), 11, 31, 23, 59, 59).toISOString();
+  const timeMax = new Date(todayStart.getTime() + 90 * 24 * 60 * 60 * 1000).toISOString();
   const response = await axios.get<{ items?: RawGoogleEvent[] }>(
     'https://www.googleapis.com/calendar/v3/calendars/primary/events',
     {
