@@ -239,11 +239,24 @@ calendarRouter.get('/', authMiddleWare, async (req, res) => {
                          userId: { type: 'string', example: '69c78a9f77ac6314790d6c16' },
                          outfitImgUrl: { type: 'string', example: 'https://res.cloudinary.com/...' },
                          occasion: { type: 'string', example: 'businessCasual' },
-                         selectedItems: { type: 'array', items: { type: 'object' } },
+                         selectedItems: {
+                           type: 'array',
+                           items: {
+                             type: 'object',
+                             properties: {
+                               cloudImgUrl: { type: 'string', example: 'https://res.cloudinary.com/...' },
+                               name: { type: 'string', example: '白色 T-Shirt' },
+                               brand: { type: 'string', example: 'Uniqlo' },
+                               category: { type: 'string', example: 'tops' }
+                             }
+                           }
+                         },
                          createdDateSimply: { type: 'string', example: '2026/04/20' },
                          createdAt: { type: 'string', format: 'date-time' }
                        }
-                     }
+                     },
+                     createdAt: { type: 'string', format: 'date-time', example: '2026-04-20T08:00:00.000Z' },
+                     updatedAt: { type: 'string', format: 'date-time', example: '2026-04-20T08:00:00.000Z' }
                    }
                  }
                }
