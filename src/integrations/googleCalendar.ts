@@ -4,12 +4,12 @@ import { config } from '../config/env';
 import { GoogleEvent } from '../types/calendar';
 import { getTaipeiDayStart } from '../utils/datetime';
 
-
 export const createOAuth2Client = () => {
   return new OAuth2Client(
     config.GOOGLE_CLIENT_ID,
     config.GOOGLE_CLIENT_SECRET,
     config.GOOGLE_CALENDAR_REDIRECT_URI,
+    'postmessage',
   );
 };
 
@@ -68,7 +68,9 @@ export const refreshAccessTokenIfNeeded = async (
   return {
     accessToken: credentials.access_token!,
     refreshToken: credentials.refresh_token ?? refreshToken,
-    expiresAt: credentials.expiry_date ? new Date(credentials.expiry_date) : new Date(Date.now() + 60 * 60 * 1000),
+    expiresAt: credentials.expiry_date
+      ? new Date(credentials.expiry_date)
+      : new Date(Date.now() + 60 * 60 * 1000),
     refreshed: true,
   };
 };
