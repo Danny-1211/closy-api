@@ -5,12 +5,7 @@ import { GoogleEvent } from '../types/calendar';
 import { getTaipeiDayStart } from '../utils/datetime';
 
 export const createOAuth2Client = () => {
-  return new OAuth2Client(
-    config.GOOGLE_CLIENT_ID,
-    config.GOOGLE_CLIENT_SECRET,
-    config.GOOGLE_CALENDAR_REDIRECT_URI,
-    'postmessage',
-  );
+  return new OAuth2Client(config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET, 'postmessage');
 };
 
 export const exchangeCodeForTokens = async (code: string) => {
